@@ -80,8 +80,8 @@ LAYER_WIDTHS = [18, 10, 8]
 # The agents a source can belong to, including those that do not exist yet. The tracker never
 # writes Dono; it only warns about a value outside this list (a typo would drop the source from
 # every snapshot without a word).
-OWNERS = ("cambio", "politica_monetaria", "inflacao", "fiscal", "externo", "atividade", "credito",
-          "mercado_trabalho", "trader")
+OWNERS = ("cambio", "politica_monetaria", "inflacao", "fiscal", "externo", "expectativas", "atividade",
+          "credito", "mercado_trabalho", "trader")
 # The layout of the layer columns is this list; _migrate() moves the user's values by header name
 # whenever it changes.
 FIRST_LAYER = len(BASE_HEADERS) + 1        # column J

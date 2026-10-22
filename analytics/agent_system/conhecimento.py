@@ -4,6 +4,7 @@ Gera o retrato do conhecimento de um agente para um ciclo (PLANO_AGENTES.md 3C).
     uv run python -m analytics.agent_system.conhecimento cambio
     uv run python -m analytics.agent_system.conhecimento cambio --ciclo 2026-10-22
     uv run python -m analytics.agent_system.conhecimento cambio --refazer
+    uv run python -m analytics.agent_system.conhecimento cambio --sem-literatura
 
 Roda no início do ciclo, junto com o `dados` (o F(A)). O agente lê só daqui, nunca do vault direto.
 
@@ -28,7 +29,14 @@ menos o mapa, um link para fora do retrato vira texto simples. Assim nenhum wiki
 fora. INDICE.md (para o agente) e retrato.json (para quem audita o log) listam cada arquivo com o
 dono, a camada e por que entrou. É por eles que se sabe quando o agente leu material de outro dono.
 
-Fixo no ciclo, como o F(A): se o retrato do agente já existe naquele ciclo, o gerador para.
+Sem literatura (`--sem-literatura`, o primeiro ciclo conjunto dos sete agentes): só o mapa
+conceitual e, no agente de política monetária, os documentos do Copom da camada 1, pela mesma regra
+de data. Nenhuma síntese, clean_md, página de conceito ou modelo mental, e o tracker nem é lido. O
+mapa é obrigatório: sem ele o retrato ficaria vazio, então o gerador levanta. INDICE.md e
+retrato.json dizem que o retrato é sem literatura.
+
+Fixo no ciclo, como o F(A): se o retrato do agente já existe naquele ciclo, o gerador para. Se o
+que existe foi feito no outro modo (com ou sem literatura), ele levanta em vez de parar calado.
 `--refazer` apaga e refaz; serve para consertar um ciclo que ainda não começou.
 """
 
@@ -54,7 +62,7 @@ SCRIPTS = RAIZ / "repository" / "ingestion" / "scripts"
 # agente -> pasta da área no vault (None: agente que ainda não tem pasta)
 AREA = {"cambio": "exchange_rate", "politica_monetaria": "monetary_policy", "inflacao": "inflation",
         "fiscal": "fiscal_policy", "atividade": "economic_activity", "mercado_trabalho": "labor_market",
-        "trader": "trader", "externo": None, "credito": None}
+        "trader": "trader", "externo": "external", "expectativas": "expectations", "credito": None}
 DONO_DA_AREA = {a: d for d, a in AREA.items() if a}
 DONO_COPOM = "politica_monetaria"
 
@@ -143,13 +151,21 @@ def itens(ciclo: dt.date, planilha: Path | None = None) -> tuple[list[Item], lis
             (it.arquivos.append(p) if p.exists() else it.falta.append("documento"))
             out.append(it)
     wb.close()                                         # read_only segura o arquivo aberto até fechar
+    return out + itens_copom(ciclo), avisos
+
+
+def itens_copom(ciclo: dt.date) -> list[Item]:
+    """Os documentos do Copom publicados antes da data do ciclo, com a camada de cada um."""
+    tk = tracker()
     docs = tk.copom_docs()
+    camadas = tk.copom_layer(docs, ciclo)
+    out = []
     for d in docs:
-        c = tk.copom_layer(docs, ciclo)[d["name"]]
+        c = camadas[d["name"]]
         if c is not None:                              # None: publicado na data do ciclo ou depois
             rel = d["path"].relative_to(OBSIDIAN).with_suffix("")
             out.append(Item(rel.as_posix(), "copom", DONO_COPOM, c, [d["path"]]))
-    return out, avisos
+    return out
 
 
 # ── links ────────────────────────────────────────────────────────────────────
@@ -257,18 +273,40 @@ def pasta(agente: str, ciclo: dt.date, destino: Path = CICLOS) -> Path:
     return Path(destino) / ciclo.isoformat() / "conhecimento" / agente
 
 
+def mapa_de(agente: str) -> Path | None:
+    """O mapa conceitual do agente no vault (None: agente sem pasta)."""
+    return OBSIDIAN / AREA[agente] / f"{AREA[agente]}_conceptual_map.md" if AREA[agente] else None
+
+
 def gerar(agente: str, ciclo: dt.date, refazer: bool = False, planilha: Path | None = None,
-          destino: Path = CICLOS) -> Path:
+          destino: Path = CICLOS, sem_literatura: bool = False) -> Path:
     if agente not in AREA:
         raise ValueError(f"agente desconhecido {agente!r}; conhecidos: {', '.join(AREA)}")
     saida = pasta(agente, ciclo, destino)
     if saida.exists() and not refazer:
+        feito = saida / "retrato.json"
+        modo = json.loads(feito.read_text(encoding="utf-8")).get("sem_literatura", False) if feito.exists() else None
+        if modo is not None and modo != sem_literatura:
+            raise ValueError(f"{saida} já existe {'sem' if modo else 'com'} literatura, e o pedido é "
+                             f"{'sem' if sem_literatura else 'com'}. Use --refazer para refazer.")
         raise FileExistsError(f"{saida} já existe: o retrato é fixo no ciclo. Use --refazer para refazer.")
-    todos, avisos = itens(ciclo, planilha)
-    idx = indice_vault()
-    entra, conceitos = alcance(agente, todos, idx)
+    mapa = mapa_de(agente)
+    if sem_literatura:
+        # Só o mapa e, para o dono do Copom, os documentos da camada 1. O tracker nem é lido.
+        if mapa is None or not mapa.exists():
+            onde = mapa.relative_to(OBSIDIAN).as_posix() if mapa else "o agente não tem pasta no vault"
+            raise FileNotFoundError(f"{agente}: falta o mapa conceitual ({onde}); "
+                                    "sem ele o retrato sem literatura ficaria vazio")
+        todos, avisos = itens_copom(ciclo), []
+        idx = indice_vault()
+        entra = {it.chave: (it, "camada 1 do agente") for it in todos
+                 if it.dono == agente and it.camada == 1 and it.arquivos}
+        conceitos: dict[str, str] = {}
+    else:
+        todos, avisos = itens(ciclo, planilha)
+        idx = indice_vault()
+        entra, conceitos = alcance(agente, todos, idx)
     dentro = {_rel(p) for it, _ in entra.values() for p in it.arquivos} | set(conceitos)
-    mapa = OBSIDIAN / AREA[agente] / f"{AREA[agente]}_conceptual_map.md" if AREA[agente] else None
     if mapa is not None and mapa.exists():
         dentro.add(_rel(mapa))
 
@@ -302,7 +340,7 @@ def gerar(agente: str, ciclo: dt.date, refazer: bool = False, planilha: Path | N
                 if it.dono == agente and it.camada == 1 and it.falta]
 
     meta = {"agente": agente, "ciclo": ciclo.isoformat(), "gerado_em": dt.datetime.now().isoformat(timespec="seconds"),
-            "arquivos": linhas, "camada1_sem_arquivo": faltando, "avisos": avisos}
+            "sem_literatura": sem_literatura, "arquivos": linhas, "camada1_sem_arquivo": faltando, "avisos": avisos}
     (saida / "retrato.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
     (saida / "INDICE.md").write_text(_indice_md(meta), encoding="utf-8")
     return saida
@@ -315,8 +353,13 @@ def _indice_md(meta: dict) -> str:
            "do vault, então os wikilinks resolvem aqui dentro. A coluna **outro dono** marca o material da "
            "biblioteca de outro agente, alcançado por uma página de conceito: ao abrir um desses arquivos, "
            "registre no log.", "",
-           f"{len(meta['arquivos'])} arquivos · {n_outro} de outros donos · gerado em {meta['gerado_em']}", "",
-           "| arquivo | tipo | dono | camada | outro dono | por que entrou |", "|---|---|---|---|---|---|"]
+           f"{len(meta['arquivos'])} arquivos · {n_outro} de outros donos · gerado em {meta['gerado_em']}", ""]
+    if meta.get("sem_literatura"):
+        out += ["**Retrato sem literatura.** Neste ciclo o agente lê só o mapa conceitual"
+                + (" e os documentos do Copom da camada 1" if any(x["tipo"] == "copom" for x in meta["arquivos"]) else "")
+                + ": nenhuma síntese, clean_md, página de conceito ou modelo mental. O que o mapa cita e não está "
+                "aqui não pode ser lido neste ciclo.", ""]
+    out += ["| arquivo | tipo | dono | camada | outro dono | por que entrou |", "|---|---|---|---|---|---|"]
     for x in meta["arquivos"]:
         out.append(f"| {x['arquivo']} | {x['tipo']} | {x['dono'] or '—'} | {x['camada'] or '—'} | "
                    f"{'sim' if x['outro_dono'] else ''} | {x['motivo']} |")
@@ -336,14 +379,17 @@ def main() -> None:
     ap.add_argument("agente", choices=sorted(AREA))
     ap.add_argument("--ciclo", type=dt.date.fromisoformat, default=dt.date.today())
     ap.add_argument("--refazer", action="store_true")
+    ap.add_argument("--sem-literatura", action="store_true",
+                    help="só o mapa conceitual (e o Copom da camada 1, na política monetária)")
     a = ap.parse_args()
     try:
-        saida = gerar(a.agente, a.ciclo, a.refazer)
-    except FileExistsError as e:
+        saida = gerar(a.agente, a.ciclo, a.refazer, sem_literatura=a.sem_literatura)
+    except (FileExistsError, FileNotFoundError, ValueError) as e:
         sys.exit(str(e))
     meta = json.loads((saida / "retrato.json").read_text(encoding="utf-8"))
     print(f"  retrato  {saida}  ({len(meta['arquivos'])} arquivos, "
-          f"{sum(1 for x in meta['arquivos'] if x['outro_dono'])} de outros donos)")
+          + ("sem literatura, " if meta["sem_literatura"] else "")
+          + f"{sum(1 for x in meta['arquivos'] if x['outro_dono'])} de outros donos)")
     for x in meta["camada1_sem_arquivo"] + meta["avisos"]:
         print(f"  aviso    {x}")
 

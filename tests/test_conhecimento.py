@@ -15,7 +15,9 @@ pasta temporária. Cada item erra sem levantar nada se quebrar:
    "outro dono" que o log usa;
 4. um documento do Copom publicado na data do ciclo ou depois entra no retrato (a ata sai ~6 dias
    depois da reunião);
-5. rodar de novo sem --refazer refaz o retrato no meio do ciclo.
+5. rodar de novo sem --refazer refaz o retrato no meio do ciclo;
+6. o retrato sem literatura leva algo além do mapa (e do Copom da camada 1, na PM), não diz que é
+   sem literatura, sai vazio quando falta o mapa, ou um retrato do outro modo passa por "já existe".
 """
 from __future__ import annotations
 
@@ -163,6 +165,67 @@ with tempfile.TemporaryDirectory() as tmp:
             "4. camada 1 do Copom: 14 comunicados do mandato, RPMs de 202503 a 202606")
     fora = links_para_fora(raiz_pm)
     confere(not fora, f"2. PM: nenhum wikilink para fora ({len(fora)}: {fora[:3]})")
+    copom_com = sorted(copom)
+
+    # ── sem literatura ──────────────────────────────────────────────────────
+    sem = tmp / "sem"
+    raiz = k.gerar("cambio", ciclo, planilha=planilha, destino=sem, sem_literatura=True)
+    meta = json.loads((raiz / "retrato.json").read_text(encoding="utf-8"))
+    confere([x["arquivo"] for x in meta["arquivos"]] == ["exchange_rate/exchange_rate_conceptual_map.md"],
+            f"6. câmbio sem literatura: só o mapa ({[x['arquivo'] for x in meta['arquivos']]})")
+    no_disco = sorted(p.relative_to(raiz).as_posix() for p in raiz.rglob("*") if p.is_file())
+    confere(no_disco == ["INDICE.md", "exchange_rate/exchange_rate_conceptual_map.md", "retrato.json"],
+            f"6. e no disco também ({no_disco})")
+    confere(meta["sem_literatura"] is True and "sem literatura" in (raiz / "INDICE.md").read_text(encoding="utf-8"),
+            "6. retrato.json e INDICE dizem que é sem literatura")
+
+    raiz_pm = k.gerar("politica_monetaria", ciclo, planilha=planilha, destino=sem, sem_literatura=True)
+    meta = json.loads((raiz_pm / "retrato.json").read_text(encoding="utf-8"))
+    tipos = {x["tipo"] for x in meta["arquivos"]}
+    copom = sorted(x["arquivo"] for x in meta["arquivos"] if x["tipo"] == "copom")
+    confere(tipos == {"mapa", "copom"}, f"6. PM sem literatura: só o mapa e o Copom ({tipos})")
+    confere(copom == copom_com, f"6. PM sem literatura: os mesmos {len(copom_com)} documentos do Copom da camada 1")
+    confere(all(docs[Path(a).stem]["published"] < ciclo for a in copom),
+            f"4. sem literatura: nenhum documento do Copom publicado em {ciclo} ou depois")
+    confere(not any("/synthesis/" in x["arquivo"] or "/clean_md/" in x["arquivo"] and x["tipo"] != "copom"
+                    or x["arquivo"].startswith("concepts/") or "/mental_models/" in x["arquivo"]
+                    for x in meta["arquivos"]),
+            "6. PM sem literatura: nenhuma síntese, clean_md, conceito ou modelo mental")
+    fora = links_para_fora(raiz_pm)
+    confere(not fora, f"2. PM sem literatura: nenhum wikilink para fora ({len(fora)}: {fora[:3]})")
+    confere("Copom" in (raiz_pm / "INDICE.md").read_text(encoding="utf-8").split("| arquivo |")[0],
+            "6. o INDICE da PM diz que entram os documentos do Copom")
+
+    # o modo do retrato que já existe tem de bater com o pedido
+    try:
+        k.gerar("cambio", ciclo, planilha=planilha, destino=sem)
+        confere(False, "6. retrato sem literatura que já existe, pedido com: levanta")
+    except ValueError as e:
+        confere("sem literatura" in str(e), "6. retrato sem literatura que já existe, pedido com: levanta")
+    except FileExistsError:
+        confere(False, "6. retrato sem literatura que já existe, pedido com: levanta (não só 'já existe')")
+    try:
+        k.gerar("cambio", ciclo, planilha=planilha, destino=sem, sem_literatura=True)
+        confere(False, "6. mesmo modo: para com 'já existe'")
+    except FileExistsError:
+        confere(True, "6. mesmo modo: para com 'já existe'")
+
+    # sem mapa, o retrato sem literatura ficaria vazio: levanta
+    k.AREA["_teste_sem_mapa"] = "_pasta_que_nao_existe"
+    try:
+        for ag, trecho in (("credito", "não tem pasta"), ("_teste_sem_mapa", "_pasta_que_nao_existe_conceptual_map")):
+            try:
+                k.gerar(ag, ciclo, planilha=planilha, destino=sem, sem_literatura=True)
+                confere(False, f"6. {ag} sem mapa: levanta")
+            except FileNotFoundError as e:
+                confere(trecho in str(e) and not k.pasta(ag, ciclo, sem).exists(),
+                        f"6. {ag} sem mapa: levanta com o caminho, sem criar a pasta")
+    finally:
+        del k.AREA["_teste_sem_mapa"]
+
+    confere(k.AREA["externo"] == "external" and k.AREA["expectativas"] == "expectations"
+            and k.DONO_DA_AREA["expectations"] == "expectativas" and "expectativas" in k.tracker().OWNERS,
+            "externo e expectativas reconhecidos (vault e tracker)")
 
 print(f"\n{'tudo ok' if not falhas else f'{falhas} falha(s)'}")
 sys.exit(1 if falhas else 0)
