@@ -27,9 +27,11 @@ Rodada 1 → P1 → rodada 2 → P2 → report final → PF*. Dentro de uma roda
 
 ### Consolidação P<n>
 
-- **Reports usados:** <report de cada agente na rodada n>
-- **O que o Modelo Estrutural devolveu:** <variáveis e trajetória>
-- **Onde divergiu dos agentes:** <variável, agente, tamanho da diferença>
+- **Reports e caminhos usados:** <report e `caminhos/<agente>_<rodada>.json` de cada agente na rodada n; JSON que faltou>
+- **Tutela:** <a aba "Exógenas" no dia; exógena sem tutela ou cuja tutela não escreveu, que ficou no padrão do simulador>
+- **O que o Modelo Estrutural devolveu:** <variáveis e trajetória> (`P<n>.md`)
+- **Caminhos divergentes** (seção 3 do P): quem escreveu fora da tutela, em que exógena e quanto; na rodada seguinte, a resposta de quem tem a tutela (manteve · mudou, e por quê)
+- **Central do modelo contra a faixa dos agentes:** <variável, agente, quando a central conjunta caiu fora da faixa do agente>
 
 ## Conhecimento
 
@@ -54,7 +56,9 @@ Conta que o F(A) não faz. O código fica em `dados/G/`, lê os arquivos de `dad
 
 ## Divergências abertas
 
-| Tema | Posição de <agente A> | Posição de <agente B> | Por que não se resolveu |
+Podem envolver mais de dois agentes: uma linha por agente com posição própria.
+
+| Tema | Agente | Posição | Por que não se resolveu |
 |---|---|---|---|
 
 ## Relatório

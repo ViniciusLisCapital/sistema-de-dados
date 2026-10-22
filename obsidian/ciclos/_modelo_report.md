@@ -1,21 +1,21 @@
 # Report — <área> · ciclo <AAAA-MM-DD> · rodada <1 | 2 | final>
 
-Dados até: <data de corte> · Horizontes: os seis trimestres do Modelo Estrutural a partir do trimestre em curso (ex.: 4T26 a 1T28), com a variável no fechamento do trimestre
+Dados até: <data de corte> · Horizontes: os seis trimestres do Modelo Estrutural a partir do trimestre em curso (ex.: 4T26 a 1T28), com a variável medida como o mapa conceitual da área define (em geral, no fechamento do trimestre)
 
 ## 1. Tese
 
-| Variável | Trimestre | Central | Base: faixa · P | Cauda worst: limite · P | Cauda best: limite · P | Pbc − Pwc |
+| Variável | Trimestre | Central | Base: faixa · P | Upside: limite · P | Downside: limite · P | P(up) − P(down) |
 |---|---|---|---|---|---|---|
-| <ex.: USD/BRL, PTAX de fechamento> | 4T26 | <5,20> | <5,05 a 5,35 · 55%> | <acima de 5,35 · 25%> | <abaixo de 5,05 · 20%> | <−0,05> |
+| <ex.: USD/BRL, PTAX de fechamento> | 4T26 | <5,20> | <5,05 a 5,35 · 55%> | <acima de 5,35 · 25%> | <abaixo de 5,05 · 20%> | <+0,05> |
 | | 1T27 | | | | | |
 | | 2T27 | | | | | |
 | | 3T27 | | | | | |
 | | 4T27 | | | | | |
 | | 1T28 | | | | | |
 
-- Uma linha por trimestre. A variável é medida no fechamento do trimestre (no câmbio, a PTAX do último dia útil), porque é o que se compara com o dado de hoje.
-- **A central é a do Modelo Estrutural no cenário base** (seção 3.1), sem ajuste. Faixa, limites das caudas e probabilidades são do agente (seção 3.2).
-- As três probabilidades de cada linha somam 100%. Worst e best são as caudas abaixo e acima da faixa base, na direção que vale para a variável (inflação mais alta é worst; no câmbio, depreciação é worst).
+- Uma linha por trimestre. A variável é medida como o mapa da área define (no câmbio, a PTAX do último dia útil do trimestre), porque é o que o placar confere.
+- **A central é a do Modelo Estrutural no cenário base** (seção 3.1), sem ajuste; da rodada 2 em diante, a do P anterior. Agente sem variável endógena no modelo (fiscal, externo): a tese é o caminho base das exógenas de que tem tutela, e a central é esse caminho. Faixa, limites das caudas e probabilidades são do agente (seção 3.2).
+- As três probabilidades de cada linha somam 100%. **Upside** é a cauda acima da faixa base e **downside** a cauda abaixo: só posição, sem julgar se é bom ou ruim. Quando importar, o texto diz se uma cauda é boa ou ruim para o Brasil (ex.: commodities em queda são downside, ruim para o câmbio e boa para a inflação).
 - **O que leva a cada cauda**, uma linha para cada, dita nas duas etapas da seção 3: o cenário do modelo e o tempero ("acima de 5,35 se o 2º turno reverter o resultado: CDS a 150 dá 5,30 no modelo, e o efeito do CDS × 1,5 leva a 5,45").
 - **A tese em uma frase:** o que se espera, em que trimestres e por qual mecanismo.
 
@@ -23,7 +23,7 @@ Dados até: <data de corte> · Horizontes: os seis trimestres do Modelo Estrutur
 
 - **As perguntas centrais.** A resposta a cada pergunta central do mapa conceitual da área (no câmbio, Q1–Q4). É o mínimo, não o máximo: insights novos e alertas entram aqui também.
 - **Por que a central.** Os caminhos das exógenas no cenário base e o que o modelo faz com eles: quais canais movem a variável, e quanto. A central não leva tempero; uma força qualitativa no cenário base entra na assimetria.
-- **Por que a faixa e a probabilidade de cada cauda.** Os riscos que justificam a assimetria: o que levaria a variável para o worst-case e para o best-case, e por que um é mais provável que o outro, com os temperos da seção 3.2.
+- **Por que a faixa e a probabilidade de cada cauda.** Os riscos que justificam a assimetria: o que levaria a variável para o upside e para o downside, e por que um é mais provável que o outro, com os temperos da seção 3.2.
 
 **Cada dado tem um papel.** Uma afirmação com partes é escrita em partes ("mercado fino" e "demanda fora do mercado à vista"), e cada dado diz a qual parte responde:
 - **sustenta:** fica no parágrafo, ligado à afirmação por uma palavra que diga a relação ("o que mostra", "porque");
@@ -52,18 +52,22 @@ Duas etapas, nesta ordem. A etapa 1 dá a central; a etapa 2 dá a distribuiçã
 
 **Cenários.** Uma linha por cenário com a história que o define, em eventos:
 - Base: <ex.: o 2º turno confirma a leitura de 05/10; o plano fiscal de 2027 estabiliza a dívida devagar>
-- Worst: <ex.: o 2º turno reverte a leitura de 05/10>
-- Best: <...>
+- Upside: <ex.: o 2º turno reverte a leitura de 05/10 (câmbio mais depreciado)>
+- Downside: <...>
 
 **Caminhos das exógenas.** Só as exógenas do Modelo Estrutural que a área usa, uma por linha, sem agrupar. As endógenas (hiato, inflação, expectativas, Selic, câmbio) o modelo resolve, e o agente não as fixa. As exógenas que a área não usa ficam no padrão do simulador.
 
 | Exógena | Hoje (valor · tabela · data) | Cenário | 4T26 | 1T27 | 2T27 | 3T27 | 4T27 | 1T28 |
 |---|---|---|---|---|---|---|---|---|
 | <CDS 5 anos> | <112 · `cmb_risco_pais` · 08/09> | base | | | | | | |
-| | | worst | | | | | | |
-| | | best | | | | | | |
+| | | upside | | | | | | |
+| | | downside | | | | | | |
 
 Um caminho que não seja óbvio pela história do cenário ganha uma linha de motivo abaixo da tabela.
+
+**Quem escreve cada caminho.** A tutela de cada exógena está na aba "Exógenas" do `data_tracker.xlsx` (SISTEMA_AGENTES.md IV.ii). O P usa o caminho de quem tem a tutela; o agente pode escrever o caminho de uma exógena fora da tutela dele quando discorda, e esse caminho não entra no P: vira divergência, que quem tem a tutela responde na rodada seguinte.
+
+**O arquivo de caminhos.** Junto com o report, o agente grava `obsidian/ciclos/<ciclo>/caminhos/<agente>_<r1|r2|rf>.json`, no contrato da docstring de `analytics/agent_system/consolidacao.py`: o caminho **base** de cada exógena que escreve, na convenção de `modelo.listar()`, e a `tese` com os mesmos números da tabela da seção 1. Os caminhos de upside e downside ficam só no report. É desse arquivo que sai o P.
 
 **Acompanhamento das exógenas.** *Suspenso desde 2026-10-15, junto com as linhas de Alerta das fichas: vai para o dashboard de Report (SISTEMA_AGENTES.md IV.ix).*
 
@@ -75,14 +79,15 @@ Um caminho que não seja óbvio pela história do cenário ganha uma linha de mo
 
 | Variável | Cenário | 4T26 | 1T27 | 2T27 | 3T27 | 4T27 | 1T28 |
 |---|---|---|---|---|---|---|---|
-| <PTAX> | base · worst · best | | | | | | |
-| <Selic, IPCA 12m> | base · worst · best | | | | | | |
+| <PTAX> | base · upside · downside | | | | | | |
+| <Selic, IPCA 12m> | base · upside · downside | | | | | | |
 
 ### 3.2 Etapa 2 — o tempero qualitativo
 
 O que o agente acrescenta ao modelo para formar a distribuição. Uma ficha por tempero, de dois tipos. Um canal que está no modelo só entra pelo tipo (i): pelo (ii) ele seria contado duas vezes.
 
-**(i) <Exógena> — efeito mais forte | mais fraco que o estimado** · cenário <base | worst | best>
+**(i) <Exógena> — efeito mais forte | mais fraco que o estimado** · cenário <base | upside | downside>
+- O multiplicador é de quem é dono da equação; quem tem só a tutela da exógena argumenta pela seção 4 e o dono aplica.
 - Coeficiente: estimado <β>, intervalo de 90% do posterior <a> a <b>. Multiplicador: × <m>, <dentro | fora> do intervalo.
 - Efeito: <a variável no cenário, do modelo → com o multiplicador, nos trimestres afetados>.
 - Por quê: <X1>; <X2>; … Quanto mais para a cauda da distribuição do coeficiente, melhor tem de ser a justificativa. Fora do intervalo, o agente afirma que o histórico subestima o canal, e diz por que agora é diferente (ex.: o modelo é linear e o estresse não é).
@@ -90,7 +95,7 @@ O que o agente acrescenta ao modelo para formar a distribuição. Uma ficha por 
 - Alerta: <indicador> · <tipo> · <limiar> · <janela>
 - Checkpoints: <evento · data>
 
-**(ii) <Fator fora do modelo> — <indicador>** · cenário <base | worst | best>
+**(ii) <Fator fora do modelo> — <indicador>** · cenário <base | upside | downside>
 - Hoje: <valor> (<tabela>, <data>)
 - Por que o modelo não vê: <o fator, e por que ele não está em nenhuma exógena>.
 - Efeito: <direção · tamanho · duração> (ex.: "+2% sobre o modelo por um trimestre").
@@ -98,11 +103,11 @@ O que o agente acrescenta ao modelo para formar a distribuição. Uma ficha por 
 - Alerta: <indicador> · <tipo> · <limiar> · <janela>
 - Checkpoints: <evento · data>
 
-Um tempero no cenário base não move a central: entra como assimetria (Pbc − Pwc).
+Um tempero no cenário base não move a central: entra como assimetria (P(up) − P(down)).
 
 ### 3.3 Da etapa 1 à tese
 
-| Trimestre | Central (modelo, base) | Worst: modelo → com tempero | Best: modelo → com tempero |
+| Trimestre | Central (modelo, base) | Upside: modelo → com tempero | Downside: modelo → com tempero |
 |---|---|---|---|
 | 4T26 | | | |
 
@@ -121,6 +126,7 @@ Abaixo da tabela, em uma ou duas frases: como esses pontos dão a faixa base, os
 
 - **Respostas às entradas fixas** do mapa conceitual (no câmbio, E1–E7 para política monetária): uma linha cada. Quando a condição de alerta do mapa aconteceu, o item vem marcado **em destaque**, com o motivo e o argumento ("E7, em destaque: o BC vendeu US$ 3 bi à vista em setembro").
 - **Pedidos:** as saídas fixas do mapa (no câmbio, S1–S4) e os pedidos deste ciclo, com a pergunta exata e a tese que depende dela.
+- **Divergências** (da rodada 2 em diante): para cada divergência da seção 3 do P sobre uma exógena de que este agente tem a tutela, mantém ou muda o caminho, e diz por quê.
 
 ## 5. Placar
 
