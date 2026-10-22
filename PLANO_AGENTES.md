@@ -21,12 +21,12 @@ Fica fora deste plano tudo o que não leva a isso (lista em "Anotado para depois
 | 4 | Re-teste do câmbio só com o núcleo | feito (2026-10-21, dados de 15/10): report completo com pouca literatura aberta; Kapitalo promovida para a camada 1; síntese do Cortapasso refeita pelo `/vault` (f44c8a0); o câmbio declara a lacuna do Copom em vez de escrever de memória (SISTEMA II.II.iv) |
 | 5 | Material da camada 1 de PM | feito (2026-10-21): modelo mental da Verde, 24 cartas em 3 rodadas (14d91ac); as 10 fontes da camada 1 já tinham síntese |
 | 6 | Agente de PM e teste solo | feito (2026-10-21): definição (`.claude/agents/politica-monetaria-analyst.md`); dois testes solo em `obsidian/ciclos/2026-10-15/` (fba897b, 414eda4). Da revisão do usuário: passo máximo de 25 p.b. afirmado de memória (virou o princípio I.II.ix); foco vai × deveria × mercado (Q1–Q4); central do modelo em todos os trimestres; seção 6, "Sobre o modelo", em todo report. Promovidos Segura-Ubiergo e Adrian-Crump-Moench. Seta no diagrama (9f6383e) |
-| 7 | Desenho do ciclo conjunto (decisões) | em curso (2026-10-22): itens 2, 3 e 4 decididos (SISTEMA IV.ii, IV.vi); item 1 virou a aba "Exógenas" do tracker, que o usuário preenche; falta o item 5 |
-| 8 | Os cinco agentes novos, na forma mínima | em curso (2026-10-22): os cinco rascunhos de mapa prontos (M1–M5, sem commit), esperando aprovação |
-| 9 | Engrenagem do ciclo conjunto | em curso (2026-10-22): E1 feito (71bbb16, 78c79f6) |
+| 7 | Desenho do ciclo conjunto (decisões) | feito (2026-10-22): SISTEMA IV.ii, IV.vi, IV.vii e III.III.vii; a tutela das exógenas virou a aba "Exógenas" do tracker, **que o usuário preenche**; caudas upside/downside para todos; relatório por tema com apêndice por área (manual §13) |
+| 8 | Os cinco agentes novos, na forma mínima | em curso (2026-10-22): mapas aprovados, exceto a Parte 1 do fiscal, reescrita nas duas discussões (contábil × impacto na demanda); os subagentes escrevem lista, módulo de dados e definição. Falta o ajuste de câmbio e PM |
+| 9 | Engrenagem do ciclo conjunto | em curso (2026-10-22): E1 (71bbb16, 78c79f6), E2 consolidação (4f9f186), templates (9b262ce); em curso E3 (escrivão) e E4 (grupos do IPCA no modelo, upside/downside no JSON) |
 | 10 | O primeiro ciclo conjunto, sem literatura | — |
 
-**Em curso:** a aprovação dos cinco mapas e o preenchimento da aba "Exógenas" pelo usuário. **Próximo:** o E2 (consolidação, lendo a aba) e o item 5 da Fase 7 (estrutura do relatório do escrivão).
+**Em curso:** M1–M5 (lista, módulo, definição), E3, E4. **Falta do usuário:** preencher a aba "Exógenas"; aprovar a Parte 1 do fiscal. **Próximo:** linhas em `AGENTES`, unificação das tabelas com `variante` própria, ajuste de câmbio e PM.
 
 O A e o F(A) de câmbio e PM do ciclo 2026-10-22 já foram montados, antes da mudança de rumo. A data do ciclo conjunto será escolhida na Fase 10, depois da conversa sobre o recorte dos dados.
 
