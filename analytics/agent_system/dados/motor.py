@@ -8,10 +8,12 @@ Três garantias, cada uma contra um defeito silencioso:
     lista é decidida com o usuário; o código não pode ganhar nem perder uma tabela calado.
   - F é calculado a partir dos ARQUIVOS de A, nunca do banco. É isso que faz o F(A) e as
     funções G do agente olharem exatamente o mesmo dado.
-  - A é extraído uma vez por ciclo e compartilhado entre os agentes. Um segundo agente que
-    declare a mesma tabela com o mesmo nome de recorte e outra consulta faz o gerador
-    levantar, em vez de reaproveitar um arquivo que não é o que ele pediu. Se a consulta
-    diferente é de propósito, ela leva uma `variante`, que vai para outro arquivo.
+  - A é extraído uma vez por ciclo e compartilhado entre os agentes. Dois agentes que
+    declarem a mesma tabela com o mesmo recorte e outra consulta fazem o gerador levantar
+    (`conferir_consultas`, sobre todos os pares, antes de extrair), em vez de um reaproveitar
+    um arquivo que não é o que ele pediu. Se a consulta diferente é de propósito, ela leva
+    uma `variante`, que vai para outro arquivo. O jeito de não divergir é partir da
+    declaração do outro agente: `de(modulo, nome)` e `so(modulo, nome, chaves)`.
 
 As leituras de série (o F genérico):
 
@@ -27,6 +29,7 @@ histórico, mínimo e máximo de 10 anos); os outros grupos, a enxuta.
 
 from __future__ import annotations
 
+import dataclasses
 import datetime as dt
 import gzip
 import json
@@ -122,6 +125,54 @@ def conferir(tabelas: list[Tabela], grupos: list[dict]) -> None:
         raise ValueError("A declaração não bate com a lista do SISTEMA_AGENTES.md: "
                          f"faltam {sorted(faltam, key=str)}, sobram {sorted(sobram, key=str)}, "
                          f"repetidas {sorted(dup, key=str)}")
+
+
+# ── tabela de outro agente ────────────────────────────────────────────────────
+def de(modulo, nome: str, recorte: str | None = None, **mudar) -> Tabela:
+    """A declaração que `modulo` (o módulo de outro agente) faz da tabela `nome`, com `mudar`
+    trocado. Trocando só séries, leitura, `especial` ou `nota`, a consulta fica idêntica e o A
+    do ciclo, que é compartilhado, serve aos dois. Trocando a consulta (filtro, params, corte),
+    leve uma `variante`, senão `conferir_consultas` levanta."""
+    t = next((t for t in modulo.TABELAS if t.nome == nome and t.recorte == recorte), None)
+    if t is None:
+        raise ValueError(f"{modulo.__name__} não declara `{nome}`"
+                         + (f" ({recorte})" if recorte else ""))
+    return dataclasses.replace(t, **mudar)
+
+
+def so(modulo, nome: str, chaves: tuple[str, ...], recorte: str | None = None, **mudar) -> Tabela:
+    """A declaração de `modulo` para a tabela, só com as séries `chaves`, nessa ordem."""
+    t = de(modulo, nome, recorte, **mudar)
+    por = {se.chave: se for se in t.series}
+    if faltam := [k for k in chaves if k not in por]:
+        raise ValueError(f"{modulo.__name__} não declara as séries {faltam} de `{nome}`")
+    return dataclasses.replace(t, series=tuple(por[k] for k in chaves))
+
+
+def conferir_consultas(declaracoes: dict[str, list[Tabela]]) -> None:
+    """Todo par de agentes: a mesma tabela no mesmo arquivo de A (nome, recorte e variante) tem
+    de ter a mesma consulta, porque o A do ciclo é um só. Levanta com todos os conflitos.
+
+    O `extrair` também confere contra o manifesto, mas só quando o segundo agente roda, e só
+    contra quem rodou antes; aqui o conflito aparece antes de extrair qualquer coisa, para
+    qualquer par, inclusive entre dois agentes que ainda não rodaram no ciclo."""
+    corte = pd.Timestamp("2000-01-01")               # a mesma para todos: só o texto importa
+    vistos: dict[str, tuple[str, tuple]] = {}
+    conflitos = []
+    for agente, tabelas in declaracoes.items():
+        for t in tabelas:
+            if t.fora:
+                continue
+            sql, params = _sql(t, corte)
+            consulta = (sql, tuple(sorted(params.items())))
+            if t.arquivo not in vistos:
+                vistos[t.arquivo] = (agente, consulta)
+            elif vistos[t.arquivo][1] != consulta:
+                outro, (sql0, _) = vistos[t.arquivo]
+                conflitos.append(f"{t.arquivo}: {outro} consulta `{sql0}` e {agente} `{sql}`")
+    if conflitos:
+        raise ValueError("Mesma tabela e mesmo arquivo de A com consultas diferentes; declare uma "
+                         "`variante` na que muda: " + "; ".join(conflitos))
 
 
 # ── A ─────────────────────────────────────────────────────────────────────────

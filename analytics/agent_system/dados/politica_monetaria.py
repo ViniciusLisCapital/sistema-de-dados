@@ -9,17 +9,17 @@ Três coisas que valem para o arquivo inteiro:
 
   - A seção vai até o grupo "xi. Fora da lista": o que está ali é consulta livre, sem uso
     previsto, e não entra no F.
-  - Tabela que o câmbio também lê sai da declaração DELE (`_do_cambio`), trocando só as
-    séries. A consulta fica idêntica, e o A do ciclo, que é compartilhado, serve aos dois.
-    Onde a consulta tem de ser outra (a curva americana inteira, e não só três vértices),
-    ela leva uma `variante` e vai para outro arquivo.
+  - Tabela que o câmbio também lê sai da declaração DELE (`de(cambio, ...)` e
+    `so(cambio, ...)`, do motor), trocando só as séries. A consulta fica idêntica, e o A
+    do ciclo, que é compartilhado, serve aos dois. Onde a consulta tem de ser outra (a curva
+    americana inteira, e não só três vértices), ela leva uma `variante` e vai para outro
+    arquivo.
   - Profundidade (PRINCIPIOS I.II.vii): só o grupo "Endógeno" ganha a leitura completa;
     "Endógeno de câmbio", TWA e Exógeno, a enxuta. O motor decide pelo nome do grupo.
 """
 
 from __future__ import annotations
 
-import dataclasses
 from functools import partial
 
 import numpy as np
@@ -27,8 +27,8 @@ import pandas as pd
 
 from analytics.agent_system.dados import cambio
 from analytics.agent_system.dados import especiais as esp
-from analytics.agent_system.dados.motor import (Ctx, Serie, Tabela, antes, em, fdata, fmt,
-                                                md_tabela, pctl)
+from analytics.agent_system.dados.motor import (Ctx, Serie, Tabela, antes, de, em, fdata, fmt,
+                                                md_tabela, pctl, so)
 
 SECAO = ("## (V.II) Agente de política monetária", "### xi. Fora da lista")
 PIB = None   # o balanço de pagamentos em % do PIB é leitura do câmbio; aqui não há PIB em dólar
@@ -38,19 +38,6 @@ _BI = 1000.0  # R$ ou US$ milhões -> bilhões
 
 def _s(chave, rotulo, unidade, leitura, **kw) -> Serie:
     return Serie(chave, rotulo, unidade, leitura, **kw)
-
-
-def _do_cambio(nome: str, recorte: str | None = None, **mudar) -> Tabela:
-    """A declaração do câmbio para a mesma tabela, com a mesma consulta e outras séries."""
-    t = next(t for t in cambio.TABELAS if t.nome == nome and t.recorte == recorte)
-    return dataclasses.replace(t, **mudar)
-
-
-def _so(nome: str, chaves: tuple[str, ...]) -> Tabela:
-    """A declaração do câmbio, só com as séries `chaves`."""
-    t = _do_cambio(nome)
-    por = {se.chave: se for se in t.series}
-    return dataclasses.replace(t, series=tuple(por[k] for k in chaves))
 
 
 def _modalidade(itens) -> tuple[Serie, ...]:
@@ -477,9 +464,9 @@ def efgg(df: pd.DataFrame, ctx: Ctx) -> list[str]:
 # ── a declaração ──────────────────────────────────────────────────────────────
 TABELAS: list[Tabela] = [
     # ── i. Endógeno ──────────────────────────────────────────────────────────
-    _do_cambio("pm_copom_calendario", especial=partial(esp.copom_calendario, proximas=None)),
-    _do_cambio("pm_copom_reuniao", especial=copom_decisoes),
-    _do_cambio("pm_copom_projecoes", especial=copom_projecoes),
+    de(cambio, "pm_copom_calendario", especial=partial(esp.copom_calendario, proximas=None)),
+    de(cambio, "pm_copom_reuniao", especial=copom_decisoes),
+    de(cambio, "pm_copom_projecoes", especial=copom_projecoes),
     Tabela("pm_hiato_produto", corte="vintage", especial=hiato),
     Tabela("pm_hiato_produto_vintages", corte="vintage", especial=hiato_vintages),
     Tabela("br_interest_rate", dims=("curve", "tenor"), series=(
@@ -490,25 +477,25 @@ TABELAS: list[Tabela] = [
         *[_s(f"NTNBJS|{t}", f"NTN-B {r} (juro real)", "% a.a.", "dif")
           for t, r in (("12M", "1 ano"), ("24M", "2 anos"), ("60M", "5 anos"), ("120M", "10 anos"))],
     )),
-    _do_cambio("br_di_grade"),
-    _do_cambio("inflc_meta"),
+    de(cambio, "br_di_grade"),
+    de(cambio, "inflc_meta"),
     # ── ii. Endógeno de câmbio ───────────────────────────────────────────────
-    _so("cmb_ptax", ("ptax_venda",)),
-    _do_cambio("cmb_fx_latam"),
-    _so("cmb_reer", ("BR|real_broad", "BR|nominal_broad", "MX|real_broad", "CL|real_broad", "CO|real_broad")),
-    _so("cmb_reservas_bc", ("reserves_total_daily", "bcb_swap_cambial_position",
+    so(cambio, "cmb_ptax", ("ptax_venda",)),
+    de(cambio, "cmb_fx_latam"),
+    so(cambio, "cmb_reer", ("BR|real_broad", "BR|nominal_broad", "MX|real_broad", "CL|real_broad", "CO|real_broad")),
+    so(cambio, "cmb_reservas_bc", ("reserves_total_daily", "bcb_swap_cambial_position",
                             "bcb_intervention_spot", "bcb_intervention_repo_lines")),
-    _so("cmb_cambio_contratado", ("cc_saldo_total", "cc_saldo_comercial", "cc_fin_saldo")),
-    _so("cmb_balanco_pagmt", ("conta_corrente", "investimento_direto_liquido", "portfolio_passivos")),
-    _so("cmb_cot_fx", ("BRL|lev_net", "BRL|asset_mgr_net", "BRL|open_interest")),
-    _do_cambio("cmb_termos_troca"),
-    _so("cmb_comex_fator_agregado", ("basicos_export", "manufaturados_export")),
-    _so("cmb_comex_pais", ("mundo_export", "mundo_import", "china_export")),
-    _so("cmb_comex_produto", ("petroleo_export", "soja_export", "minerio_ferro_export")),
-    _so("diferenciais_juros", ("selic", "fed_funds", "diferencial_nominal", "diferencial_real")),
+    so(cambio, "cmb_cambio_contratado", ("cc_saldo_total", "cc_saldo_comercial", "cc_fin_saldo")),
+    so(cambio, "cmb_balanco_pagmt", ("conta_corrente", "investimento_direto_liquido", "portfolio_passivos")),
+    so(cambio, "cmb_cot_fx", ("BRL|lev_net", "BRL|asset_mgr_net", "BRL|open_interest")),
+    de(cambio, "cmb_termos_troca"),
+    so(cambio, "cmb_comex_fator_agregado", ("basicos_export", "manufaturados_export")),
+    so(cambio, "cmb_comex_pais", ("mundo_export", "mundo_import", "china_export")),
+    so(cambio, "cmb_comex_produto", ("petroleo_export", "soja_export", "minerio_ferro_export")),
+    so(cambio, "diferenciais_juros", ("selic", "fed_funds", "diferencial_nominal", "diferencial_real")),
     # ── iii. TWA — expectativas ──────────────────────────────────────────────
-    _do_cambio("expc_focus_copom"),
-    _do_cambio("expc_focus_periodo", recorte="Selic"),
+    de(cambio, "expc_focus_copom"),
+    de(cambio, "expc_focus_periodo", recorte="Selic"),
     Tabela("expc_qpc", especial=qpc),
     Tabela("expc_focus", filtro="tipo_calculo = 'geral' AND base_calculo = 0",
            dims=("indicador", "horizonte", "suavizada"), valor="mediana", series=(
@@ -518,10 +505,10 @@ TABELAS: list[Tabela] = [
         _s("IPCA Livres|12m|S", "IPCA livres 12 meses à frente (suavizada)", "%", "dif"),
         _s("IPCA Administrados|12m|S", "IPCA administrados 12 meses à frente (suavizada)", "%", "dif"),
     )),
-    _do_cambio("expc_focus_periodo", recorte="IPCA"),
-    _do_cambio("expc_focus_periodo", recorte="câmbio"),
+    de(cambio, "expc_focus_periodo", recorte="IPCA"),
+    de(cambio, "expc_focus_periodo", recorte="câmbio"),
     # ── iv. TWA — inflação ───────────────────────────────────────────────────
-    _do_cambio("inflc_agregados", series=(
+    de(cambio, "inflc_agregados", series=(
         *[_s(k, rot, "%", "var_mensal") for k, rot in (
             ("ipca", "IPCA"), ("ipca15", "IPCA-15"), ("ipca_livres", "Livres"),
             ("ipca_administrado", "Administrados"), ("ipca_alimentacao", "Alimentação"),
@@ -682,14 +669,14 @@ TABELAS: list[Tabela] = [
         _s("concessao_credito_pj", "Concessões PJ", "R$ bi", "fluxo", escala=_BI, casas=1),
     )),
     # ── viii. TWA — fiscal ───────────────────────────────────────────────────
-    _do_cambio("fisc_nfsp", series=(
+    de(cambio, "fisc_nfsp", series=(
         _s("resultado_primario_pct_pib_12m", "Resultado primário, 12m (+ = superávit)", "% do PIB", "dif"),
         _s("resultado_primario_governo_federal_bc_pct_pib_12m",
            "Primário do governo federal e BC, 12m", "% do PIB", "dif"),
         _s("resultado_nominal_pct_pib_12m", "Resultado nominal, 12m", "% do PIB", "dif"),
         _s("juros_nominais_pct_pib_12m", "Juros nominais, 12m", "% do PIB", "dif"),
     )),
-    _do_cambio("fisc_divida"),
+    de(cambio, "fisc_divida"),
     Tabela("fisc_dlsp_fatores", especial=dlsp_fatores),
     Tabela("fisc_rtn", series=(
         _s("resultado_primario_governo_central", "Primário do governo central (+ = superávit)",
@@ -699,7 +686,7 @@ TABELAS: list[Tabela] = [
     )),
     Tabela("fisc_efgg", especial=efgg),
     # ── ix. TWA — externo ────────────────────────────────────────────────────
-    _do_cambio("us_interest_rate", variante="curva",
+    de(cambio, "us_interest_rate", variante="curva",
                filtro="curve = 'POLICY' OR (curve = 'US_TREASURY' AND tenor IN ('3M', '2Y', '5Y', '10Y', '30Y'))",
                series=(_s("POLICY|1d", "Fed Funds, meta (ponto médio)", "% a.a.", "dif"),
                        *[_s(f"US_TREASURY|{t}", f"Treasury {r}", "% a.a.", "dif")
@@ -708,17 +695,17 @@ TABELAS: list[Tabela] = [
     Tabela("inter_interest_rate", dims=("country_code",), filtro="curve = 'POLICY'", series=tuple(
         _s(p, f"{rot}, juro de política", "% a.a.", "dif") for p, rot in (
             ("MX", "México"), ("CL", "Chile"), ("CO", "Colômbia"), ("PE", "Peru")))),
-    _do_cambio("cmb_real_rates"),
-    _do_cambio("cmb_dollar_index"),
-    _do_cambio("cmb_dollar_index_em"),
-    _do_cambio("comm_brent"),
-    _do_cambio("comm_icbr_usd"),
+    de(cambio, "cmb_real_rates"),
+    de(cambio, "cmb_dollar_index"),
+    de(cambio, "cmb_dollar_index_em"),
+    de(cambio, "comm_brent"),
+    de(cambio, "comm_icbr_usd"),
     Tabela("comm_icbr", series=tuple(
         _s(k, rot, "índice, em R$", "pct") for k, rot in (
             ("icbr_geral", "IC-Br"), ("icbr_agropecuaria", "IC-Br agropecuária"),
             ("icbr_metal", "IC-Br metal"), ("icbr_energia", "IC-Br energia")))),
     # ── x. Exógeno ───────────────────────────────────────────────────────────
-    _do_cambio("cmb_risco_pais"),
+    de(cambio, "cmb_risco_pais"),
 ]
 
 

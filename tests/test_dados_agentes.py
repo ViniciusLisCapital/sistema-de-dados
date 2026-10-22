@@ -20,7 +20,13 @@ Cada item erra sem levantar nada se quebrar:
 8. uma serie trimestral sai com Δ 1m e Δ 3m iguais (os dois contra o trimestre anterior);
 9. uma tabela sem coluna de dimensao (dims=()) quebra o pivot;
 10. o recorte do BC refeito dos subitens nao e a media ponderada pelo peso do mes;
-11. o ciclo de juros em curso comeca no lugar errado.
+11. o ciclo de juros em curso comeca no lugar errado;
+12. de()/so() copiam outra coisa que a declaracao do outro agente, ou nao levantam quando
+    ela nao existe;
+13. dois agentes quaisquer de AGENTES declaram a mesma tabela, no mesmo arquivo de A, com
+    consultas diferentes -- um leria o arquivo que o outro pediu;
+14. gerar() extrai antes de conferir o conflito, ou deixa o F gravado quando o retrato do
+    conhecimento levanta (a rodada seguinte pararia com "ja existe").
 """
 from __future__ import annotations
 
@@ -143,6 +149,118 @@ txt = pm.copom_decisoes(r, None)[-1]
 check("ciclo de corte comeca no primeiro corte depois da ultima alta",
       "corte desde" in txt and "4 reuniões" in txt and "-50 p.b." in txt and "de 10.50%" in txt, txt)
 check("e conta as manutencoes no fim", "últimas 2 reuniões mantiveram" in txt, txt)
+
+# 12. de()/so(): a declaracao de outro agente, copiada
+t = motor.de(cambio, "cmb_ptax")
+check("de() copia a declaracao do outro agente", t == next(x for x in cambio.TABELAS if x.nome == "cmb_ptax"))
+t = motor.de(cambio, "expc_focus_periodo", recorte="IPCA", nota="x")
+check("de() acha pelo recorte e troca so o pedido",
+      t.recorte == "IPCA" and t.nota == "x" and motor._sql(t, corte) == fx[t.arquivo])
+t = motor.so(cambio, "cmb_reer", ("MX|real_broad", "BR|real_broad"))
+check("so() fica so com as series pedidas, na ordem pedida",
+      [s.chave for s in t.series] == ["MX|real_broad", "BR|real_broad"] and motor._sql(t, corte) == fx[t.arquivo])
+check("de() de tabela que o outro nao declara levanta",
+      levanta(lambda: motor.de(cambio, "tabela_que_nao_existe"), "não declara"))
+check("de() com recorte que o outro nao declara levanta",
+      levanta(lambda: motor.de(cambio, "expc_focus_periodo", recorte="PIB"), "não declara"))
+check("so() com serie que o outro nao declara levanta (em vez de KeyError)",
+      levanta(lambda: motor.so(cambio, "cmb_ptax", ("nao_existe",)), "não declara as séries"))
+
+# 13. conflito de consulta entre TODOS os pares de agentes de AGENTES
+from analytics.agent_system.dados import __main__ as dados_main  # noqa: E402
+
+check("os agentes registrados nao tem conflito de consulta",
+      not levanta(dados_main.conferir_consultas, ""))
+a1 = motor.Tabela("tab_x", filtro="name = 'a'")
+check("mutante: mesma tabela, mesmo arquivo, outra consulta => levanta",
+      levanta(lambda: motor.conferir_consultas({"ag1": [a1], "ag2": [motor.Tabela("tab_x", filtro="name = 'b'")]}),
+              "tab_x.csv.gz"))
+check("mutante: o conflito aparece mesmo entre o 2o e o 3o agente",
+      levanta(lambda: motor.conferir_consultas({"ag1": [motor.Tabela("outra")], "ag2": [a1],
+                                                "ag3": [motor.Tabela("tab_x", corte=None)]}), "ag2"))
+check("mesma consulta no mesmo arquivo passa",
+      not levanta(lambda: motor.conferir_consultas({"ag1": [a1], "ag2": [motor.Tabela("tab_x", filtro="name = 'a'",
+                                                                                     series=(motor.Serie("k", "k", "u", "dif"),))]}), ""))
+check("outra consulta com `variante` passa (vai para outro arquivo)",
+      not levanta(lambda: motor.conferir_consultas({"ag1": [a1], "ag2": [motor.Tabela("tab_x", filtro="name = 'b'",
+                                                                                     variante="b")]}), ""))
+check("outra consulta em outro recorte passa",
+      not levanta(lambda: motor.conferir_consultas({"ag1": [a1], "ag2": [motor.Tabela("tab_x", recorte="r",
+                                                                                     filtro="name = 'b'")]}), ""))
+check("params diferentes tambem sao outra consulta",
+      levanta(lambda: motor.conferir_consultas({"ag1": [motor.Tabela("tab_x", filtro="x = %(v)s", params={"v": 1})],
+                                                "ag2": [motor.Tabela("tab_x", filtro="x = %(v)s", params={"v": 2})]}),
+              "tab_x"))
+
+# 14. gerar(): o conflito para antes de extrair; o F so e gravado depois do retrato do conhecimento
+import datetime as dt  # noqa: E402
+import tempfile  # noqa: E402
+import types  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+from analytics.agent_system import conhecimento, modelo  # noqa: E402
+
+originais = {"CICLOS": motor.CICLOS, "extrair": motor.extrair, "montar_f": motor.montar_f,
+             "retratar": modelo.retratar, "gerar": conhecimento.gerar}
+extraiu = []
+motor.extrair = lambda tabelas, pasta_a, *a, **k: (pasta_a.mkdir(parents=True, exist_ok=True),
+                                                   extraiu.append(pasta_a))
+motor.montar_f = lambda *a, **k: "# F de teste\n"
+modelo.retratar = lambda *a, **k: "(modelo de teste)"
+conhecimento.gerar = lambda *a, **k: "(retrato de teste)"   # nunca o de verdade: ele grava no vault
+ciclo = dt.date(2026, 9, 20)
+try:
+    with tempfile.TemporaryDirectory() as tmp:
+        motor.CICLOS = Path(tmp)
+        f_pm = Path(tmp) / ciclo.isoformat() / "dados" / "F_politica_monetaria.md"
+
+        # um agente falso que le a mesma tabela do cambio com outra consulta, sem variante
+        falso = types.ModuleType("_agente_falso_teste")
+        falso.TABELAS = [motor.de(cambio, "cmb_ptax", filtro="name = 'ptax_venda'")]
+        sys.modules[falso.__name__] = falso
+        dados_main.AGENTES["_falso"] = falso.__name__
+        try:
+            levantou = levanta(lambda: dados_main.gerar("politica_monetaria", ciclo), "cmb_ptax")
+        finally:
+            del dados_main.AGENTES["_falso"], sys.modules[falso.__name__]
+        check("gerar() levanta no conflito com um terceiro agente, antes de extrair",
+              levantou and not extraiu and not f_pm.exists())
+
+        def quebra(*a, **k):
+            raise RuntimeError("retrato quebrado")
+        conhecimento.gerar = quebra
+        try:
+            dados_main.gerar("politica_monetaria", ciclo)
+            quebrou = False
+        except RuntimeError:
+            quebrou = True
+        check("retrato do conhecimento que levanta: o erro sobe e o F nao fica no disco",
+              quebrou and extraiu and not f_pm.exists())
+
+        pedidos = []
+        conhecimento.gerar = lambda *a, **k: pedidos.append(k) or "(retrato de teste)"
+        dados_main.gerar("politica_monetaria", ciclo, sem_literatura=True)
+        check("rodar de novo funciona (sem 'ja existe') e grava o F",
+              f_pm.exists() and f_pm.read_text(encoding="utf-8") == "# F de teste\n")
+        check("--sem-literatura chega ao retrato do conhecimento", pedidos == [{"sem_literatura": True}], pedidos)
+
+        def ja_existe(*a, **k):
+            raise FileExistsError("ja existe")
+        conhecimento.gerar = ja_existe
+        f_pm.unlink()
+        dados_main.gerar("politica_monetaria", ciclo)
+        check("retrato que ja existe nao impede o F", f_pm.exists())
+
+        conhecimento.gerar = quebra
+        try:
+            dados_main.gerar("politica_monetaria", ciclo, refazer=True)
+        except RuntimeError:
+            pass
+        check("--refazer que quebra no retrato nao deixa o F antigo, que descrevia o A trocado", not f_pm.exists())
+finally:
+    for nome in ("CICLOS", "extrair", "montar_f"):
+        setattr(motor, nome, originais[nome])
+    modelo.retratar, conhecimento.gerar = originais["retratar"], originais["gerar"]
 
 print("")
 print(("%d FALHA(S)" % falhas) if falhas else "todos os asserts passaram")
