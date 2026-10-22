@@ -1,8 +1,8 @@
 # Economic Activity — Conceptual Map
 
 **Status (2026-10-22):** Parts 1–4 approved by the user on 2026-10-22 (central questions, horizon,
-thesis variable and its companion row, data list, outputs; Part 4 is filled when the seven maps are
-approved). Decisions of the first batch of seven agents: `SISTEMA_AGENTES.md` III.III.vii.
+thesis variable and its companion row, data list, outputs; Part 4, the mirror of the other maps'
+Part 3, filled on 2026-10-22). Decisions of the first batch of seven agents: `SISTEMA_AGENTES.md` III.III.vii.
 
 **What this file is.** This is the economic-activity agent's (`atividade`) contract with the rest of
 the system. It says what every report must answer (Part 1, central questions), what moves Brazilian
@@ -375,7 +375,19 @@ input, under that map's own label.
 
 ## Part 4 — Inputs: what the others told this agent matters to them
 
-Mirror of the other agents' Part 3, filled when the seven maps are approved.
+The mirror of what the other six maps ask of this agent in their Part 3 (2026-10-22), written from
+this side; the source row carries the label in that map, and this map's inputs are labelled E1, E2…
+Every row asks for the gap path, so the answer is the thesis of Q4, written once, and each row points
+to it. The FX and external maps register no fixed output to this agent: there the flow goes the
+other way, and it is in this map's Part 3 (S-CB1, S-CB2, S-EXT1–S-EXT3).
+
+| # | Source row | What the other agent needs | Why it matters to it | How this agent answers |
+|---|---|---|---|---|
+| E1 | PM S10 | **The output-gap path** (this agent's thesis) **and its revision** in the latest RPM, with the labour market (unemployment, wages against productivity) | The gap enters the Copom's projection, and a revision moves the projection with no new data; the Copom watches wages growing above productivity | The thesis of Q4 by quarter; Q3 with the revision of recent quarters (`pm_hiato_produto_vintages`); channel 2.4 for the labour market (`mt_pnad`, `mt_caged`); flag it when the gap changes sign in the horizon or the RPM revises recent quarters |
+| E2 | Inflation IN-S5 | **The output-gap path and where the demand pressure is**: services against goods, household consumption, income | The gap is the demand channel of services and industrial goods; services are the most persistent group and the one the Copom watches most | The thesis of Q4, and Q1–Q2 with the composition by sector and by demand (the monthly services and retail indicators, household consumption and income, channel 2.4); flag it when the gap changes sign or services activity diverges from the gap |
+| E3 | Fiscal FS-AT1 | **Real growth and the output gap** by quarter | The benchmark for real spending growth, the cycle correction of the impulse, the g of r − g | The thesis of Q4 with its companion row, GDP growth over four quarters (`atv_pib_taxas`); flag a revision of growth or of the gap large enough to change the cycle correction |
+| E4 | Fiscal FS-AT2 | **Government consumption and investment in the national accounts** | Checks the impulse from the demand side | Q1, the composition by demand of the national accounts (`atv_pib`, channel 2.3); flag it when government demand in the national accounts moves against the direction of the impulse the fiscal agent gives (S-FI1) |
+| E5 | Expectations XS9 | **The gap path and whether demand is pressing services** | It reaches expectations through inflation (I), the services expectation first | The thesis of Q4 and channel 2.4; flag it when the gap turns, or services activity rises with a positive gap |
 
 ---
 

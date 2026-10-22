@@ -2,7 +2,8 @@
 
 **Status (2026-10-22):** Parts 1–4 approved by the user on 2026-10-22 (central questions; thesis on
 the seven exogenous variables, measured in the model's convention and written in three scenario
-blocks; upside and downside; outputs). Part 4 is filled when the seven maps are approved.
+blocks; upside and downside; outputs). Part 4, the mirror of the other maps' Part 3, filled on
+2026-10-22.
 
 **One agent, three blocks — and every report covers all three.** The user considered splitting this
 area into two agents (the US and global conditions; commodities) and kept one (2026-10-22). The
@@ -369,10 +370,27 @@ this agent needs (for instance on Chinese demand), the row is added in a dynamic
 
 ## Part 4 — Inputs: what the others told this agent matters to them
 
-Mirror of the other agents' Part 3, filled when the seven maps are approved. Expected, from the
-existing maps: from FX, the Fed path and the global dollar (FX map 2.3, 3.2); from monetary policy,
-the Fed path and the global cycle (monetary-policy map 2.8, 3.2), which until now were TWA premises
-of those two agents and, per the "Exógenas" tab, become paths this agent writes.
+The mirror of what the other six maps ask of this agent in their Part 3 (2026-10-22), written from
+this side; the source row carries the label in that map. Most rows ask for the paths of the three
+blocks, which are the thesis of Q5, so the answer is written once, in the block sections of the
+report, and each row points to the block. Two things are asked that the database does not carry —
+growth abroad (no US, China or partner GDP) and emerging-market spreads (no peers' CDS) —; there the
+agent argues from what it has and says so (2.3, 2.5, 2.6).
+
+| # | Source row | What the other agent needs | Why it matters to it | How this agent answers |
+|---|---|---|---|---|
+| XE1 | FX S8 | **The paths of the global block of (F)** — `dxy_em`, the S&P 500, the IC-Br in dollars, the Fed funds and US inflation — base and tails | They are exogenous inputs of (F), written by whoever has their tutela; the BRL's central moves with them | Q5: the three scenario blocks, with the seven paths in the `CONVENCAO` convention and the probability of each scenario; flag it when a path or a tail moves materially against the previous cycle |
+| XE2 | FX S9 | **The global cycle outside the model**: the dollar against developed currencies, risk appetite, the peers' policy cycle and Brent | The FX agent's global-or-idiosyncratic split is read against them, Brent reaches the terms of trade, and carry is relative to the peers' rates as well as the Fed's | Q2 (channels 2.4, 2.5, 2.7) and Q3 (2.6, the Brent path inside the commodity block); flag a global risk-off or risk-on move, a turn in the peers' cycle, or a sustained oil move |
+| XE3 | PM S13 | **The Fed path and the global cycle**: the `ffr` and US inflation paths by quarter, base and tails, global risk appetite and the peers' policy cycle | US policy and global risk move emerging-market premia, flows and long rates; the Fed funds is an exogenous input of the model | Q1 and the US-policy block (channels 2.1, 2.3), Q2 (2.5, 2.7); flag a change in the Fed path, a global risk-off, or a turn in the peers' cycle |
+| XE4 | Inflation IN-S7 | **The paths of the agricultural and metal commodity prices in dollars** (`icbr_agr_usd`, `icbr_met_usd`), by quarter, base and tails | They are exogenous inputs of the Phillips curve: food and industrial goods | The commodity block of Q5 (Q3, channel 2.6), in the quarter-average convention; flag a material change of either path, saying in which quarters |
+| XE5 | Inflation IN-S8 | **Oil and global energy**: the Brent path and the state of the global goods and energy cycle | Oil reaches fuels and, through them, administered prices and transport costs; it is outside the model | Q3, channel 2.6: the Brent path, the only oil path of the cycle, inside the commodity block's scenarios; US goods inflation (2.3) for the goods cycle; flag a sustained oil move or a supply event |
+| XE6 | Activity S-EXT1 | **Demand abroad**: growth of the main partners and the global cycle, with the probability of a global recession | Exports and the commodity cycle; a global recession is the activity agent's downside tail, and the model's crisis dummies are zero in projection | Q2 and Q4 (channels 2.3, 2.6, 2.8): the US labour market, the risk-appetite block and metal prices as the reading of the global cycle, China argued from metal prices and Brazil's exports to China; growth abroad and the recession probability are argued, with the missing data stated; flag a change in the global outlook or a rising recession probability |
+| XE7 | Activity S-EXT2 | **Commodity prices in dollars** (agriculture, metals, energy) | Farm and mining income, investment in the extractive sectors | The commodity block (Q3, channel 2.6): the three IC-Br paths and Brent; flag it when the base paths move materially |
+| XE8 | Activity S-EXT3 | **Global financial conditions**: the Fed path and risk appetite | They reach domestic credit, the long rates and flows | Q1 and Q2: the US-policy and the risk-and-dollar blocks (channels 2.1, 2.2, 2.5); flag a risk-off episode or a change in the Fed path |
+| XE9 | Fiscal FS-EX1 | **Global risk appetite and emerging-market spreads** (the base path and the tails) | The global component of the CDS; without it, a global move is read as fiscal | Q2, the risk-and-dollar block (channel 2.5): the `dxy_em` and `sp500` scenarios and the global component of the CDS the agent sees, argued from `dxy_em`, the S&P and the LatAm currencies, since no emerging-market spread is in the database; flag a risk-off or risk-on move across emerging markets |
+| XE10 | Fiscal FS-EX2 | **US long rates** (the 10-year Treasury path) | The global component of the long real yield and of the debt cost | Q1, channel 2.2: the US long end and its term premium, and by a G the ex-ante real yield; the 10-year path is written in the report, since it is not a model variable; flag a large move of US long rates |
+| XE11 | Fiscal FS-EX3 | **Oil and commodity prices** | Royalties and state-firm dividends in the revenue; the commodity part of nominal GDP | The commodity block (Q3, channel 2.6), with Brent; flag a material move of Brent or of the IC-Br paths |
+| XE12 | Expectations XS10 | **Commodity price paths (oil, agricultural, metals) and global inflation** | They reach fuel, electricity and food, the components that move the short horizons | The commodity block (Q3, channel 2.6) and US inflation (2.3, the `infl_us` path and US expected inflation), the only inflation abroad in the database; flag a commodity shock the agent reads as persistent |
 
 ---
 

@@ -1,7 +1,7 @@
 # Expectations — Conceptual Map
 
 **Status (2026-10-22):** Partes 1–4 aprovadas pelo usuário em 2026-10-22 (central questions, horizon,
-outputs; Part 4 is filled when the seven maps are approved). **The user registered that he still has
+outputs; Part 4, the mirror of the other maps' Part 3, filled on 2026-10-22). **The user registered that he still has
 doubts about this agent** (`SISTEMA_AGENTES.md` III.III.vii): its existence and scope are reviewed
 after the first joint cycle, on what its reports added that the other agents did not.
 
@@ -341,7 +341,25 @@ provisionally (III.III.vii), and reaches this agent through XS9.
 
 ## Part 4 — Inputs: what the others told this agent matters to them
 
-Mirror of the other agents' Part 3, filled when the seven maps are approved.
+The mirror of what the other six maps ask of this agent in their Part 3 (2026-10-22), written from
+this side; the source row carries the label in that map. Two rows ask for the anchoring reading
+(the thesis of Q4 and Q1), the rest for the survey's consensus on another agent's variable. Some
+of the cuts asked for are not in this agent's list yet (V.VII) — the Focus for unemployment and for the
+fiscal results, and the QPC's blocks on potential, the NAIRU, fiscal policy and the external
+environment —; the agent that asked reads them in its own F for now, and the rows stay as its
+request until the cuts of `expc_focus_periodo` and `expc_qpc` are unified here.
+
+| # | Source row | What the other agent needs | Why it matters to it | How this agent answers |
+|---|---|---|---|---|
+| XE1 | FX S10 | **The consensus for the exchange rate**: the Focus for the BRL at each year-end and its revisions, and the IPCA and Selic the survey expects | Separates surprise from convergence; the expected IPCA enters prospective PPP and the expected Selic the expected carry | `expc_focus_periodo` (exchange rate, IPCA and Selic at each year-end), with revisions and dispersion (channels 2.4, 2.5, 2.8); flag it when the survey revises its year-end exchange rate, IPCA or Selic in the direction of the BRL's move |
+| XE2 | PM S9 | **The anchoring reading**: the path of the 12-month-ahead expectation (this agent's thesis), the long horizons against the target, and whether a move is de-anchoring or a short-run reaction to a shock | De-anchored expectations require more restriction for longer, and the rule (R) reacts to the Focus deviation from the target | The thesis of Q4 by quarter (`focus_12m`) and Q1: the long calendar years against the target, with their position in history (channels 2.1, 2.2, 2.7); flag it when the long horizons move away from the target or the upside tail gains probability |
+| XE3 | Inflation IN-S9 | **The path of the 12-month-ahead IPCA expectation** (the model variable) **and the anchoring reading**: whether long horizons stay at the target | Expectations are the anchor of all four groups in the model; a de-anchoring makes every shock more persistent | The same answer as XE2: the thesis of Q4 and Q1 (channels 2.1, 2.7); flag it when the long horizons move away from the target |
+| XE4 | Inflation IN-S10 | **Expectations by component** (services, administered, food, goods) against the headline | The model anchors all groups to the headline expectation; where the market expects relative prices to move is the evidence for a tempero on one group | Q2, channel 2.9: the five components of `expc_focus` and `expc_focus_periodo` against the headline, at the same horizons; flag it when one component moves while the headline does not |
+| XE5 | Activity S-EXP1 | **The consensus for activity**: the Focus for GDP (quarterly and annual, by component) and unemployment; the QPC for quarterly GDP and the gap | Separates surprise from convergence; the market's gap is the second estimate to confront with the BCB's | Q2, channel 2.9: `expc_focus_periodo` (GDP total, by sector and by demand component, annual and quarterly), with its revisions; the unemployment cut and the QPC's GDP and gap blocks are not in this agent's list (see above); flag a material revision of the consensus |
+| XE6 | Activity S-EXP2 | **The market's structural readings**: potential growth and NAIRU from the QPC | Inputs to the activity agent's slack cross-check and to the GDP translation of its thesis | Not in this agent's list: the QPC's potential and NAIRU blocks are the activity agent's consultation (V.VII); this agent adds only the QPC's neutral rate (channel 2.8) when it moves with them |
+| XE7 | Fiscal FS-EP1 | **The consensus fiscal path**: Focus for the primary, the nominal result, net and gross debt and government consumption, and its revisions; the QPC's fiscal perception | Separates surprise from convergence and is the fiscal agent's benchmark for the accounts (F4) | Government consumption from `expc_focus_periodo` (GDP by demand component, channel 2.9); the fiscal cut of the Focus and the QPC's fiscal perception are not in this agent's list (see above) |
+| XE8 | Fiscal FS-EP2 | **Long-horizon inflation expectations, and whether they move with fiscal news** | De-anchoring at long horizons on fiscal news is a market sign of fiscal dominance | Q1 and Q2, channels 2.3 and 2.7: the long calendar years against the target, and the inflation implied in the curve (2.6), read around the fiscal events the fiscal agent names; flag it when long expectations rise in a cycle of fiscal news |
+| XE9 | External XS8 | **The market's reading of the external environment**: the QPC's external-environment block and anything in the Focus that bears on it | The consensus against which the external agent's scenario is a view or a surprise | From the Focus, the year-end exchange rate (channel 2.4) and the components that commodity prices reach first (administered, food, 2.9); the QPC's external block is not in this agent's list (see above); flag it when the survey's exchange rate or those components move on an external shock |
 
 ---
 

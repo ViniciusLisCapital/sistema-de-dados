@@ -412,8 +412,11 @@ cycle. Each row becomes an input of that agent's map (its Part 4).
 
 ## Part 4 — Inputs: what the others told this agent matters to them
 
-Mirror of the other agents' Part 3. The rest is filled when the other maps are adjusted to the batch
-of seven (`PLANO_AGENTES.md`, Phase 8, item 5).
+The mirror of what the other six maps ask of this agent in their Part 3, written from this side; the
+source row carries the label in that map. 4.1 is the pass-through row, approved on its own; 4.2 is
+the rest. Most rows ask for the same thesis — the 12-month IPCA by quarter, with its tails — and for
+the split between shock and trend, so the answer is written once, in the report, and each row points
+to it.
 
 ### 4.1 From monetary policy (approved by the user, 2026-10-22)
 
@@ -425,6 +428,20 @@ global or idiosyncratic; how far it reaches prices is answered here.
 | # | Source row | What the monetary-policy agent needs | Why it matters to it | How this agent answers |
 |---|---|---|---|---|
 | IN-E1 | PM S7 (was FX E3) | **Pass-through channel.** Which prices a depreciation reaches, and how fast: food, industrial goods, and administered prices through fuels, energy and medicines | The Copom projects free and administered prices separately, and their pass-through differs; it reacts to the second round, not the first | Q2 and Q3, channels 2.5 and 2.7: the model's coefficients `I.IA.ia3` and `I.II.ii4`, plus the tempero (ii) on administered prices, on the FX agent's path (IN-S1) |
+
+### 4.2 From the other agents of the batch (2026-10-22)
+
+| # | Source row | What the other agent needs | Why it matters to it | How this agent answers |
+|---|---|---|---|---|
+| IN-E2 | FX S5 | **The IPCA path** (12 months, by quarter: this agent's thesis) and where its tails come from | The inflation differential is the relative-PPP leg of the BRL's level and enters (F) with its weight fixed at one; a higher domestic path is, mechanically, more nominal depreciation | The thesis of Q4 by quarter, with the line under the thesis table saying what leads to each tail and the group where the asymmetry sits; flag it when the thesis moves materially against the previous cycle or a tail gains probability |
+| IN-E3 | PM S8 | **The IPCA path and what drives it**: persistence (cores, diffusion, underlying services), administered prices and food, first round against second round | The projection at the relevant horizon decides; the Copom accommodates the first-round effects of supply shocks and reacts to the second round | The thesis of Q4, whose last quarter is the Copom's relevant horizon; Q1 (shock against trend) and Q2 (first round against second), channels 2.1, 2.2, 2.6 and 2.7; flag it when the thesis moves at the relevant horizon or a shock is read as spreading |
+| IN-E4 | Activity S-IN1 | **The IPCA path and its distribution, with food and administered prices** | Inflation deflates the wage bill and the transfers; food and administered prices weigh most on lower-income consumption | The thesis of Q4 and its tails, with the model's contribution of food and administered prices (`ipca_12m_alimentacao`, `ipca_12m_monitorados`); channels 2.6 and 2.7 |
+| IN-E5 | Activity S-IN2 | **Is the gap showing in prices?** Underlying services against what the gap implies | Services are the gap's price signal in (I); services running persistently above or below what the gap explains is evidence that the gap measure is off | Q1 and Q2, channel 2.4: underlying services against the path the services equation gives for the BCB's gap (`I.IS.is2`); flag it when services diverge from that path for more than one quarter |
+| IN-E6 | Fiscal FS-IN1 | **The IPCA path** (quarter and 12 months) | It deflates spending; nominal revenue, inflation-linked debt and indexed spending follow it | The thesis of Q4 (12 months) and the quarterly path `modelo.rodar()` prints with it; flag a material move of the thesis, which is what moves real spending growth and the debt cost |
+| IN-E7 | Fiscal FS-IN2 | **Which government decisions the inflation path assumes** (administered prices, taxes on fuel and energy, subsidies) | The fiscal scenario and the inflation scenario must assume the same decisions | Channel 2.7: the decisions inside the central and inside each tail, with dates — the same list this agent asks the fiscal agent for (IN-S6); flag it when a decision enters or leaves the path |
+| IN-E8 | External XS7 | **Which commodity paths the IPCA thesis depends on**: agriculture, metals or energy, and in which quarters | Tells the external agent where precision on commodities pays | Q3, channels 2.6 (agriculture and metals, the inputs of (I)) and 2.7 (energy, through fuels): which commodity path carries each tail and in which quarters; flag it when the thesis hinges on a commodity tail |
+| IN-E9 | Expectations XS5 | **The inflation path by quarter and its composition**: persistent pressure against one-off shocks (administered, food), and what leaves the 12-month window | 12-month inflation is the regressor of (E); a one-off shock should not move the long horizons | The thesis of Q4, Q1 and Q2 (shock against trend, first round against second), and the base effects: which large months enter or leave the 12-month window inside the horizon; channels 2.1, 2.6 and 2.7 |
+| IN-E10 | Expectations XS6 | **Surprises against the survey's own short-horizon expectation** (the next prints against the monthly Focus) | Surprises are what makes respondents revise | Q1 for the last print and its groups against the survey's monthly median (`expc_focus_periodo`), Q3 for the prints the agent sees coming against it; flag a print or a component far from that median |
 
 ---
 
