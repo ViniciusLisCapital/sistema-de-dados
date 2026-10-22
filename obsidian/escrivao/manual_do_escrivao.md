@@ -146,7 +146,7 @@ Os reports trazem probabilidades em número. Kent mostrou que a mesma expressão
 - **A incerteza já tem lugar: as faixas e as caudas.** Não espalhe "possivelmente", "pode" e "tende a" sobre afirmações cuja incerteza já está no número. Pinker observa que a ressalva compulsiva faz o leitor não saber o que o autor de fato afirma.
 - **Também não aumente a certeza.** Escrever "o real vai se apreciar" quando a probabilidade é de 55% é falso. A frase acompanha o número.
 - **Toda tese é falseável** (I.I.iii). Ela chega ao leitor junto com o que a derrubaria, dito como indicador e limiar: "se o CDS passar de 220 pb por duas semanas, a cauda de depreciação fica mais provável". "Se o cenário fiscal piorar" não é um signpost.
-- **Diga o que acontece em cada cauda.** Escreva "depreciação além de R$ 6,00", e não só "worst-case": o leitor não sabe para que lado fica o pior em cada variável.
+- **Diga o que acontece em cada cauda.** Escreva "depreciação além de R$ 6,00", e não só "upside": o leitor não sabe o que fica acima da central em cada variável, nem se isso é bom ou ruim.
 
 
 # 8. Lógica: o escrivão lê como um cético
@@ -169,7 +169,7 @@ Para cada afirmação central do relatório, o escrivão encontra no RF as cinco
 4. **Circularidade.** Explicar a variável por ela mesma ou por um sinônimo dela: "o real se depreciou porque aumentou a demanda por dólar".
 5. **Conclusão maior que a evidência.** Um mês de dado não sustenta uma "mudança de tendência". Desconfie de "sempre", "nunca" e "todos".
 6. **Explicação que serve para qualquer resultado.** Se o mesmo mecanismo também explicaria o movimento oposto, ele não explica nenhum dos dois.
-7. **Contradição interna.** A argumentação diz uma coisa e a tabela da tese diz outra. Exemplo: o texto fala em risco maior de depreciação, mas Pbc − Pwc é positivo.
+7. **Contradição interna.** A argumentação diz uma coisa e a tabela da tese diz outra. Exemplo: o texto fala em risco maior de depreciação, mas P(up) − P(down) é negativo.
 8. **Contradição entre agentes.** A premissa de um agente sobre a área de outro diverge do que esse outro escreveu. Exemplo: o câmbio assume a Selic estável e a política monetária projeta corte. O escrivão aponta a contradição e não a resolve.
 9. **O número do texto diferente do número da tese** ou da premissa que ele diz citar.
 10. **Dado solto.** Um dado no parágrafo que não sustenta nem contraria a afirmação dele: "As reservas caíram US$ 9,7 bi. O estoque de swaps estava em −US$ 91,6 bi." Todo dado tem um papel (`_modelo_report.md`, seção 2): sustenta, contraria (no mesmo parágrafo, com "mas") ou não diz nada neste ciclo (bloco "Olhado, sem sinal"). O escrivão cobra a ligação do agente; não a inventa. E cobra também a falta de dado contra: uma afirmação central em que todo dado só sustenta foi checada?
@@ -254,3 +254,9 @@ A ordem importa: a estrutura vem antes da frase, porque não adianta polir uma f
     5. **O que acompanhar:** as premissas e as datas que podem mudar o cenário.
     - **Apêndice:** uma tabela por variável, com central, faixa, caudas e probabilidades por trimestre.
     - **Notas de rodapé** (1.3).
+- Regras de aplicação escritas na definição do escrivão (`.claude/agents/escrivao.md`, 2026-10-22), **a revisar no 1º ciclo conjunto**:
+    - a central publicada é a central conjunta do PF\*; se ela difere da central do RF, a frase que cita a antiga vira cobrança; se o PF\* a marca fora da faixa do agente, faixa e caudas daquele trimestre ficam pendentes, com cobrança;
+    - uma cobrança não para o relatório: o ponto fica com o marcador `[pendente · C<n>]` até o agente responder; o escrivão só para quando falta insumo (um RF ou o PF\*);
+    - o placar fica fora do relatório;
+    - a única conversão de unidade permitida é p.p. ↔ p.b.;
+    - a única nota que o escrivão escreve é a que reproduz um aviso do PF\* (ex.: uma exógena segurada no último valor), porque esses avisos não têm agente dono.

@@ -63,4 +63,4 @@ Podem envolver mais de dois agentes: uma linha por agente com posição própria
 
 ## Relatório
 
-<data> · `relatorio.md` · números conferidos contra a fonte: sim | não
+<data> · `relatorio.md` · números conferidos contra os RF e o PF\* (escrivão): sim | não · contra a fonte, no banco (sessão que conduz o ciclo, III.III.iii): sim | não
