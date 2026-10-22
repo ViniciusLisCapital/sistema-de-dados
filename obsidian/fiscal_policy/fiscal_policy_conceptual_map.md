@@ -402,8 +402,8 @@ cycle; it becomes an input row in that agent's map.
 
 **What this agent tells the others (their side, to be confirmed in their maps).** First, discussion
 (ii): the stance, the impulse and its path, the parafiscal push (atividade, PM); the government
-decisions that reach prices (inflação); the policy mix (PM). Then the price of risk: the CDS path and
-its reading (câmbio, PM, externo), the fiscal-dominance reading (PM, câmbio), and `rr_10a` and its
+decisions that reach prices (inflação); the fiscal impulse and the fiscal-dominance reading (PM). Then the price of risk: the CDS path and
+its reading (câmbio, PM, externo, expectativas), the fiscal-dominance reading (PM, câmbio), and `rr_10a` and its
 split if this agent has the tutela (PM).
 
 ---

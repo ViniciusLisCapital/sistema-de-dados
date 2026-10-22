@@ -37,7 +37,8 @@ IV.ix).
 **Outputs and inputs.** An output of agent A to agent B is what A tells B is important for A, coming
 from B. An input of A from B is what B told A is important for B, coming from A. This map labels its
 rows with the prefix **X** (for expectativas): outputs **XS1…**, inputs **XE1…**, so the mirror in
-the other six maps can be checked line by line. A row is a request; the content flows the other way.
+the other six maps can be checked line by line. The external map uses the same X letters; the map a
+row comes from tells the two apart. A row is a request; the content flows the other way.
 An input gives emphasis and tells the agent what to flag; it never limits the analysis.
 
 **Two layers.** What is written here is the **fixed** layer: what matters every cycle. On top of it,

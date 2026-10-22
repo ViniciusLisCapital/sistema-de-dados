@@ -39,7 +39,8 @@ read; a name in `code` font is a concept with no page yet (Part 5).
 from B. An input of A from B is what B told A is important for B, coming from A
 (`SISTEMA_AGENTES.md` I.III.vii). This map labels its outputs **XS1, XS2…** and its inputs **XE1,
 XE2…** (X for external), so they do not collide with the S/E rows of the FX and monetary-policy maps
-when the mirrors are checked. A row gives emphasis and tells the agent what to flag; it never limits
+when the mirrors are checked. The expectations map uses the same X letters; the map a row comes from
+tells the two apart. A row gives emphasis and tells the agent what to flag; it never limits
 the analysis.
 
 **Two layers.** What is written here is the **fixed** layer. Each cycle adds a **dynamic** layer,

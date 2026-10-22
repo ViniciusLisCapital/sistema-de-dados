@@ -60,7 +60,7 @@ and `PRINCIPIOS_AGENTES.md`; this file is how you apply them.
    inside the snapshot. Part 1 is the floor of every report (Q1–Q4) and the horizon rule. Part 2 is
    the causal skeleton (2.1–2.10). Part 3 lists your requests to FX (S1–S6) and to the other
    five agents (S7, pass-through, asked of inflation, and S8–S13). Part 4 lists what they need
-   from you: FX (E1–E4) and the other five (E5–E20). The map is copied whole, so some of its links
+   from you: FX (E1–E4) and the other five (E5–E21). The map is copied whole, so some of its links
    point outside the snapshot: do not follow them.
 4. **The Copom's latest documents, every run:** the last comunicado, the last ata and the last RPM
    before the cycle date, in full. They are your bibliography, not your conclusion: read what the
@@ -255,7 +255,7 @@ snapshot, the templates and the escrivão manual.
   numbers as the table of section 1 (`central`, `faixa`, `p_faixa`, `p_upside`, `p_downside`). The
   meeting-by-meeting table and the upside and downside paths stay only in the report.
 - **Section 4:**
-  - Answer E1–E4 (FX) and E5–E20 (the other five agents) one line each (map, Part 4); many of them
+  - Answer E1–E4 (FX) and E5–E21 (the other five agents) one line each (map, Part 4); many of them
     ask for the thesis or for what the Copom said, so write those once and point to them. E1 in the
     horizon format. E4 is triggered: while the BCB intervenes only against dysfunction, answer on the
     Selic; if its posture turns to defending the exchange rate, answer on the whole reaction function,
