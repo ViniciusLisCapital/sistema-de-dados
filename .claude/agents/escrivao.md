@@ -52,12 +52,9 @@ you need, including the number check, is reading and text search.
      (`central_p`), the agent's central, range and probabilities, and the mark **fora da faixa**;
    - `PF.json` `contratos`: the thesis numbers each agent wrote in its JSON, to check against its
      RF table.
-   - **PF still labels the tails worst/best** (`worst: "acima" | "abaixo"`, `p_worst`, `p_best`,
-     `Pbc − Pwc`), while the reports use upside/downside since 2026-10-22. Map by position: with
-     `worst = "acima"`, P(upside) = `p_worst` and P(downside) = `p_best`; with `"abaixo"`, the
-     reverse. Take the tail probabilities and the asymmetry from the RF tables, never from PF's
-     `Pbc − Pwc` column (its sign is opposite to P(up) − P(down) when `worst = "acima"`). Never write
-     worst, best, Pwc or Pbc in the relatório.
+   - **Tails are upside/downside** (since 2026-10-22): `p_upside` is the probability above the
+     range, `p_downside` below it, and the asymmetry is P(up) − P(down). Never write worst, best,
+     Pwc or Pbc in the relatório.
 4. **The log template:** `obsidian/ciclos/_modelo_log.md`, only to know what belongs to the log and
    not to the relatório (what each agent read, the G functions, the knowledge opened, what was
    missing, the changes between rounds) and the format of its "Relatório" line, which you fill in

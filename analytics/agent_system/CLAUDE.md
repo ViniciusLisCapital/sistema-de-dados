@@ -162,6 +162,15 @@ regras na docstring do módulo.
   estimação é o do último mês. Não é o ponto médio da banda nem a média do trimestre (3T26: 3,75,
   com o Fed subindo em 17/09). Convenção da estimação, não defeito.
 
+- **Grupos do IPCA (2026-10-22, SISTEMA III.III.vii):** `rodar()` devolve `ipca_12m_servicos`,
+  `_alimentacao`, `_industriais`, `_monitorados` e `ipca_12m_residuo`, a contribuição de cada grupo
+  para o IPCA de 12 meses, em p.p.: Σ, nos 4 trimestres da janela, peso × variação do grupo,
+  encadeada pelo cheio dos trimestres anteriores. Grupos + resíduo somam o IPCA 12m em todo trimestre
+  (o teste confere). O resíduo só existe enquanto a janela tem trimestre observado, onde o IPCA
+  publicado não é Σ peso × grupo trimestral, porque o IBGE agrega mês a mês (0,014 p.p. em média,
+  0,14 no pior); do 4º trimestre projetado em diante é zero. Faixa por grupo, dos mesmos desenhos;
+  as faixas não somam. `GRUPOS` liga o grupo da (I) ao sufixo e levanta se a (I) mudar.
+
 Teste: `uv run python tests/test_modelo_agentes.py` (lê o payload do relatório entregue, não o
 banco; ~1 min).
 
@@ -180,5 +189,8 @@ tutela, ou num nível pior, com valor diferente vira divergência. Uma rodada de
 multiplicadores grava `P1|P2|PF.md` e o `.json` ao lado. No PF* a faixa do agente não é deslocada
 para a central conjunta: o P mostra a diferença e marca "fora da faixa". O dono de cada endógena
 está em `ENDOGENA_DONO`, no topo do módulo; o das exógenas, só na aba.
+Caudas da tese (2026-10-22, SISTEMA III.III.i): `p_faixa`, `p_upside` (acima de `faixa[1]`) e
+`p_downside` (abaixo de `faixa[0]`), que somam 100; um JSON com `worst`/`p_worst`/`p_best` levanta.
+Assimetria = (P(up) − P(down))/100. Os grupos do IPCA são da inflação em `ENDOGENA_DONO`.
 Teste: `uv run python tests/test_consolidacao.py` (cópia do tracker com tutela fictícia, retrato de
 2026-10-22, pasta temporária; ~25 s).
