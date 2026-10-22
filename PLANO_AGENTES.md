@@ -184,6 +184,8 @@ Quem influencia o modelo, e por qual variável, vai mudar. Um exemplo: o modelo 
 # (VI) Anotado para depois (fora deste plano)
 
 - **Estudo de cada exógena** para definir a tutela com mais cuidado (a aba "Exógenas" já existe, preenchida pelo usuário). Mais de um agente pode acompanhar a mesma exógena, com prioridades diferentes.
+- **Ordem de escrita dos reports** (ideia do usuário, 2026-10-22): numa rodada, o segundo agente já lê o report do primeiro, e assim por diante, para haver mais interação entre eles. Na Rodada 1 do primeiro ciclo conjunto os sete rodam independentes, sem ler os reports dos outros. Há que decidir a ordem e o que cada um pode ler.
+- **A tutela é peso, não exclusividade** (correção do usuário, 2026-10-22): os níveis da aba "Exógenas" dão o peso da opinião de cada agente, e todos com nível escrevem o caminho. Falta decidir o peso de cada nível e mudar `consolidacao.py`, a nota da aba e as definições (hoje: vale o melhor nível, empate em média, e caminho fora do nível vira divergência). Fazer antes do P1.
 - Variáveis próprias da área para fiscal e externo, além do caminho das exógenas.
 - O modelo de PIB do agente de atividade, com a demanda do governo vindo do fiscal.
 - Um modelo do hiato que regride só a parte consolidada do hiato do BC (até dois ou três anos atrás, a de menor revisão esperada) contra PIB, desemprego, indústria e outros, e usa os coeficientes para a frente (ideia do usuário, 2026-10-22).
