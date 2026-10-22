@@ -11,9 +11,9 @@ Três coisas que valem para o arquivo inteiro:
     `so`, do motor), trocando só séries e leitura: a consulta fica idêntica e o A do ciclo,
     que é compartilhado, serve aos três. É o caso de quase todas, inclusive as que passaram
     a ser endógenas daqui (o hiato do BC, as contas nacionais, o mercado de trabalho).
-  - Tabela de outro agente NOVO que nenhum dos dois declara (a Focus do PIB e da
-    desocupação) leva `variante="atividade"`: vai para um arquivo próprio de A e não
-    depende de um módulo que ainda está sendo escrito. Unificar depois.
+  - A Focus do PIB sai da declaração de expectativas (`de`): mesma consulta, mesmo arquivo de
+    A, só o F próprio muda. A da desocupação, que expectativas não declara (V.VII não a
+    lista), segue com `variante="atividade"`, em arquivo próprio de A, até o dono declarar.
   - Profundidade (PRINCIPIOS I.II.vii): só o grupo "Endógeno" ganha a leitura completa;
     os de consulta e o TWA, a enxuta. O motor decide pelo nome do grupo.
 
@@ -27,7 +27,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from analytics.agent_system.dados import cambio
+from analytics.agent_system.dados import cambio, expectativas
 from analytics.agent_system.dados import especiais as esp
 from analytics.agent_system.dados import politica_monetaria as pm
 from analytics.agent_system.dados.motor import (Ctx, Serie, Tabela, de, em, fdata, fmt,
@@ -284,9 +284,7 @@ TABELAS: list[Tabela] = [
     # ── vi. Endógeno de externo ──────────────────────────────────────────────
     de(cambio, "comm_icbr_usd"),
     # ── vii. Endógeno de expectativas ────────────────────────────────────────
-    Tabela("expc_focus_periodo", recorte="PIB", variante="atividade", especial=focus_pib,
-           filtro=_FOCUS + " AND periodicidade IN ('anual', 'trimestral') AND indicador IN ("
-                  + ", ".join(f"'{i}'" for i in _FOCUS_PIB) + ")"),
+    de(expectativas, "expc_focus_periodo", recorte="PIB", especial=focus_pib),
     Tabela("expc_focus_periodo", recorte="desocupação", variante="atividade", especial=focus_desocupacao,
            filtro=_FOCUS + " AND periodicidade IN ('anual', 'trimestral') "
                            "AND indicador = 'Taxa de desocupação'"),

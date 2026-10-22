@@ -27,6 +27,8 @@ Cada item erra sem levantar nada se quebrar:
     consultas diferentes -- um leria o arquivo que o outro pediu;
 14. gerar() extrai antes de conferir o conflito, ou deixa o F gravado quando o retrato do
     conhecimento levanta (a rodada seguinte pararia com "ja existe").
+15. algum dos sete agentes diverge da propria lista, ha conflito de consulta entre eles, ou sobra
+    uma `variante` fora das conhecidas (ou redundante: a mesma consulta em dois arquivos de A).
 """
 from __future__ import annotations
 
@@ -275,6 +277,55 @@ finally:
     for nome in ("CICLOS", "extrair", "montar_f"):
         setattr(motor, nome, originais[nome])
     modelo.retratar, conhecimento.gerar = originais["retratar"], originais["gerar"]
+
+# 15. os sete agentes: cada declaracao bate com a propria lista, nao ha conflito de consulta, e
+#     as `variante` que sobraram sao as conhecidas (uma nova obriga a atualizar este teste)
+import importlib  # noqa: E402
+
+check("AGENTES tem os sete agentes",
+      sorted(dados_main.AGENTES) == sorted(["cambio", "politica_monetaria", "inflacao", "atividade",
+                                            "fiscal", "externo", "expectativas"]), sorted(dados_main.AGENTES))
+modulos = {a: importlib.import_module(m) for a, m in dados_main.AGENTES.items()}
+for agente, mod in modulos.items():
+    check(f"{agente}: a declaracao bate com a lista do SISTEMA_AGENTES.md",
+          not levanta(lambda mod=mod: motor.conferir(mod.TABELAS, motor.ler_lista(mod.SECAO)), ""))
+check("conferir_consultas passa sobre os sete juntos",
+      not levanta(lambda: motor.conferir_consultas({a: m.TABELAS for a, m in modulos.items()}), ""))
+
+declaradas = [(a, t) for a, m in modulos.items() for t in m.TABELAS if not t.fora]
+com_variante = sorted((a, t.nome, t.recorte, t.variante) for a, t in declaradas if t.variante)
+check("variantes que restam: so as sem dono declarando (Focus de componentes, desocupacao e fiscal) "
+      "e as duas curvas americanas",
+      com_variante == [("atividade", "expc_focus_periodo", "desocupação", "atividade"),
+                       ("externo", "us_interest_rate", None, "curva completa"),
+                       ("fiscal", "expc_focus_periodo", "fiscal", "fiscal"),
+                       ("inflacao", "expc_focus_periodo", "componentes", "inflacao"),
+                       ("politica_monetaria", "us_interest_rate", None, "curva")], com_variante)
+arquivos = {}
+for a, t in declaradas:
+    arquivos.setdefault(t.arquivo, set()).add(a)
+check("cada variante e de um agente so (dois agentes com a mesma variante dividiriam o arquivo)",
+      all(len(arquivos[t.arquivo]) == 1 for _, t in declaradas if t.variante),
+      [t.arquivo for _, t in declaradas if t.variante and len(arquivos[t.arquivo]) > 1])
+# Variante duplicada: a mesma consulta (nome, recorte, SQL e params) em dois arquivos de A.
+por_consulta = {}
+for a, t in declaradas:
+    por_consulta.setdefault((t.nome, t.recorte, motor._sql(t, corte)[0],
+                             tuple(sorted(motor._sql(t, corte)[1].items()))), set()).add(t.arquivo)
+check("nenhuma consulta esta em dois arquivos de A (variante redundante)",
+      all(len(v) == 1 for v in por_consulta.values()),
+      [k[:2] for k, v in por_consulta.items() if len(v) > 1])
+# A Focus do PIB e de expectativas (dono): a atividade a le do mesmo arquivo, sem variante.
+pib_at = next(t for t in modulos["atividade"].TABELAS if t.nome == "expc_focus_periodo" and t.recorte == "PIB")
+pib_ex = next(t for t in modulos["expectativas"].TABELAS if t.nome == "expc_focus_periodo" and t.recorte == "PIB")
+check("a Focus do PIB da atividade vem de expectativas: mesmo arquivo de A e mesma consulta",
+      pib_at.variante is None and pib_at.arquivo == pib_ex.arquivo == "expc_focus_periodo__pib.csv.gz"
+      and motor._sql(pib_at, corte) == motor._sql(pib_ex, corte), pib_at.arquivo)
+check("e so o F muda (a funcao de leitura e a da atividade)",
+      pib_at.especial is modulos["atividade"].focus_pib and pib_at.especial is not pib_ex.especial)
+check("mutante: a mesma Focus do PIB com a consulta da atividade volta a conflitar sem variante",
+      levanta(lambda: motor.conferir_consultas({"ex": [pib_ex], "at": [motor.de(modulos["expectativas"],
+              "expc_focus_periodo", "PIB", filtro="indicador = 'PIB Total'")]}), "expc_focus_periodo__pib"))
 
 print("")
 print(("%d FALHA(S)" % falhas) if falhas else "todos os asserts passaram")
