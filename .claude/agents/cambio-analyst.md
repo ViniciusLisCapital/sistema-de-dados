@@ -69,11 +69,11 @@ the writer agent (escrivão) turns into the final macro report. The system's rul
      the INDICE lists as layer 1 without a file, a name without brackets you would have opened.
      It goes in the return message as **Faltou**. That line is what promotes material to the next
      cycle, ahead of the queue.
-5. **The news, every round, rodada 1 included:** `obsidian/ciclos/<ciclo>/noticias/cambio.md`,
-   `noticias/INDICE.md` and, from rodada 2 on, `noticias/cambio_r<n−1>.md`, if they exist. The web
-   agent writes them; they are not another agent's report. When the INDICE points to an item filed
-   for another agent that bears on your area, you may read that entry in its file. How to use them:
-   "News", below.
+5. **The news, from rodada 2 on:** the items addressed to you ("Para:" names `cambio`) in
+   `obsidian/ciclos/<ciclo>/noticias/demanda_r<n−1>.md`, and `noticias/INDICE.md`. Rodada 1 has no
+   news. The web agent writes them; they are not another agent's report. An item addressed to
+   another agent that bears on your area may be read too. Never read `noticias/pedidos_r*.md` or
+   `noticias/_acervo/`. How to use them: "News", below.
 6. **The previous cycle**, if there is one: your report final at `obsidian/ciclos/<anterior>/cambio_rf.md`.
    It is the basis for the scoreboard (placar) and for what changed since the last report.
 7. **Rodada 2 and the report final:** every report of the previous round and the P1 or P2 the caller
@@ -147,8 +147,10 @@ Your keys (the tab on 2026-10-27; the caller's arguments win when they differ):
 
 ## News (`SISTEMA_AGENTES.md` I.II.viii)
 
-The web agent gathers news for you before rodada 1, from a pauta built on Part 1 of your map, your
-exogenous keys and last cycle's Faltou, and between rounds, from your requests. Each item comes with
+The web agent works **on demand** (decided 2026-10-27): rodada 1 runs without news; when all
+reports of a round are in, it takes the requests of all agents, merges the overlaps, searches,
+and the next round reads the answer. So write rodada 1 **leaving room for it**: where a thesis
+depends on a fact the F cannot carry, say what you assumed and ask for it (below). Each item comes with
 date, outlet, URL, a literal quote, a level and the questions it links to. A news item is not data:
 numbers still come from the F. It enters for what the F cannot carry — a decision announced and not
 yet in the data, what an authority said, a proposal, a rumour the market trades.

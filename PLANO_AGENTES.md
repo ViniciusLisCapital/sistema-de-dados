@@ -24,7 +24,7 @@ Fica fora deste plano tudo o que não leva a isso (lista em "Anotado para depois
 | 7 | Desenho do ciclo conjunto (decisões) | feito (2026-10-22): SISTEMA IV.ii, IV.vi, IV.vii e III.III.vii; a tutela das exógenas virou a aba "Exógenas" do tracker, **que o usuário preenche**; caudas upside/downside para todos; relatório por tema com apêndice por área (manual §13) |
 | 8 | Os cinco agentes novos, na forma mínima | quase feito (2026-10-22): os cinco mapas aprovados (o fiscal reescrito nas duas discussões, com foco no impacto na demanda), listas V.III–V.VII, módulos de dados e definições (1a7ef6a, b23ea25, cd52f2f, 04d3102, 0e311f4), os sete em `AGENTES` (50a40b0), ajuste de câmbio e PM (d0a14d1, 2026-10-22; linhas S5–S10 do câmbio e S7–S13 da PM aprovadas pelo usuário; repasse tirado e renumerado, 318dfb0). **Falta a Parte 4 (entradas) dos cinco mapas novos** |
 | 9 | Engrenagem do ciclo conjunto | quase feito (2026-10-22): E1 (71bbb16, 78c79f6), E2 consolidação (4f9f186), E3 escrivão (94a1672), E4 grupos do IPCA e upside/downside (faab307), templates (9b262ce), tutela preenchida (cf8a7c6, efe85f7). Falta a unificação das `variante` e o teste dos sete |
-| 10 | O primeiro ciclo conjunto, sem literatura | — |
+| 10 | O primeiro ciclo conjunto, sem literatura | em curso (2026-10-27): rodada 1 de 2026-10-02 feita com os sete (teste; vazamento de dado declarado); agente web criado (SISTEMA I.II.viii, demanda pura); principal/subordinado no lugar dos níveis (7d5b687). Ciclo 2026-10-27 montado para os sete; próxima: rodada 1 dele, um agente por vez |
 
 ## Para a próxima sessão (handover de 2026-10-22)
 
@@ -144,7 +144,8 @@ Só o que o ciclo conjunto precisa:
 2. **Montagem:**
     - `dados <agente> --ciclo <data> --sem-literatura` para os sete;
     - conferir, de cada agente, o F, o retrato e a definição.
-3. **Rodada 1:** os sete agentes. O chat principal lê os reports e traz os problemas antes do P1.
+3. **Rodada 1:** os sete agentes, sem notícia. O chat principal lê os reports e traz os problemas antes do P1.
+    - Depois, o chat principal junta os pedidos "ao agente web" dos sete em `noticias/pedidos_r1.md` e roda o agente web uma vez (`modo=demanda rodada=1`; no ciclo 2026-10-27, com `acervo=noticias/_acervo`).
 4. **P1 → rodada 2 → P2 → report final → PF*.** O usuário revisa cada P.
 5. **Escrivão:** o relatório conjunto, a checagem dos números contra a fonte e o log.
 
