@@ -26,7 +26,7 @@ Series (export/import separados; saldo por parceiro calculado no relatorio):
   mundo_export / mundo_import   (total, sem filtro de pais — usado para o residual "Demais Paises")
 
 Codigos de pais no Comex Stat (API e bulk usam o MESMO codigo, confirmado
-contra balanca.economia.gov.br/balanca/bd/tabelas/PAIS.csv):
+contra balanca.mdic.gov.br/balanca/bd/tabelas/PAIS.csv):
   China = 160, Estados Unidos = 249, Argentina = 063, Alemanha = 023
 
 Cobertura: 1997-01 -> hoje (limite da propria fonte). Valores em USD FOB,
@@ -36,14 +36,13 @@ as demais tabelas de cambio).
 DUAS fontes, dois casos de uso (2026-07-14 — pedido do usuario apos a API ao
 vivo travar num rate limit persistente durante o backfill historico):
   - `backfill()`: download em massa (connectors/comexstat_bulk.py, arquivos
-    anuais estaticos de balanca.economia.gov.br) — SEM rate limit. Uso:
+    anuais estaticos de balanca.mdic.gov.br) — SEM rate limit. Uso:
     carga historica completa, uma vez (ou reprocessamento, ex: parceiro
     novo adicionado). Insere por (ano, flow) incrementalmente — uma falha
     no meio nao descarta o que ja foi buscado.
-  - `run()`: API ao vivo (connectors/comexstat.py) — COM rate limit
-    agressivo (confirmado: ~300 chamadas seguidas esgotam uma cota que leva
-    minutos para se recuperar). Uso: update rotineiro/marginal, janela
-    curta (`n_meses`, default 36) — poucas dezenas de chamadas.
+  - `run()`: update rotineiro, tambem pelo download em massa (ultimos 2 anos).
+    A API ao vivo (connectors/comexstat.py) saiu da rotina em 2026-10-22: 429
+    persistente mesmo com uma chamada por vez.
 
 Banco: macro_brasil.cmb_comex_pais — PRIMARY KEY (date, name)
 """
@@ -51,7 +50,6 @@ Banco: macro_brasil.cmb_comex_pais — PRIMARY KEY (date, name)
 import pandas as pd
 
 from connectors import comexstat_bulk
-from connectors.comexstat import ComexStat
 from connectors.mysql import insert_data_into_database
 
 _DATABASE = "macro_brasil"
@@ -64,14 +62,11 @@ _PAISES = {
     "alemanha":  "023",
 }
 
-_cs = ComexStat()
-
-
 def backfill(start_year: int = 1997, end_year: int | None = None) -> None:
     """Carga historica completa via download em massa (SEM rate limit).
 
     Uso recomendado: rodar uma vez (ou ao adicionar/trocar um parceiro).
-    Para updates rotineiros, usar run() (API ao vivo, janela curta).
+    Para updates rotineiros, usar run() (ultimos 2 anos, tambem em massa).
 
     Args:
         start_year: ano inicial (default 1997, inicio da serie na fonte).
@@ -104,41 +99,14 @@ def backfill(start_year: int = 1997, end_year: int | None = None) -> None:
             insert_data_into_database(_DATABASE, _TABLE, out)
 
 
-def _fetch_flow(flow: str, start: str, end: str) -> pd.DataFrame:
-    frames = []
+def run(start_year: int | None = None, end_year: int | None = None) -> None:
+    """Atualiza macro_brasil.cmb_comex_pais (update rotineiro).
 
-    mundo = _cs.get_trade(flow, start, end, country_code=None)
-    mundo["name"] = f"mundo_{flow}"
-    frames.append(mundo)
-
-    for nome, codigo in _PAISES.items():
-        df = _cs.get_trade(flow, start, end, country_code=codigo)
-        df["name"] = f"{nome}_{flow}"
-        frames.append(df)
-
-    return pd.concat(frames, ignore_index=True)
-
-
-def run(start: str | None = None, end: str | None = None, n_meses: int = 36) -> None:
-    """Atualiza macro_brasil.cmb_comex_pais via a API ao vivo (update marginal).
-
-    NAO usar para carga historica completa — a API tem rate limit agressivo
-    (ver docstring do modulo). Para isso, usar backfill().
-
-    Args:
-        start:   "YYYY-MM". Default None usa os ultimos `n_meses` meses.
-        end:     "YYYY-MM". Default: mes corrente.
-        n_meses: janela retroativa usada quando `start` nao e informado.
+    Wrapper fino sobre backfill() — default: ultimos 2 anos civis (cobre
+    revisoes do ano anterior + o ano corrente), pelos arquivos em massa, sem
+    rate limit. Desde 2026-10-22 NAO usa a API ao vivo: ela devolvia 429 mesmo
+    com uma chamada por vez, e o update fazia ~40 chamadas.
     """
-    if end is None:
-        end = pd.Timestamp.today().strftime("%Y-%m")
-    if start is None:
-        start = (pd.Timestamp.today() - pd.DateOffset(months=n_meses)).strftime("%Y-%m")
-
-    exports = _fetch_flow("export", start, end)
-    imports = _fetch_flow("import", start, end)
-
-    df = pd.concat([exports, imports], ignore_index=True)
-    df = df[["date", "name", "value"]]
-
-    insert_data_into_database(_DATABASE, _TABLE, df)
+    if start_year is None:
+        start_year = pd.Timestamp.today().year - 1
+    backfill(start_year=start_year, end_year=end_year)

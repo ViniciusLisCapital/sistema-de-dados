@@ -1,0 +1,22 @@
+{
+  "agente": "inflacao",
+  "rodada": "r1",
+  "ciclo": "2026-10-02",
+  "caminhos": {
+    "icbr_agr_usd": {"4T26": 200.53, "1T27": 200.53, "2T27": 200.53, "3T27": 200.53, "4T27": 200.53, "1T28": 200.53},
+    "icbr_met_usd": {"4T26": 330.14, "1T27": 330.14, "2T27": 330.14, "3T27": 330.14, "4T27": 330.14, "1T28": 330.14}
+  },
+  "tese": {
+    "ipca_12m": {
+      "trimestres": {
+        "4T26": {"central": 5.28, "faixa": [5.05, 5.50], "p_faixa": 50, "p_upside": 28, "p_downside": 22},
+        "1T27": {"central": 4.85, "faixa": [4.55, 5.15], "p_faixa": 48, "p_upside": 32, "p_downside": 20},
+        "2T27": {"central": 4.33, "faixa": [4.00, 4.70], "p_faixa": 45, "p_upside": 35, "p_downside": 20},
+        "3T27": {"central": 4.34, "faixa": [4.00, 4.75], "p_faixa": 43, "p_upside": 36, "p_downside": 21},
+        "4T27": {"central": 4.23, "faixa": [3.90, 4.65], "p_faixa": 42, "p_upside": 33, "p_downside": 25},
+        "1T28": {"central": 4.08, "faixa": [3.85, 4.40], "p_faixa": 40, "p_upside": 33, "p_downside": 27}
+      }
+    }
+  },
+  "nota": "Rodada 1. Caminhos de icbr_agr_usd e icbr_met_usd: a média do 3T26 segurada. A central é a do modelo no cenário base; a partida do modelo (3T26, IPCA 12m 4,58) usa o IPCA de set/26, divulgado em 9/10, depois do corte do ciclo."
+}

@@ -1,0 +1,19 @@
+{
+  "agente": "expectativas",
+  "rodada": "r1",
+  "ciclo": "2026-10-02",
+  "caminhos": {},
+  "tese": {
+    "focus_12m": {
+      "trimestres": {
+        "4T26": {"central": 4.16, "faixa": [4.10, 4.45], "p_faixa": 31, "p_upside": 68, "p_downside": 1},
+        "1T27": {"central": 3.97, "faixa": [3.90, 4.25], "p_faixa": 30, "p_upside": 61, "p_downside": 9},
+        "2T27": {"central": 3.78, "faixa": [3.70, 4.05], "p_faixa": 28, "p_upside": 60, "p_downside": 12},
+        "3T27": {"central": 3.67, "faixa": [3.60, 4.00], "p_faixa": 25, "p_upside": 54, "p_downside": 21},
+        "4T27": {"central": 3.59, "faixa": [3.50, 3.90], "p_faixa": 26, "p_upside": 49, "p_downside": 25},
+        "1T28": {"central": 3.52, "faixa": [3.45, 3.85], "p_faixa": 16, "p_upside": 47, "p_downside": 37}
+      }
+    }
+  },
+  "nota": "Rodada 1, sem tutela de exógena: caminhos vazios (padrão do simulador). Central = modelo base."
+}

@@ -1,7 +1,7 @@
 """
 Download em massa do Comex Stat (MDIC) — dados historicos por NCM.
 
-Fonte: balanca.economia.gov.br — arquivos anuais estaticos, SEM rate limit
+Fonte: balanca.mdic.gov.br — arquivos anuais estaticos, SEM rate limit
 (diferente de connectors/comexstat.py, que usa a API ao vivo e tem throttle
 agressivo — confirmado empiricamente que um backfill de ~300 chamadas
 esgota uma cota que leva minutos para se recuperar). Recomendado pela
@@ -11,8 +11,8 @@ rotineiros/marginais devem usar connectors/comexstat.py (API ao vivo, janela
 curta — poucas dezenas de chamadas, nao centenas).
 
 Arquivos anuais NCM-level (`;` separado, aspas duplas em campos texto):
-  https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm/EXP_{ano}.csv
-  https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm/IMP_{ano}.csv
+  https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_{ano}.csv
+  https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm/IMP_{ano}.csv
 
 Colunas export: CO_ANO;CO_MES;CO_NCM;CO_UNID;CO_PAIS;SG_UF_NCM;CO_VIA;CO_URF;QT_ESTAT;KG_LIQUIDO;VL_FOB
 Colunas import: idem + VL_FRETE;VL_SEGURO
@@ -20,14 +20,14 @@ Colunas import: idem + VL_FRETE;VL_SEGURO
 Codigos de CO_PAIS confirmados IDENTICOS aos usados pela API ao vivo
 (connectors/comexstat.py) — China=160, Estados Unidos=249, Argentina=063,
 Alemanha=023 — conferido diretamente contra
-balanca.economia.gov.br/balanca/bd/tabelas/PAIS.csv.
+balanca.mdic.gov.br/balanca/bd/tabelas/PAIS.csv.
 
 Quebra por "Fator Agregado" (Basicos/Semimanufaturados/Manufaturados) — a
 classica classificacao brasileira de comercio exterior, NAO disponivel na
 API ao vivo (confirmado checando /general/filters) — so existe via join
 contra a tabela de correlacao NCM.csv (coluna CO_FAT_AGREG), que mapeia cada
 codigo NCM de 8 digitos a 1 dos 6 codigos de
-balanca.economia.gov.br/balanca/bd/tabelas/NCM_FAT_AGREG.csv:
+balanca.mdic.gov.br/balanca/bd/tabelas/NCM_FAT_AGREG.csv:
   01 Produtos Basicos, 02 Semimanufaturados, 03 Manufaturados,
   04 Transacoes Especiais, 05 Consumo de Bordo, 06 Reexportacao.
 Os 3 ultimos + os poucos NCM sem correspondencia na tabela (residual
@@ -61,7 +61,7 @@ adapter — esse retry cobre falhas de conexao/status HTTP, nao uma leitura de
 corpo que comeca e e' interrompida no meio. `_get_csv_bytes()` adiciona um
 retry manual em cima disso (3 tentativas, backoff simples).
 
-Nota tecnica — TLS: o servidor balanca.economia.gov.br envia apenas o
+Nota tecnica — TLS: o servidor balanca.mdic.gov.br envia apenas o
 certificado folha, sem a cadeia intermediaria (confirmado via
 `openssl s_client -showcerts`: 1 certificado, contra 3 em
 api-comexstat.mdic.gov.br) — `requests`/certifi rejeita com
@@ -84,8 +84,8 @@ import truststore
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-_BASE = "https://balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm"
-_TABELAS_BASE = "https://balanca.economia.gov.br/balanca/bd/tabelas"
+_BASE = "https://balanca.mdic.gov.br/balanca/bd/comexstat-bd/ncm"
+_TABELAS_BASE = "https://balanca.mdic.gov.br/balanca/bd/tabelas"
 
 _FAT_AGREG_LABELS = {
     "01": "basicos",

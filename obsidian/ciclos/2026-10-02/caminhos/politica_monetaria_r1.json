@@ -1,0 +1,22 @@
+{
+  "agente": "politica_monetaria",
+  "rodada": "r1",
+  "ciclo": "2026-10-02",
+  "caminhos": {
+    "meta_12m": {"4T26": 3.0, "1T27": 3.0, "2T27": 3.0, "3T27": 3.0, "4T27": 3.0, "1T28": 3.0},
+    "rr_10a": {"4T26": 7.51, "1T27": 7.51, "2T27": 7.51, "3T27": 7.51, "4T27": 7.51, "1T28": 7.51}
+  },
+  "tese": {
+    "selic_fim": {
+      "trimestres": {
+        "4T26": {"central": 13.10, "faixa": [13.00, 13.50], "p_faixa": 47, "p_upside": 53, "p_downside": 0},
+        "1T27": {"central": 12.78, "faixa": [12.75, 13.50], "p_faixa": 53, "p_upside": 46, "p_downside": 1},
+        "2T27": {"central": 12.50, "faixa": [12.50, 13.50], "p_faixa": 65, "p_upside": 32, "p_downside": 3},
+        "3T27": {"central": 12.25, "faixa": [12.25, 13.25], "p_faixa": 57, "p_upside": 37, "p_downside": 6},
+        "4T27": {"central": 12.04, "faixa": [12.00, 13.00], "p_faixa": 51, "p_upside": 40, "p_downside": 9},
+        "1T28": {"central": 11.85, "faixa": [11.75, 13.00], "p_faixa": 56, "p_upside": 32, "p_downside": 12}
+      }
+    }
+  },
+  "nota": "Rodada 1. Central = selic_fim do Modelo Estrutural no cenário base (G pm_cenarios_r1.py), com meta_12m 3,00 e rr_10a 7,51 segurados; demais exógenas no padrão do simulador. Faixas e probabilidades da árvore de reuniões (G pm_reunioes.py). rr_10a: tutela de pm nível 2 (fiscal nível 1)."
+}

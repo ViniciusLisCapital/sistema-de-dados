@@ -1,0 +1,37 @@
+# Capital Controls
+
+**Type:** Policy instrument (capital account management)
+**Tags:** #capital-controls #capital-flows #capital-account #trilemma
+
+---
+
+## Definition
+
+Restrictions or taxes on cross-border capital movements, applied on inflows or outflows, permanently or temporarily, to all assets or to a subset (e.g. credit and portfolio debt). In the trilemma framework they are the way a country gives up full capital mobility to regain monetary independence; in Rey's "dilemma" they are one way to manage the capital account against a global financial cycle.
+
+## Mechanism
+
+A tax or limit on inflows lowers the volume of flows entering in a boom. Rey describes the typical setting: when capital flows in, the currency appreciates and hurts exporters; the central bank intervenes and accumulates reserves, facing higher inflation or sterilization costs, and the higher interest rate attracts further inflows, reinforced by expected appreciation. "Taxing inflows, if effectively implemented can act as a circuit breaker in such a situation."
+
+## When it applies / when it fails
+
+- Their effects are hard to assess: recent permanent controls exist only in a subset of low-income countries (a selection problem), and the effectiveness and side effects of temporary controls are debated, with measurement problems of selection and endogeneity (Rey).
+- When the concern is excessive credit growth, Rey treats them as partial substitutes for macroprudential tools, which are more targeted; controls may be appropriate when much lending is direct cross-border and can bypass the domestic banking system.
+
+## How it appears across sources
+
+| Source | Role |
+|---|---|
+| [[exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016)]] | Empirical test of Brazil's IOF-based inflow controls, 2009–2013: they opened onshore–offshore price wedges (cupom cambial, ADR premia), but the BRL moved only after the last, comprehensive measures closed the bypass channels (derivatives tax, longer-maturity borrowing tax) |
+| [[exchange_rate/synthesis/capital_inflow (IMF, 2010)]] | IMF staff position: inflow controls justified, alongside macro and prudential policy, when the economy is near potential, reserves are adequate, the currency is not undervalued and the surge is transitory; past evidence finds effects on composition more than on volume or the exchange rate; controls on debt inflows associated with milder 2008–09 output losses; multilateral costs |
+
+## BRL / application to the current analysis
+
+Rey cites "the 2010 and 2011 Brazilian taxes on equity inflows" as a temporary control tested in practice, and notes that controls have often been used mainly to prevent excessive appreciation; she does not evaluate the Brazilian case.
+
+## Connections
+
+- [[currency_regimes]] — giving up free capital mobility is one corner of the trilemma
+- [[global_financial_cycle]] — the external force controls are meant to insulate against
+- [[exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016)]] — controls segment markets before they move the exchange rate; effective only when comprehensive
+- [[exchange_rate/synthesis/capital_inflow (IMF, 2010)]] — when controls belong in the toolkit, why they work through composition rather than volume, and their multilateral costs

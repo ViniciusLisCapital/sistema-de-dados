@@ -1,0 +1,18 @@
+{
+ "agente": "atividade",
+ "ciclo": "2026-10-02",
+ "gerado_em": "2026-10-22T16:20:56",
+ "sem_literatura": true,
+ "arquivos": [
+  {
+   "arquivo": "economic_activity/economic_activity_conceptual_map.md",
+   "tipo": "mapa",
+   "dono": "atividade",
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "mapa conceitual do agente, inteiro"
+  }
+ ],
+ "camada1_sem_arquivo": [],
+ "avisos": []
+}

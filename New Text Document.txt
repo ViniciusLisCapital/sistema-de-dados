@@ -1,0 +1,87 @@
+//@version=6
+indicator("Cupom cambial limpo", precision = 2)
+
+// ---------- Entradas ----------
+vencCod  = input.string("Z2026", "Vencimento (letra do mês + ano)", tooltip = "F=jan G=fev H=mar J=abr K=mai M=jun N=jul Q=ago U=set V=out X=nov Z=dez")
+usarMini = input.bool(false, "Usar mini dólar (WDO)")
+spotSym  = input.symbol("FX_IDC:USDBRL", "Dólar à vista")
+verSofr  = input.bool(true, "Mostrar cupom menos SOFR")
+
+TZ  = "America/Sao_Paulo"
+DIA = 86400000
+
+// Feriados nacionais 2026-2027 (calendário ANBIMA). Acrescente os anos seguintes.
+var array<int> FERIADOS = array.from(
+     20260101, 20260216, 20260217, 20260403, 20260421, 20260501, 20260604,
+     20260907, 20261012, 20261102, 20261115, 20261120, 20261225,
+     20270101, 20270208, 20270209, 20270326, 20270421, 20270501, 20270527,
+     20270907, 20271012, 20271102, 20271115, 20271120, 20271225)
+
+diaUtil(t) =>
+    dow   = dayofweek(t, TZ)
+    chave = year(t, TZ) * 10000 + month(t, TZ) * 100 + dayofmonth(t, TZ)
+    dow != dayofweek.saturday and dow != dayofweek.sunday and not array.includes(FERIADOS, chave)
+
+// ---------- Vencimento: 1º dia útil do mês do contrato ----------
+codigo = str.upper(vencCod)
+mes    = str.pos("FGHJKMNQUVXZ", str.substring(codigo, 0, 1)) + 1
+ano    = int(str.tonumber(str.substring(codigo, 1)))
+if barstate.isfirst and (na(mes) or na(ano))
+    runtime.error("Vencimento inválido. Use a letra do mês e o ano, ex.: Z2026")
+
+var int venc = na
+if barstate.isfirst
+    t = timestamp(TZ, ano, mes, 1, 0, 0, 0)
+    while not diaUtil(t)
+        t += DIA
+    venc := t
+
+// ---------- Dias até o vencimento (du na convenção do DI1) ----------
+hoje = timestamp(TZ, year(time, TZ), month(time, TZ), dayofmonth(time, TZ), 0, 0, 0)
+
+var int du = na
+var int dc = na
+if hoje != nz(hoje[1])
+    n = 0
+    t = hoje
+    while t < venc
+        if diaUtil(t)
+            n += 1
+        t += DIA
+    du := n
+    dc := int(math.round((venc - hoje) / float(DIA)))
+
+// ---------- Preços ----------
+raiz  = usarMini ? "WDO" : "DOL"
+dolPx = request.security("BMFBOVESPA:" + raiz + codigo, timeframe.period, close)
+di    = request.security("BMFBOVESPA:DI1" + codigo, timeframe.period, close)
+spot  = request.security(spotSym, timeframe.period, close)
+fut   = dolPx > 100 ? dolPx / 1000 : dolPx   // DOL e WDO são cotados em R$ por US$ 1.000
+
+// Cupom = [(1 + DI)^(du/252) × Spot ÷ Futuro − 1] × 360/dc
+cupom = du > 0 and dc > 0 ? (math.pow(1 + di / 100, du / 252.0) * spot / fut - 1) * 360.0 / dc * 100 : na
+
+// SOFR médio composto dos últimos 20 dias publicados, a partir do índice SOFR do NY Fed
+[idx, idxAnt, tIdx, tAnt] = request.security("FRED:SOFRINDEX", "D", [close, close[20], time, time[20]])
+sofr = (idx / idxAnt - 1) * 360.0 / ((tIdx - tAnt) / 86400000.0) * 100
+
+// ---------- Gráfico ----------
+plot(cupom, "Cupom limpo (% a.a.)", color.blue, 2)
+plot(verSofr ? cupom - sofr : na, "Cupom menos SOFR (p.p.)", color.orange, 2)
+hline(0, "Zero", color.gray)
+plot(sofr, "SOFR médio 20 dias (% a.a.)", display = display.data_window)
+plot(du, "du", display = display.data_window)
+plot(dc, "dc", display = display.data_window)
+
+
+
+
+
+
+
+
+
+
+
+
+BMFBOVESPA:DOLZ2026/1000-FX_IDC:USDBRL

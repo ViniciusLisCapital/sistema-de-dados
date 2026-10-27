@@ -803,7 +803,7 @@ df_fa = get_year_by_fator_agregado("export", 2015)  # via correlação NCM.csv
 ```
 
 **Detalhes técnicos:**
-- `balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm/{EXP,IMP}_{ano}.csv` — arquivos anuais
+- `balanca.mdic.gov.br (domínio oficial desde out/2026; o balanca.economia.gov.br antigo ainda responde, mesmo servidor)/balanca/bd/comexstat-bd/ncm/{EXP,IMP}_{ano}.csv` — arquivos anuais
   estáticos, **sem rate limit** (a própria documentação da API recomenda esta rota para consultas
   grandes). Uso: **somente o backfill histórico** (1997→hoje, uma vez); update rotineiro é pela
   API ao vivo.

@@ -1,0 +1,417 @@
+{
+ "agente": "cambio",
+ "ciclo": "2026-10-22",
+ "gerado_em": "2026-10-22T09:13:04",
+ "arquivos": [
+  {
+   "arquivo": "exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/clean_md/capital_controls_brazil (Chamon & Garcia, 2016).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/clean_md/equilibrium_exchange_brazil (Paiva, 2006).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/synthesis/fx_anomalies_survey (Froot & Thaler, 1990).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/clean_md/fx_anomalies_survey (Froot & Thaler, 1990).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/synthesis/logic_currency_crises (Obstfeld, 1994).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/clean_md/logic_currency_crises (Obstfeld, 1994).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/synthesis/posicao_de_cambio (BCB, 2020).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/clean_md/posicao_de_cambio (BCB, 2020).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "monetary_policy/synthesis/monetary_policy_exchange_rates (BIS, 2026).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "monetary_policy/clean_md/monetary_policy_exchange_rates (BIS, 2026).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "monetary_policy/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "monetary_policy/clean_md/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019).md",
+   "tipo": "literatura",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/mental_models/kapitalo_fx_mental_models.md",
+   "tipo": "modelo_mental",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/mental_models/verde_fx_mental_models.md",
+   "tipo": "modelo_mental",
+   "dono": "cambio",
+   "camada": 1,
+   "outro_dono": false,
+   "motivo": "camada 1 do agente"
+  },
+  {
+   "arquivo": "exchange_rate/synthesis/capital_inflow (IMF, 2010).md",
+   "tipo": "literatura",
+   "dono": "externo",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de externo, pelo conceito capital_controls"
+  },
+  {
+   "arquivo": "exchange_rate/clean_md/capital_inflow (IMF, 2010).md",
+   "tipo": "literatura",
+   "dono": "externo",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de externo, pelo conceito capital_controls"
+  },
+  {
+   "arquivo": "exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023).md",
+   "tipo": "literatura",
+   "dono": "inflacao",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de inflacao, pelo conceito balance_of_payments_approach"
+  },
+  {
+   "arquivo": "exchange_rate/clean_md/padrao_transmissao_cambial (Cortapasso, 2023).md",
+   "tipo": "literatura",
+   "dono": "inflacao",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de inflacao, pelo conceito balance_of_payments_approach"
+  },
+  {
+   "arquivo": "monetary_policy/synthesis/fiscal_dominance_it_brazil (Blanchard, 2004).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito fiscal_dominance"
+  },
+  {
+   "arquivo": "monetary_policy/clean_md/fiscal_dominance_it_brazil (Blanchard, 2004).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito fiscal_dominance"
+  },
+  {
+   "arquivo": "monetary_policy/synthesis/high_interest_rates_puzzle_brazil (Segura-Ubiergo, 2012).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito fiscal_dominance"
+  },
+  {
+   "arquivo": "monetary_policy/clean_md/high_interest_rates_puzzle_brazil (Segura-Ubiergo, 2012).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito fiscal_dominance"
+  },
+  {
+   "arquivo": "monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito exchange_rate_pass_through"
+  },
+  {
+   "arquivo": "monetary_policy/clean_md/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito exchange_rate_pass_through"
+  },
+  {
+   "arquivo": "monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito exchange_rate_pass_through"
+  },
+  {
+   "arquivo": "monetary_policy/clean_md/it_credibility_fx_volatility (Minella et al., 2003).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito exchange_rate_pass_through"
+  },
+  {
+   "arquivo": "monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito exchange_rate_pass_through"
+  },
+  {
+   "arquivo": "monetary_policy/clean_md/it_lessons_and_challenges (Minella et al., 2002).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito exchange_rate_pass_through"
+  },
+  {
+   "arquivo": "monetary_policy/synthesis/trilemma_tradeoffs (Obstfeld, 2015).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito capital_controls"
+  },
+  {
+   "arquivo": "monetary_policy/clean_md/trilemma_tradeoffs (Obstfeld, 2015).md",
+   "tipo": "literatura",
+   "dono": "politica_monetaria",
+   "camada": 1,
+   "outro_dono": true,
+   "motivo": "camada 1 de politica_monetaria, pelo conceito capital_controls"
+  },
+  {
+   "arquivo": "concepts/balance_of_payments_approach.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models, exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006)"
+  },
+  {
+   "arquivo": "concepts/bank_fx_position.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/synthesis/posicao_de_cambio (BCB, 2020)"
+  },
+  {
+   "arquivo": "concepts/capital_controls.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016)"
+  },
+  {
+   "arquivo": "concepts/carry_trade.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models, exchange_rate/mental_models/verde_fx_mental_models, exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016) …"
+  },
+  {
+   "arquivo": "concepts/currency_crisis_indicators.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models"
+  },
+  {
+   "arquivo": "concepts/currency_crisis_models.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/synthesis/logic_currency_crises (Obstfeld, 1994)"
+  },
+  {
+   "arquivo": "concepts/currency_regimes.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models, exchange_rate/synthesis/logic_currency_crises (Obstfeld, 1994), monetary_policy/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)"
+  },
+  {
+   "arquivo": "concepts/exchange_rate_pass_through.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models"
+  },
+  {
+   "arquivo": "concepts/fiscal_dominance.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models, exchange_rate/mental_models/verde_fx_mental_models"
+  },
+  {
+   "arquivo": "concepts/forward_premium_puzzle.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/synthesis/fx_anomalies_survey (Froot & Thaler, 1990)"
+  },
+  {
+   "arquivo": "concepts/fx_intervention.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016), exchange_rate/synthesis/logic_currency_crises (Obstfeld, 1994), exchange_rate/synthesis/posicao_de_cambio (BCB, 2020)"
+  },
+  {
+   "arquivo": "concepts/global_financial_cycle.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/verde_fx_mental_models, monetary_policy/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)"
+  },
+  {
+   "arquivo": "concepts/macroprudential_policy.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka monetary_policy/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)"
+  },
+  {
+   "arquivo": "concepts/overshooting.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models, exchange_rate/mental_models/verde_fx_mental_models, monetary_policy/synthesis/monetary_policy_exchange_rates (BIS, 2026)"
+  },
+  {
+   "arquivo": "concepts/ppp_balassa_samuelson.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models, exchange_rate/mental_models/verde_fx_mental_models, exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006)"
+  },
+  {
+   "arquivo": "concepts/risk_premium.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models, exchange_rate/mental_models/verde_fx_mental_models, exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006) …"
+  },
+  {
+   "arquivo": "concepts/time_inconsistency.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/synthesis/logic_currency_crises (Obstfeld, 1994)"
+  },
+  {
+   "arquivo": "concepts/uip.md",
+   "tipo": "conceito",
+   "dono": null,
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "linka exchange_rate/mental_models/kapitalo_fx_mental_models, exchange_rate/mental_models/verde_fx_mental_models, exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006) …"
+  },
+  {
+   "arquivo": "exchange_rate/exchange_rate_conceptual_map.md",
+   "tipo": "mapa",
+   "dono": "cambio",
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "mapa conceitual do agente, inteiro"
+  }
+ ],
+ "camada1_sem_arquivo": [],
+ "avisos": []
+}
