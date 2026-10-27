@@ -97,18 +97,41 @@ rest of the vault. You are not to know what the analysts think.
 
 ## Searching
 
-- **Sources.** News from traditional outlets: Valor Econômico, Folha de S.Paulo, O Estado de S. Paulo
-  (and Broadcast/Estadão Conteúdo), O Globo, Reuters, Bloomberg (and Bloomberg Línea), Financial
-  Times, The Wall Street Journal, and alike (g1, CNN Brasil, Exame, InfoMoney, AP, AFP, CNBC, The
-  Economist, Nikkei). Not blogs, social media, newsletters, unsigned aggregators or sell-side
-  research. **Official sources** (BCB, Fed, Tesouro, IBGE, Diário Oficial, ANEEL, Petrobras, company
-  filings and releases) only to **confirm a fact** a news item reports — they go in the item's
-  "Confirmação" field, never as an item of their own.
+- **Sources** (list tested in this tool and approved by the user, 2026-10-27).
+  - **Default outlets — they open in WebFetch:** InfoMoney (republishes Reuters and Estadão
+    Conteúdo, the way in to both), CNN Brasil (Reuters, with the reporter's name), Poder360,
+    Bloomberg Línea (Bloomberg content in Portuguese), Investing.com (Reuters wires with the
+    reporter's name: the way in to Reuters in English), Yahoo Finance, Exame, Agência Brasil (public,
+    EBC: good for official statements), NeoFeed, Seu Dinheiro, IstoÉ Dinheiro (Estadão Conteúdo),
+    Al Jazeera, South China Morning Post (China), France 24. **Secondary**, news pieces only, never
+    columns or recommendations: Money Times, Metrópoles, Brazil Journal (mixes news and opinion),
+    Forbes (staff news only), OilPrice.com (energy).
+  - **Leads only — blocked or paywalled in this tool:** Valor, O Globo, g1, Folha, UOL, Estadão,
+    Reuters, Bloomberg, AP, CNBC, MarketWatch, Axios, The Guardian, BBC, Politico, DW, Business
+    Insider, CNN International, FT, WSJ. When a search returns one of them, use its headline as a
+    lead and look for the same fact in a default outlet; the item enters through the outlet that
+    opened. The lead counts as a second outlet for level A only if its date and attribution show in
+    the search snippet, and it is named in "Também em" with "(pista, não aberta)".
+  - Not blogs, social media, newsletters, unsigned aggregators or sell-side research. **Official
+    sources** (BCB, Fed, Tesouro, IBGE, Diário Oficial, ANEEL, Petrobras, company filings and
+    releases) only to **confirm a fact** a news item reports — they go in the item's
+    "Confirmação" field, never as an item of their own. Their listing pages are built by
+    JavaScript and come back empty: open the specific document, not the news list.
+- **Not news here: prices and series the database already carries** (decided 2026-10-27, after the
+  first run). The DI and NTN-B curves, the Treasuries, the Focus survey, the exchange rate, the
+  stock indices, the CDS, commodity prices and published indicators (IPCA, payroll, PMI-type
+  indices) are in the analyst's F, with more precision than any article. Do not open an item for
+  them, and do not spend a search on them. A price appears only inside an item about a fact or a
+  statement, in its **Reação de preço** field, as the outlet describes it.
+- **When the fact is itself an official publication** (a Tesouro note, a BCB communiqué, an act in
+  the Diário Oficial, a company release), open the official page to confirm it: it costs one search
+  or fetch and takes the item to level A.
 - **Queries:** Portuguese for Brazil, English for the US and global markets; put the month and year
   in the query to pull the window; `allowed_domains` with the outlets above when a topic drowns in
   noise.
-- **Budget, per call:** pauta mode ~15–25 searches and ~10–20 news items; demand mode ~3–5 searches
-  per request, ~15 in all. WebSearch with `mode: "standard"`; `"extended"` only for a fact that is
+- **Budget, per call — a hard cap:** pauta mode at most **25 searches** and ~10–20 news items;
+  demand mode ~3–5 searches per request, at most **15** in all. Count every WebSearch call; at the
+  cap, stop searching, even mid-pauta. WebSearch with `mode: "standard"`; `"extended"` only for a fact that is
   hard to find and that an item of the pauta depends on (at most 3 per call). One WebFetch per item
   you keep, plus the confirmations. Stop at the budget even if the pauta is not exhausted, and list
   what was left under "Sem notícia".
