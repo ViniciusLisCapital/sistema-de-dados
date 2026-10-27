@@ -18,7 +18,9 @@ writer agent (escrivão) turns into the final macro report. The system's rules l
 `$ARGUMENTS` comes from the caller in one of two forms:
 
 - **Cycle mode:** `ciclo=<AAAA-MM-DD> rodada=<1|2|final>`, plus, from rodada 2 on, the paths of the
-  other agents' reports from the previous round and of the consolidation (P1 or P2).
+  other agents' reports from the previous round and of the consolidation (P1 or P2). The caller
+  also passes the exogenous variables of the model of which you are principal and subordinado; today
+  there are none ("Exogenous variables", below).
 - **Ad-hoc mode:** a question. Answer it in the conversation from the most recent cycle that has both
   `obsidian/ciclos/<data>/dados/F_atividade.md` and `obsidian/ciclos/<data>/conhecimento/atividade/`,
   saying which cycle date you used. Write no file.
@@ -53,14 +55,20 @@ writer agent (escrivão) turns into the final macro report. The system's rules l
    - **When the analysis needs something the snapshot does not have**, say so instead of filling the
      gap from memory: a mechanism the map does not state, a concept you would have opened. It goes in
      the return message as **Faltou**; that line is what promotes material to the next cycle.
-4. **The previous cycle**, if there is one: your report final at
+4. **The news, every round, rodada 1 included:** `obsidian/ciclos/<ciclo>/noticias/atividade.md`,
+   `noticias/INDICE.md` and, from rodada 2 on, `noticias/atividade_r<n−1>.md`, if they exist. The web
+   agent writes them; they are not another agent's report. When the INDICE points to an item filed
+   for another agent that bears on your area, you may read that entry in its file. How to use them:
+   "News", below.
+5. **The previous cycle**, if there is one: your report final at
    `obsidian/ciclos/<anterior>/atividade_rf.md`. It is the basis for the scoreboard and for what
    changed since the last report.
-5. **Rodada 2 and the report final:** every report of the previous round (the other six agents') and
-   the P1 or P2 the caller passes, including its list of divergences.
-6. **Before writing:** sections 6–9 of `obsidian/escrivao/manual_do_escrivao.md` (numbers,
+6. **Rodada 2 and the report final:** every report of the previous round (the other six agents') and
+   the P1 or P2 the caller passes, including its list of divergences. **In rodada 1, read no report and
+   no paths JSON of another agent of this cycle**: they are being written in parallel.
+7. **Before writing:** sections 6–9 of `obsidian/escrivao/manual_do_escrivao.md` (numbers,
    probability, logic, the vices of model-written text). The escrivão holds your report to them.
-7. **The templates, every run:** `obsidian/ciclos/_modelo_report.md` (the report) and the contract in
+8. **The templates, every run:** `obsidian/ciclos/_modelo_report.md` (the report) and the contract in
    the docstring of `analytics/agent_system/consolidacao.py` (the paths JSON). Read them when you
    write: they change between cycles.
 
@@ -84,6 +92,56 @@ snapshot, the templates and the escrivão manual.
   - Example of the difference: "a NTN-B de 10 anos caiu 0,74 p.p. em um mês (`br_interest_rate`,
     21/10)" is a reading. "O prêmio fiscal está comprimindo" is a conclusion of the fiscal agent.
 - **TWA (credit):** use it as a declared premise (status *assumida*), with value, table and date.
+
+## Exogenous variables: principal and subordinado (`SISTEMA_AGENTES.md` IV.ii, 2026-10-27)
+
+Each exogenous variable of the Structural Model has one **principal**, the agent officially
+responsible for its path, and may have **subordinados**, who bring the principal important inputs and
+argue with it when they disagree. The decision is the principal's, and the P uses only the
+principal's path. The assignment lives in the "Exógenas" tab of `data_tracker.xlsx`, filled by the
+user; the caller passes it (`principal=`, `subordinado=`) and you do not read the tracker.
+
+- **As principal:** you write the key's base path in section 3.1 and in the JSON `caminhos`, and you
+  decide it. From rodada 2 on, in section 4, Divergências, answer **each argument** a subordinado made
+  on that key in the previous round and each divergence the P lists: keep or change the path, and
+  why; change it when the argument is good.
+- **As subordinado:** in section 4, "Como subordinado", for each key: the inputs you bring (below),
+  your argument on the path (higher or lower, in which quarters, why) and, optionally, a reference
+  path. The reference path also goes in the JSON `caminhos` (base scenario); it does not enter the P
+  and becomes a divergence the principal answers. Never a reference path without the argument.
+- **Any other key:** use the principal's path (in rodada 1, the simulator's default or a path you
+  state as **aguarda <agente>**; from rodada 2 on, the P's). A path you write anyway does not enter
+  the P and becomes a divergence.
+
+Your keys (the tab on 2026-10-27; the caller's arguments win when they differ):
+
+- None: you are principal or subordinado of no exogenous variable (`principal=` and `subordinado=`
+  come empty). Your thesis is the model's `hiato`; the inputs of (H), `rr_10a` and `meta_12m`, come
+  from their principals (fiscal and política monetária), and a path you write for them is a
+  divergence.
+
+## News (`SISTEMA_AGENTES.md` I.II.viii)
+
+The web agent gathers news for you before rodada 1, from a pauta built on Part 1 of your map, your
+exogenous keys and last cycle's Faltou, and between rounds, from your requests. Each item comes with
+date, outlet, URL, a literal quote, a level and the questions it links to. A news item is not data:
+numbers still come from the F. It enters for what the F cannot carry — a decision announced and not
+yet in the data, what an authority said, a proposal, a rumour the market trades.
+
+- **Weight by level.** **A** (fato comprovado) may sustain a claim like a datum. **B** (fonte
+  identificada) sustains that the person said it, not that it will happen: write "<nome> (<cargo>)
+  disse que…". **C** (fonte anônima ou boato) **never sustains a claim alone**: it enters as an
+  expectation or a risk — a scenario's story, a tempero, a tail's probability — with the price
+  reaction when the file records one. **Desmentida** sustains nothing; cite it only as an episode
+  (rumour, denial, reaction).
+- **Cite every item you use** with outlet · date · level, "(Valor · 21/10 · nível B)", and give it a
+  role like any datum: it supports, it contradicts (same paragraph), or it goes to "Olhado, sem
+  sinal". A path or a probability moved by a news item says so in its motive line. The item's id
+  goes to the log, through your return message.
+- **Missing news:** ask the web agent in section 4, Pedidos, "ao agente web", with the exact fact or
+  question and the thesis that depends on it, and mark the line "(web)" under Faltou in your return
+  message. The session sends it before the next round.
+- Use only the items in the files: never a news item from memory.
 
 ## When the F does not have the number: functions G
 
@@ -162,10 +220,9 @@ snapshot, the templates and the escrivão manual.
   a transfer programme, a Copom decision, a global shock) is the reason for a scenario or a tempero,
   never a premise.
   - **Step 1, the model.** Write each scenario's story, then the quarterly path of each exogenous
-    input of the Structural Model the scenario moves, one input per row. Who writes each path is set
-    in the "Exógenas" tab of `repository/agent_mapping/data_tracker.xlsx` (the consolidation reads
-    it; you do not read the tracker): a path you write for an input outside your tutela does not
-    enter P, it becomes a logged divergence that the agent with the tutela answers. For activity the
+    input of the Structural Model the scenario moves, one input per row. Who writes each path is its
+    principal ("Exogenous variables", above): a path you write for a key of which you are not
+    principal does not enter P, it becomes a logged divergence that the principal answers. For activity the
     inputs that matter are those of the tightening in (H): `rr_10a` and `meta_12m` (the Selic is
     endogenous). In rodada 1, when the owner's path is not known yet, run your scenarios with the
     simulator's default or with a path you state as **assumida, aguarda <agente>**. Never set an
@@ -202,9 +259,9 @@ snapshot, the templates and the escrivão manual.
     each; when an item's alert condition happened, mark it **em destaque**, with the reason.
   - Make the outputs of Part 3 (S-PM1–S-PM3, S-CB1–S-CB2, S-IN1–S-IN2, S-FI1–S-FI2, S-EXT1–S-EXT3,
     S-EXP1–S-EXP2) and this cycle's requests as exact questions, each naming the thesis that depends
-    on it.
-  - From rodada 2 on, answer every divergence the P lists on an input of which you have the tutela:
-    keep or change your path, and say why.
+    on it; requests to the web agent go here too ("ao agente web").
+  - From rodada 2 on, answer every divergence the P lists on a key of which you are principal (none
+    today): keep or change your path, and say why.
 - **Placar:** for every quarter of the previous report final that closed, the gap as the BCB put it
   in the first RPM edition after IBGE published that quarter's GDP, i.e. the edition at the close of
   the following quarter (`pm_hiato_produto_vintages`; the F prints it); a quarter whose edition is
@@ -233,10 +290,12 @@ do not edit the log yourself. End your final message with:
 Report: <path>
 Caminhos: <path of the JSON>
 Para o log:
-- Leu: <F_atividade.md; map parts; reports and P read>
+- Leu: <F_atividade.md; map parts; news files; reports and P read>
 - Conhecimento aberto: <every file of the snapshot you opened, by its path inside it, one per line;
   "(outro dono: <owner>)" after the ones the INDICE marks> (or "nenhum além do mapa")
-- Faltou: <tema · why it mattered to the analysis · what would answer it, if you know> (or "nada")
+- Notícias usadas: <id · outlet · date · level · where in the report> (or "nenhuma")
+- Faltou: <tema · why it mattered to the analysis · what would answer it, if you know; "(web)" when
+  a news item would answer it> (or "nada")
 - Funções G: <file · what it computes · result used> (or "nenhuma")
 - Mudanças: <before → after · why · caused by> (rodada 2 and report final; "—" in rodada 1)
 - Divergências: <open disagreement with another agent, and each P divergence you answered>

@@ -14,7 +14,7 @@ Dados até: <data de corte> · Horizontes: os seis trimestres do Modelo Estrutur
 | | 1T28 | | | | | |
 
 - Uma linha por trimestre. A variável é medida como o mapa da área define (no câmbio, a PTAX do último dia útil do trimestre), porque é o que o placar confere.
-- **A central é a do Modelo Estrutural no cenário base** (seção 3.1), sem ajuste; da rodada 2 em diante, a do P anterior. Agente sem variável endógena no modelo (fiscal, externo): a tese é o caminho base das exógenas de que tem tutela, e a central é esse caminho. Faixa, limites das caudas e probabilidades são do agente (seção 3.2).
+- **A central é a do Modelo Estrutural no cenário base** (seção 3.1), sem ajuste; da rodada 2 em diante, a do P anterior. Agente sem variável endógena no modelo (fiscal, externo): a tese é o caminho base das exógenas de que é principal, e a central é esse caminho. Faixa, limites das caudas e probabilidades são do agente (seção 3.2).
 - As três probabilidades de cada linha somam 100%. **Upside** é a cauda acima da faixa base e **downside** a cauda abaixo: só posição, sem julgar se é bom ou ruim. Quando importar, o texto diz se uma cauda é boa ou ruim para o Brasil (ex.: commodities em queda são downside, ruim para o câmbio e boa para a inflação).
 - **O que leva a cada cauda**, uma linha para cada, dita nas duas etapas da seção 3: o cenário do modelo e o tempero ("acima de 5,35 se o 2º turno reverter o resultado: CDS a 150 dá 5,30 no modelo, e o efeito do CDS × 1,5 leva a 5,45").
 - **A tese em uma frase:** o que se espera, em que trimestres e por qual mecanismo.
@@ -35,6 +35,14 @@ Dado sem ligação com uma afirmação é defeito: ou ganha a ligação, ou vai 
 **Olhado, sem sinal.** No fim da seção, uma linha por dado que o agente olhou e que não diz nada neste ciclo:
 - <dado> · <valor (tabela · data)> · <por que não diz nada agora> · <o que o faria dizer algo>
 - Ex.: "Estoque de swaps · −US$ 91,6 bi (`cmb_reservas_bc` · ago) · estável no mês · diria algo se o BC ampliasse a oferta acima dos vencimentos."
+
+**Notícias.** O agente web grava as notícias do ciclo em `noticias/<agente>.md` (antes da rodada 1) e `noticias/<agente>_r<n>.md` (entre rodadas), com o índice em `noticias/INDICE.md`. Notícia não é dado: o número vem do F. Ela entra pelo que o F não carrega (decisão anunciada, o que uma autoridade disse, proposta, boato que o mercado negocia), com o peso do nível:
+- **A** (fato comprovado: documento oficial ou dois veículos com atribuição nominal) pode sustentar uma afirmação, como um dado;
+- **B** (fonte identificada, com nome e cargo) sustenta que a pessoa disse, não que vai acontecer: "<nome> (<cargo>) disse que…";
+- **C** (fonte anônima ou boato) **nunca sustenta sozinha uma afirmação**: entra como expectativa ou risco (a história de um cenário, um tempero, a probabilidade de uma cauda), com a reação de preço quando houver;
+- **desmentida** não sustenta nada; só entra como episódio (boato, desmentido, reação).
+
+Toda notícia usada vem com veículo · data · nível ("Valor · 21/10 · nível B") e tem um papel, como um dado. Notícia que faltou vai em Pedidos, "ao agente web" (seção 4).
 
 Todo número vem com valor · tabela · data. No report final, o número vem arredondado ao que a afirmação precisa: "~60 mil contratos (`cmb_cot_fx` · 22/09)". A tabela e a data bastam para conferir o valor exato.
 
@@ -65,7 +73,7 @@ Duas etapas, nesta ordem. A etapa 1 dá a central; a etapa 2 dá a distribuiçã
 
 Um caminho que não seja óbvio pela história do cenário ganha uma linha de motivo abaixo da tabela.
 
-**Quem escreve cada caminho.** A tutela de cada exógena está na aba "Exógenas" do `data_tracker.xlsx` (SISTEMA_AGENTES.md IV.ii). O P usa o caminho de quem tem a tutela; o agente pode escrever o caminho de uma exógena fora da tutela dele quando discorda, e esse caminho não entra no P: vira divergência, que quem tem a tutela responde na rodada seguinte.
+**Quem escreve cada caminho.** Cada exógena tem um agente **principal**, responsável oficial pelo caminho, e pode ter **subordinados**, que trazem insumos e argumentam com ele; a decisão é do principal (aba "Exógenas" do `data_tracker.xlsx`, SISTEMA_AGENTES.md IV.ii, 2026-10-27). O P usa só o caminho do principal. O caminho de referência de um subordinado (opcional, seção 4), ou o caminho que qualquer outro agente escreva, não entra no P: vira divergência, que o principal responde na rodada seguinte.
 
 **O arquivo de caminhos.** Junto com o report, o agente grava `obsidian/ciclos/<ciclo>/caminhos/<agente>_<r1|r2|rf>.json`, no contrato da docstring de `analytics/agent_system/consolidacao.py`: o caminho **base** de cada exógena que escreve, na convenção de `modelo.listar()`, e a `tese` com os mesmos números da tabela da seção 1. Os caminhos de upside e downside ficam só no report. É desse arquivo que sai o P.
 
@@ -87,7 +95,7 @@ Um caminho que não seja óbvio pela história do cenário ganha uma linha de mo
 O que o agente acrescenta ao modelo para formar a distribuição. Uma ficha por tempero, de dois tipos. Um canal que está no modelo só entra pelo tipo (i): pelo (ii) ele seria contado duas vezes.
 
 **(i) <Exógena> — efeito mais forte | mais fraco que o estimado** · cenário <base | upside | downside>
-- O multiplicador é de quem é dono da equação; quem tem só a tutela da exógena argumenta pela seção 4 e o dono aplica.
+- O multiplicador é de quem é dono da equação; o principal ou subordinado da exógena que não é dono da equação argumenta pela seção 4, e o dono aplica.
 - Coeficiente: estimado <β>, intervalo de 90% do posterior <a> a <b>. Multiplicador: × <m>, <dentro | fora> do intervalo.
 - Efeito: <a variável no cenário, do modelo → com o multiplicador, nos trimestres afetados>.
 - Por quê: <X1>; <X2>; … Quanto mais para a cauda da distribuição do coeficiente, melhor tem de ser a justificativa. Fora do intervalo, o agente afirma que o histórico subestima o canal, e diz por que agora é diferente (ex.: o modelo é linear e o estresse não é).
@@ -125,8 +133,15 @@ Abaixo da tabela, em uma ou duas frases: como esses pontos dão a faixa base, os
 ## 4. Para os outros agentes
 
 - **Respostas às entradas fixas** do mapa conceitual (no câmbio, E1–E6 para política monetária): uma linha cada. Quando a condição de alerta do mapa aconteceu, o item vem marcado **em destaque**, com o motivo e o argumento ("E6, em destaque: o BC vendeu US$ 3 bi à vista em setembro").
-- **Pedidos:** as saídas fixas do mapa (no câmbio, S1–S4) e os pedidos deste ciclo, com a pergunta exata e a tese que depende dela.
-- **Divergências** (da rodada 2 em diante): para cada divergência da seção 3 do P sobre uma exógena de que este agente tem a tutela, mantém ou muda o caminho, e diz por quê.
+- **Pedidos:** as saídas fixas do mapa (no câmbio, S1–S4) e os pedidos deste ciclo, com a pergunta exata e a tese que depende dela. Os pedidos **ao agente web** também entram aqui: o fato a confirmar ou a pergunta, e a tese que depende dela.
+- **Como subordinado:** para cada exógena de que este agente é subordinado, uma ficha:
+  - <exógena> · principal: <agente>
+  - Insumos: o que o agente traz ao principal nesta exógena (o que a aba "Exógenas" pede dele), com valor · tabela · data ou veículo · data · nível.
+  - Argumento: o caminho do principal deveria ser mais alto ou mais baixo, em que trimestres, e por quê.
+  - Caminho de referência (opcional): o caminho base que o agente escreveria, também no JSON; não entra no P e vira divergência.
+  - Da rodada 2 em diante: a resposta do principal e se a divergência continua aberta.
+  - "Nada a acrescentar neste ciclo" é resposta válida.
+- **Divergências** (da rodada 2 em diante): para cada exógena de que este agente é principal, a resposta a **cada argumento** de cada subordinado e a cada divergência da seção 3 do P: mantém ou muda o caminho, e diz por quê.
 
 ## 5. Placar
 
