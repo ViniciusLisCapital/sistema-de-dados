@@ -360,7 +360,8 @@ def inflc_decomposicao_item(df: pd.DataFrame, ctx: Ctx) -> list[str]:
 def inflc_dim(df: pd.DataFrame, ctx: Ctx) -> list[str]:
     """A classificação do BC: quantos subitens e quanto peso em cada classe, no último IPCA."""
     dec = ctx.ler("inflc_decomposicao")
-    dec = dec[(dec["indice"] == "IPCA") & (dec["date"] == dec["date"].max())]
+    dec = dec[dec["indice"] == "IPCA"]  # a tabela também traz o IPCA-15, que pode estar um mês à frente
+    dec = dec[dec["date"] == dec["date"].max()]
     pesos = dec.assign(sub=dec["subitem_codigo"].astype(str)).set_index("sub")["pesos"]
     d = df.assign(sub=df["subitem_codigo"].astype(str), item=df["item"].fillna("—"))
     d = d.assign(peso=d["sub"].map(pesos))
