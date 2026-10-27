@@ -192,10 +192,18 @@ Quem influencia o modelo, e por qual variável, vai mudar. Um exemplo: o modelo 
 - O modelo de PIB do agente de atividade, com a demanda do governo vindo do fiscal.
 - Um modelo do hiato que regride só a parte consolidada do hiato do BC (até dois ou três anos atrás, a de menor revisão esperada) contra PIB, desemprego, indústria e outros, e usa os coeficientes para a frente (ideia do usuário, 2026-10-22).
 - A camada 1 de literatura dos agentes novos (~5 fontes cada), o ciclo com literatura e a medição do ruído (a rodada 1 duas vezes).
-- O agente de busca na internet (a discutir).
 - Os demais agentes (crédito, mercado de trabalho, trader, administrador), as promoções de câmbio e PM, o estoque de sínteses pendentes e o diagrama.
 - **Mover os arquivos para a pasta do dono**, de uma vez, quando a camada 1 dos agentes novos entrar. Um script move os arquivos e reescreve os wikilinks; o `vault.py check` confere.
 - Duas páginas de conceito apontadas pelo `/vault`: `exchange_rate_pass_through` traz uma conta do próprio autor; `monetary_policy_shocks` ainda diz que não há fonte brasileira.
+- **Notas do usuário na leitura da rodada 1 do ciclo 2026-10-27** (para conversar depois):
+    - a. O escrivão precisa sintetizar bem: a leitura dos reports está pesada.
+    - b. A parte "o que derrubaria a tese?" precisa ficar melhor.
+    - c. Como o agente sem papel numa exógena calibra o upside e o downside dela fica em aberto (a regra do base foi registrada no SISTEMA IV.ii).
+    - d. Como o ciclo incorpora o ciclo passado.
+    - e. Modelo: capturar efeito não linear no câmbio e o efeito sazonal (o câmbio achou o resíduo da (F) positivo no 4º trimestre em 8 de 9 anos desde 2017).
+    - f. O câmbio sempre testa o cenário com o juro da curva e com o do Focus, e pede o tempero à PM.
+    - g. Testar um modelo de juros com a taxa de câmbio embutida.
+    - h. Uma métrica de crédito na curva IS.
 
 
 # (VII) Registro e custo
