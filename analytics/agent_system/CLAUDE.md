@@ -186,15 +186,16 @@ uv run python -m analytics.agent_system.consolidacao --ciclo AAAA-MM-DD --rodada
 
 Lê `obsidian/ciclos/<data>/caminhos/<agente>_<rodada>.json` (o contrato está na docstring: caminhos
 base na convenção do `modelo.CONVENCAO`, mais a tese por trimestre, validada) e a tutela da aba
-"Exógenas" do `data_tracker.xlsx` (colunas achadas pelo nome; aba sem nenhum nível levanta). Por
-exógena vale o melhor nível entre quem tem tutela e escreveu; no empate, a média trimestre a
-trimestre de quem tem valor; sem ninguém, o padrão do simulador, com aviso. Quem escreveu fora da
-tutela, ou num nível pior, com valor diferente vira divergência. Uma rodada de `modelo.rodar` sem
+"Exógenas" do `data_tracker.xlsx` (colunas achadas pelo nome). Desde 2026-10-27 (SISTEMA IV.ii) cada
+exógena tem exatamente um "Principal" e zero ou mais "Subordinado" (em branco = sem papel); zero ou
+mais de um Principal numa linha, ou outro valor, levanta. Vale só o caminho do principal; se ele não
+escreveu, o padrão do simulador, com aviso. Quem escreveu caminho diferente do usado vira
+divergência, com o papel (`subordinado` ou `sem papel`). Sem média e sem nível. Uma rodada de `modelo.rodar` sem
 multiplicadores grava `P1|P2|PF.md` e o `.json` ao lado. No PF* a faixa do agente não é deslocada
 para a central conjunta: o P mostra a diferença e marca "fora da faixa". O dono de cada endógena
 está em `ENDOGENA_DONO`, no topo do módulo; o das exógenas, só na aba.
 Caudas da tese (2026-10-22, SISTEMA III.III.i): `p_faixa`, `p_upside` (acima de `faixa[1]`) e
 `p_downside` (abaixo de `faixa[0]`), que somam 100; um JSON com `worst`/`p_worst`/`p_best` levanta.
 Assimetria = (P(up) − P(down))/100. Os grupos do IPCA são da inflação em `ENDOGENA_DONO`.
-Teste: `uv run python tests/test_consolidacao.py` (cópia do tracker com tutela fictícia, retrato de
+Teste: `uv run python tests/test_consolidacao.py` (cópia do tracker com Principal/Subordinado fictícios, retrato de
 2026-10-22, pasta temporária; ~25 s).

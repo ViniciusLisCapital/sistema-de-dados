@@ -42,24 +42,24 @@ O CONTRATO — o JSON que cada agente grava em cada rodada
     três (p_faixa, p_upside, p_downside) somam 100.
   - Quem tem variável no modelo escreve como central a do modelo (na rodada 1, a do G dele; da
     rodada 2 em diante, a do P anterior). Quem não tem (fiscal, externo) escreve a tese sobre a
-    exógena de que tem tutela, e a central é o próprio caminho base: o validador confere que é.
+    exógena de que é o principal, e a central é o próprio caminho base: o validador confere que é.
   - Chave, trimestre ou campo desconhecido levanta, com a lista de tudo o que está errado.
 
 A CONTA
 -------
 
-  - Tutela: a aba "Exógenas", uma exógena por linha e os sete agentes nas colunas (achadas pelo
-    nome, não pela letra), nível 1 (decide) a 5; em branco, o agente não escreve o caminho.
-    Nenhum dono em código. Aba sem nenhum nível levanta: quem preenche é o usuário.
-  - Para cada exógena, entre os agentes com tutela que escreveram caminho, vale o MELHOR nível
-    (o menor número). Vários agentes nesse nível: média simples, trimestre a trimestre, entre os
-    que têm valor naquele trimestre (o caminho de cada um segurado depois do último dado). Antes
-    do primeiro valor de todos eles, e em toda exógena sem caminho de quem tem tutela, vale o
-    padrão do simulador, e o P avisa.
-  - Divergência: todo agente que escreveu um caminho para uma exógena sem ter a tutela dela, ou
-    num nível pior que o usado, e cujo valor difere do usado num trimestre que ele escreveu, entra
-    na lista (agente, exógena, trimestre, o valor dele, o usado, a diferença). O P não o usa; a
-    divergência é respondida na rodada seguinte (SISTEMA IV.ii).
+  - Tutela (decisão de 2026-10-27, SISTEMA IV.ii): a aba "Exógenas", uma exógena por linha e os
+    sete agentes nas colunas (achadas pelo nome, não pela letra). Cada exógena tem EXATAMENTE UM
+    "Principal" (o responsável oficial pelo caminho) e zero ou mais "Subordinado" (dão insumos e
+    argumentam; a decisão é do principal); em branco, o agente não tem papel na exógena. Zero ou
+    mais de um Principal numa linha, ou qualquer outro valor, levanta. Nenhum dono em código.
+  - Para cada exógena vale só o caminho do principal (o dele segurado depois do último dado).
+    Antes do primeiro valor dele, e se o principal não escreveu caminho, vale o padrão do
+    simulador, e o P avisa.
+  - Divergência: todo agente que escreveu um caminho para uma exógena e cujo valor difere do
+    usado num trimestre que ele escreveu entra na lista (agente, papel, exógena, trimestre, o
+    valor dele, o usado, a diferença). O papel é "subordinado" ou "sem papel" (quem não tem papel
+    na exógena). O P não o usa; a divergência é respondida na rodada seguinte (SISTEMA IV.ii).
   - Sem multiplicadores: o multiplicador fica no tempero de cada agente.
   - PF*: a central da rodada conjunta (dos caminhos dos reports finais) ao lado da distribuição de
     cada agente, como ele a escreveu. A faixa NÃO é deslocada para a central conjunta: a tabela
@@ -94,7 +94,7 @@ AGENTES = {
 }
 
 # Endógena do modelo (a chave de modelo.SAIDAS) -> o agente da área (SISTEMA IV.ii, 2026-10-22).
-# Fiscal e externo não têm: a tese deles é o caminho das exógenas de que têm tutela.
+# Fiscal e externo não têm: a tese deles é o caminho das exógenas de que são o principal.
 ENDOGENA_DONO = {
     "ptax": "cambio",
     "selic": "politica_monetaria",
@@ -132,11 +132,16 @@ def _f(v, casas: int = 2, sinal: bool = False) -> str:
 
 
 # ── a tutela, da aba "Exógenas" ───────────────────────────────────────────────
-def ler_tutela(path: Path | str = TRACKER) -> dict:
-    """{"arquivo", "niveis": {exógena: {agente: nível}}, "chaves": [exógenas na ordem da aba]}.
+PRINCIPAL, SUBORDINADO = "principal", "subordinado"
 
-    Levanta se a aba não existir, se faltar a coluna de algum agente, se um nível não for de
-    1 a 5, e se nenhum nível estiver preenchido (quem preenche a aba é o usuário)."""
+
+def ler_tutela(path: Path | str = TRACKER) -> dict:
+    """{"arquivo", "papeis": {exógena: {agente: "principal" | "subordinado"}}, "chaves": [...]}.
+
+    Cada linha (exógena) tem exatamente um Principal e zero ou mais Subordinados; em branco, o
+    agente não tem papel. Levanta se a aba não existir, se faltar a coluna de algum agente, se um
+    valor não for Principal/Subordinado, e se alguma linha tiver zero ou mais de um Principal
+    (quem preenche a aba é o usuário). Maiúsculas e acentos não importam."""
     import openpyxl
 
     path = Path(path)
@@ -158,40 +163,43 @@ def ler_tutela(path: Path | str = TRACKER) -> dict:
             raise ValueError(f"aba {ABA!r}: falta a coluna {nome!r} (agente {ag}).")
         col[ag] = cab.index(_norm(nome))
 
-    niveis: dict = {}
+    papeis: dict = {}
     chaves: list[str] = []
     erros = []
     for i, r in enumerate(linhas[cab_i + 1:], start=cab_i + 2):
         k = str(r[0]).strip() if r and r[0] is not None else ""
         if not k:
             continue
-        if k in niveis:
+        if k in papeis:
             erros.append(f"linha {i}: exógena {k!r} repetida")
             continue
         chaves.append(k)
-        niveis[k] = {}
+        papeis[k] = {}
+        valor_ruim = False
         for ag, c in col.items():
             v = r[c] if c < len(r) else None
             if v is None or str(v).strip() == "":
                 continue
-            try:
-                n = float(str(v).strip().replace(",", "."))
-            except ValueError:
-                n = float("nan")
-            if not (math.isfinite(n) and n == int(n) and 1 <= n <= 5):
-                erros.append(f"linha {i} ({k}), coluna {AGENTES[ag]!r}: nível {v!r}; vale 1 a 5 "
-                             "ou em branco")
+            p = _norm(v)
+            if p not in (PRINCIPAL, SUBORDINADO):
+                erros.append(f"linha {i} ({k}), coluna {AGENTES[ag]!r}: valor {v!r}; vale "
+                             "'Principal', 'Subordinado' ou em branco")
+                valor_ruim = True
                 continue
-            niveis[k][ag] = int(n)
+            papeis[k][ag] = p
+        princ = [a for a, p in papeis[k].items() if p == PRINCIPAL]
+        if len(princ) != 1 and not valor_ruim:
+            erros.append(f"linha {i} ({k}): {len(princ)} agentes Principal"
+                         + (f" ({', '.join(princ)})" if princ else "")
+                         + "; cada exógena tem exatamente um")
     if erros:
         raise ValueError(f"aba {ABA!r} de {path.name}:\n  - " + "\n  - ".join(erros))
-    if not any(niveis.values()):
+    if not papeis:
         raise ValueError(
-            f"a aba {ABA!r} de {path} está sem nenhum nível de tutela preenchido. Quem preenche é o "
-            "usuário: em cada linha (uma exógena), o nível de 1 (decide) a 5 nas colunas dos "
-            "agentes que escrevem aquele caminho; em branco, o agente não escreve. A coluna "
-            "'Proposta' é só sugestão. Sem isso a consolidação não sabe de quem é cada caminho.")
-    return {"arquivo": str(path), "niveis": niveis, "chaves": chaves}
+            f"a aba {ABA!r} de {path} não tem nenhuma exógena. Quem preenche é o usuário: uma "
+            "linha por exógena, com um 'Principal' e zero ou mais 'Subordinado' nas colunas dos "
+            "agentes. A coluna 'Proposta' é só sugestão.")
+    return {"arquivo": str(path), "papeis": papeis, "chaves": chaves}
 
 
 # ── o modelo do ciclo: janela, exógenas e o padrão ────────────────────────────
@@ -405,60 +413,56 @@ def ler_caminhos(ciclo, rodada: str, ctx: dict, raiz: Path | None = None) -> tup
 
 
 # ── a junção ──────────────────────────────────────────────────────────────────
-def juntar(niveis: dict, caminhos: dict, janela: list[str], padrao: dict) -> tuple[dict, dict, list]:
+def juntar(papeis: dict, caminhos: dict, janela: list[str], padrao: dict) -> tuple[dict, dict, list]:
     """Os caminhos que o P usa, de onde veio cada um e as divergências.
 
-      niveis    {exógena: {agente: nível}}, da aba "Exógenas"
+      papeis    {exógena: {agente: "principal" | "subordinado"}}, da aba "Exógenas"
       caminhos  {agente: {exógena: {trimestre: valor}}}, trimestres já normalizados
       padrao    {exógena: [valor por trimestre da janela]}, o padrão do simulador
 
     Devolve:
-      usados       {exógena: {trimestre: valor}}, só as exógenas com caminho de quem tem tutela,
-                   a partir do primeiro trimestre com valor (antes dele vale o padrão do
+      usados       {exógena: {trimestre: valor}}, só as exógenas em que o principal escreveu
+                   caminho, a partir do primeiro trimestre dele (antes vale o padrão do
                    simulador, que `modelo.rodar` aplica sozinho)
-      origem       {exógena: {"tipo": "tutela" | "padrão", "nivel", "agentes",
+      origem       {exógena: {"tipo": "principal" | "padrão", "principal",
                    "por_trimestre": [[agentes] por trimestre], "valores": {agente: [...]}}}
-      divergencias [{agente, exogena, nivel, trimestre, valor, usado, diferenca, usado_de}]
+      divergencias [{agente, exogena, papel, trimestre, valor, usado, diferenca, usado_de}]
     """
     usados, origem, div = {}, {}, []
     for k, pad in padrao.items():
-        tut = niveis.get(k, {})
+        tut = papeis.get(k, {})
+        princ = next((a for a, p in tut.items() if p == PRINCIPAL), None)
         escreveram = {a: c[k] for a, c in caminhos.items() if c.get(k)}
-        cand = {a: n for a, n in tut.items() if a in escreveram}
-        if cand:
-            nivel = min(cand.values())
-            ags = [a for a in AGENTES if cand.get(a) == nivel]
-            vals = {a: expandir(escreveram[a], janela) for a in ags}
+        if princ in escreveram:
+            vals = {princ: expandir(escreveram[princ], janela)}
             por_tri, cam = [], {}
             for j, t in enumerate(janela):
-                quem = [a for a in ags if vals[a][j] is not None]
-                por_tri.append(quem)
-                if quem:
-                    cam[t] = sum(vals[a][j] for a in quem) / len(quem)
+                tem = vals[princ][j] is not None
+                por_tri.append([princ] if tem else [])
+                if tem:
+                    cam[t] = vals[princ][j]
             usados[k] = cam
-            origem[k] = {"tipo": "tutela", "nivel": nivel, "agentes": ags,
+            origem[k] = {"tipo": "principal", "principal": princ,
                          "por_trimestre": por_tri, "valores": vals}
         else:
-            ags = []
-            origem[k] = {"tipo": "padrão", "nivel": None, "agentes": [],
+            origem[k] = {"tipo": "padrão", "principal": princ,
                          "por_trimestre": [[] for _ in janela], "valores": {}}
-        de = (f"{', '.join(ags)} (nível {origem[k]['nivel']}"
-              + (", média)" if len(ags) > 1 else ")")) if ags else "padrão do simulador"
+        de = f"{princ} (principal)" if k in usados else "padrão do simulador"
         for a in AGENTES:
-            if a not in escreveram or a in ags:
+            if a not in escreveram or (a == princ and k in usados):
                 continue
             for t, v in escreveram[a].items():
                 j = janela.index(t)
                 u = usados.get(k, {}).get(t, pad[j])
                 if abs(v - u) > _TOL * max(1.0, abs(u)):
-                    div.append({"agente": a, "exogena": k, "nivel": tut.get(a), "trimestre": t,
-                                "valor": v, "usado": u, "diferenca": v - u,
+                    div.append({"agente": a, "exogena": k, "papel": tut.get(a, "sem papel"),
+                                "trimestre": t, "valor": v, "usado": u, "diferenca": v - u,
                                 "usado_de": de if k in usados and origem[k]["por_trimestre"][j]
                                 else "padrão do simulador"})
     return usados, origem, div
 
 
-def _avisos(niveis: dict, lidos: dict, origem: dict, janela: list[str], ctx: dict,
+def _avisos(papeis: dict, lidos: dict, origem: dict, janela: list[str], ctx: dict,
             faltam: list, rodada: str, chaves_aba: list) -> list[str]:
     av = []
     for a in faltam:
@@ -471,29 +475,24 @@ def _avisos(niveis: dict, lidos: dict, origem: dict, janela: list[str], ctx: dic
         if k not in ctx["exogenas"]:
             av.append(f"`{k}` está na aba {ABA!r} mas não é exógena do modelo deste ciclo: ignorada.")
     for k in ctx["exogenas"]:
-        tut, o = niveis.get(k, {}), origem[k]
+        tut, o = papeis.get(k, {}), origem[k]
         if not tut:
             av.append(f"`{k}`: sem tutela na aba {ABA!r}; ficou no padrão do simulador.")
             continue
-        topo = min(tut.values())
-        nao = [a for a, n in tut.items()
-               if n == topo and not lidos.get(a, {}).get("caminhos", {}).get(k)]
         if o["tipo"] == "padrão":
-            quem = ", ".join(f"{a} nível {n}" for a, n in sorted(tut.items(), key=lambda x: x[1]))
-            av.append(f"`{k}`: nenhum agente com tutela escreveu o caminho (tutela: {quem}); ficou "
-                      "no padrão do simulador.")
+            subs = [a for a, p in tut.items() if p == SUBORDINADO]
+            av.append(f"`{k}`: o principal ({o['principal']}) não escreveu o caminho"
+                      + (f" (subordinados: {', '.join(subs)})" if subs else "")
+                      + "; ficou no padrão do simulador.")
             continue
-        if nao:
-            av.append(f"`{k}`: {', '.join(nao)} (nível {topo}) não escreveu o caminho; usado o de "
-                      f"{', '.join(o['agentes'])} (nível {o['nivel']}).")
         vazios = [janela[j] for j, q in enumerate(o["por_trimestre"]) if not q]
         if vazios:
-            av.append(f"`{k}`: de {vazios[0]} a {vazios[-1]} no padrão do simulador; o caminho de "
-                      "quem tem a tutela começa depois.")
+            av.append(f"`{k}`: de {vazios[0]} a {vazios[-1]} no padrão do simulador; o caminho do "
+                      "principal começa depois.")
     for a, c in lidos.items():
         for var, t in c["tese"].items():
-            if t["tipo"] == "exogena" and a not in niveis.get(var, {}):
-                av.append(f"{AGENTES[a]} escreveu tese sobre `{var}`, de que não tem tutela.")
+            if t["tipo"] == "exogena" and a not in papeis.get(var, {}):
+                av.append(f"{AGENTES[a]} escreveu tese sobre `{var}`, em que não tem papel.")
     return av
 
 
@@ -534,8 +533,9 @@ def _md(r: dict, ctx: dict, res: dict, lidos: dict) -> str:
     hz = jan[:HORIZONTE]
     out = [f"# {rot} — consolidação {nome_rod} · ciclo {r['ciclo']}", ""]
     out.append(
-        "Uma rodada do Modelo Estrutural com o caminho base de cada exógena vindo de quem tem a "
-        f"tutela dela (aba {ABA!r} do `data_tracker.xlsx`; no mesmo nível, a média), sem "
+        "Uma rodada do Modelo Estrutural com o caminho base de cada exógena vindo do agente "
+        f"principal dela (aba {ABA!r} do `data_tracker.xlsx`; os subordinados dão insumos e "
+        "argumentam, a decisão é do principal), sem "
         "multiplicadores: o multiplicador fica no tempero de cada agente."
         + (" Da rodada seguinte em diante, a central de quem tem variável no modelo é a deste "
            "arquivo." if not pf else
@@ -553,43 +553,34 @@ def _md(r: dict, ctx: dict, res: dict, lidos: dict) -> str:
     out += ["", "## 1. Exógenas usadas", "",
             "| Exógena | De onde | " + " | ".join(hz) + " |",
             "|---|---|" + "---|" * len(hz)]
-    medias = []
     for k, info in ctx["exogenas"].items():
         o = r["origem"][k]
-        if o["tipo"] == "tutela":
-            de = (f"média de {' e '.join(o['agentes'])}" if len(o["agentes"]) > 1
-                  else o["agentes"][0]) + f" (nível {o['nivel']})"
+        if o["tipo"] == "principal":
+            de = f"{o['principal']} (principal)"
             vaz = [t for t, q in zip(jan, o["por_trimestre"]) if not q]
             if vaz:
                 de += f"; padrão até {vaz[-1]}"
-            if len(o["agentes"]) > 1:
-                medias.append((k, o))
         else:
             de = "padrão do simulador"
         vals = [r["caminhos_usados"].get(k, {}).get(t, ctx["padrao"][k][j])
                 for j, t in enumerate(hz)]
         out.append(f"| {info['nome']} ({info['unidade']}) `{k}` | {de} | "
                    + " | ".join(_f(v, 2) for v in vals) + " |")
-    for k, o in medias:
-        partes = "; ".join(f"{a}: " + " · ".join(_f(v, 2) for v in o["valores"][a][:HORIZONTE])
-                           for a in o["agentes"])
-        out.append(f"\n`{k}`, a média de: {partes}.")
 
     out += ["", "## 2. Saída do modelo", ""]
     txt = modelo.texto(res, hz)
     out.append(txt.split("\n\n**Exógenas do cenário**")[0])
 
     out += ["", "## 3. Divergências", "",
-            "Quem escreveu, para uma exógena de que não tem a tutela (ou num nível pior que o "
-            "usado), um caminho diferente do usado. O P usa o de quem tem a tutela; a divergência "
-            "é respondida na rodada seguinte: quem tem a tutela mantém ou muda o caminho, e diz "
-            "por quê.", ""]
+            "Quem escreveu, para uma exógena, um caminho diferente do usado (o do principal): um "
+            "subordinado, ou um agente sem papel nela. O P usa o do principal; a divergência é "
+            "respondida na rodada seguinte: o principal mantém ou muda o caminho, e diz por quê.", ""]
     if r["divergencias"]:
-        out += ["| Agente | Exógena | Nível do agente | Trimestre | Valor do agente | Usado | "
+        out += ["| Agente | Exógena | Papel do agente | Trimestre | Valor do agente | Usado | "
                 "Diferença | Usado de |", "|---|---|---|---|---|---|---|---|"]
         for d in r["divergencias"]:
             out.append(f"| {AGENTES[d['agente']]} | `{d['exogena']}` | "
-                       f"{d['nivel'] if d['nivel'] is not None else 'sem tutela'} | {d['trimestre']} | "
+                       f"{d['papel']} | {d['trimestre']} | "
                        f"{_f(d['valor'], 2)} | {_f(d['usado'], 2)} | {_f(d['diferenca'], 2, True)} | "
                        f"{d['usado_de']} |")
     else:
@@ -654,17 +645,17 @@ def consolidar(ciclo, rodada: str, raiz: Path | None = None, tracker: Path | str
         raise FileNotFoundError(f"nenhum caminho {RODADAS[rodada][1]} em "
                                 f"{pasta(ciclo, raiz) / 'caminhos'} (<agente>_{rodada}.json)")
     cams = {a: c["caminhos"] for a, c in lidos.items()}
-    niveis = {k: v for k, v in tut["niveis"].items() if k in ctx["exogenas"]}
-    usados, origem, div = juntar(niveis, cams, ctx["janela"], ctx["padrao"])
+    papeis = {k: v for k, v in tut["papeis"].items() if k in ctx["exogenas"]}
+    usados, origem, div = juntar(papeis, cams, ctx["janela"], ctx["padrao"])
     res = modelo.rodar(sim, caminhos=usados, mult={}, faixa=faixa)
     P = RODADAS[rodada][0]
     r = {
         "ciclo": ciclo, "rodada": rodada, "p": P,
         "gerado_em": dt.datetime.now().isoformat(timespec="seconds"),
-        "tracker": tut["arquivo"], "tutela": niveis,
+        "tracker": tut["arquivo"], "tutela": papeis,
         "agentes_lidos": list(lidos), "agentes_faltando": faltam,
         "caminhos_usados": usados, "origem": origem, "divergencias": div,
-        "avisos": _avisos(niveis, lidos, origem, ctx["janela"], ctx, faltam, rodada, tut["chaves"]),
+        "avisos": _avisos(papeis, lidos, origem, ctx["janela"], ctx, faltam, rodada, tut["chaves"]),
         "teses": _teses(lidos, res, ctx, usados),
         "contratos": lidos,
         "modelo": res,
@@ -681,7 +672,11 @@ def consolidar(ciclo, rodada: str, raiz: Path | None = None, tracker: Path | str
 
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
-    ap = argparse.ArgumentParser(prog="python -m analytics.agent_system.consolidacao")
+    ap = argparse.ArgumentParser(
+        prog="python -m analytics.agent_system.consolidacao",
+        description="Consolida uma rodada do ciclo (P1, P2 ou PF*). O caminho de cada exógena é o do "
+                    "agente Principal dela na aba Exógenas do data_tracker.xlsx; subordinados dão "
+                    "insumos e, se escreverem caminho diferente, viram divergência.")
     ap.add_argument("--ciclo", required=True, type=dt.date.fromisoformat)
     ap.add_argument("--rodada", required=True, choices=list(RODADAS))
     ap.add_argument("--tracker", type=Path, default=TRACKER)

@@ -10,14 +10,14 @@ preenchida por uma tutela FICTICIA, e os JSON dos agentes e o P vao para uma pas
 O modelo e o retrato de 2026-10-22 (obsidian/ciclos/2026-10-22/dados/A/modelo_estrutural.json),
 so lido. Cada item erra sem levantar nada se quebrar:
 
-1. o P usa o caminho de quem nao tem a tutela, ou de um nivel pior;
-2. dois agentes no mesmo nivel nao viram media trimestre a trimestre, ou a media conta quem
-   ainda nao tem valor naquele trimestre;
-3. um caminho diferente de quem nao tem tutela some calado em vez de virar divergencia;
-4. exogena sem caminho de quem tem tutela nao fica no padrao do simulador, ou nao e avisada;
+1. o P usa o caminho de quem nao e o principal da exogena, ou faz media de caminhos;
+2. o principal escreve e o P nao usa exatamente o dele (nem segurado depois do ultimo dado);
+3. um caminho diferente de subordinado ou de quem nao tem papel some calado em vez de virar
+   divergencia (com o papel dele);
+4. exogena cujo principal nao escreveu nao fica no padrao do simulador, ou nao e avisada;
 5. o P nao e o modelo.rodar com os mesmos caminhos (central e faixa);
 6. um JSON com chave, trimestre ou probabilidade errados passa;
-7. a aba sem nenhum nivel passa, e a consolidacao inventa dono.
+7. a aba com zero ou mais de um Principal numa linha, ou com valor desconhecido, passa.
 """
 from __future__ import annotations
 
@@ -58,18 +58,21 @@ def perto(a, b, tol=1e-9):
 
 
 # ── a tutela ficticia ─────────────────────────────────────────────────────────
+P, S = "Principal", "Subordinado"
 TUTELA = {
-    "fiscal": {"fiscal": 1, "politica_monetaria": 3},        # PM escreve diferente: diverge
-    "rr_10a": {"fiscal": 1, "politica_monetaria": 1},        # os dois escrevem: media
-    "vol": {"cambio": 1},
-    "meta_12m": {"politica_monetaria": 1},                   # PM nao escreve: padrao + aviso
-    "dxy_em": {"externo": 1},                                # cambio escreve sem tutela: diverge
-    "ffr": {"externo": 1},
-    "infl_us": {"externo": 1},
-    "sp500": {"externo": 1},
-    "icbr_usd": {"externo": 1},
-    # icbr_agr_usd: ninguem; a inflacao escreve assim mesmo -> padrao, aviso e divergencia
-    "icbr_met_usd": {"inflacao": 1, "externo": 2},           # a inflacao nao escreve: vale o 2
+    "fiscal": {"fiscal": P, "politica_monetaria": S},         # PM escreve diferente: diverge
+    "rr_10a": {"fiscal": P, "politica_monetaria": S},         # os dois escrevem: vale so o principal
+    "vol": {"cambio": P},
+    "meta_12m": {"politica_monetaria": P, "fiscal": S},       # o principal nao escreve: padrao + aviso
+    "dxy_em": {"externo": P},                                 # cambio escreve sem papel: diverge
+    "ffr": {"externo": P},
+    "infl_us": {"externo": P},
+    "sp500": {"externo": P},
+    "icbr_usd": {"externo": P},
+    # icbr_agr_usd: o externo e o principal e nao escreve; a inflacao escreve sem papel -> padrao,
+    # aviso e divergencia contra o padrao
+    "icbr_agr_usd": {"externo": P},
+    "icbr_met_usd": {"externo": P, "inflacao": S},           # o subordinado nao escreve: sem divergencia
 }
 
 
@@ -117,22 +120,33 @@ PAD = CTX["padrao"]
 
 # 0. juntar sozinho, com dados sinteticos (rapido, sem o modelo)
 jj = ["4T26", "1T27", "2T27"]
-u, o, dv = cs.juntar({"x": {"cambio": 1, "fiscal": 1, "externo": 2}},
-                     {"cambio": {"x": {"4T26": 10.0}}, "fiscal": {"x": {"1T27": 20.0}},
+u, o, dv = cs.juntar({"x": {"cambio": "principal", "fiscal": "subordinado"}},
+                     {"cambio": {"x": {"4T26": 10.0}}, "fiscal": {"x": {"1T27": 20.0, "2T27": 10.0}},
                       "externo": {"x": {"4T26": 99.0}}},
                      jj, {"x": [5.0, 5.0, 5.0]})
-check("juntar: no mesmo nivel, media so de quem tem valor no trimestre (10; (10+20)/2; segurado)",
-      u["x"] == {"4T26": 10.0, "1T27": 15.0, "2T27": 15.0}, u)
-check("juntar: o nivel 2 nao entra e diverge do usado", dv == [{
-    "agente": "externo", "exogena": "x", "nivel": 2, "trimestre": "4T26", "valor": 99.0,
-    "usado": 10.0, "diferenca": 89.0, "usado_de": "cambio, fiscal (nível 1, média)"}], dv)
-u, o, dv = cs.juntar({"x": {}}, {"cambio": {"x": {"1T27": 7.0}}}, jj, {"x": [5.0, 6.0, 6.0]})
-check("juntar: sem tutela, fica no padrao e quem escreveu diverge contra o padrao",
-      "x" not in u and o["x"]["tipo"] == "padrão"
-      and [(d["trimestre"], d["usado"]) for d in dv] == [("1T27", 6.0)], (u, dv))
-u, o, dv = cs.juntar({"x": {"cambio": 2}}, {"cambio": {"x": {"4T26": 5.0}}, "fiscal": {"x": {"4T26": 5.0}}},
+check("juntar: o principal escreve -> vale so o dele, segurado depois do ultimo dado (sem media)",
+      u["x"] == {"4T26": 10.0, "1T27": 10.0, "2T27": 10.0} and o["x"]["tipo"] == "principal"
+      and o["x"]["principal"] == "cambio", u)
+check("juntar: o subordinado diverge (papel 'subordinado') e quem nao tem papel diverge ('sem papel'); "
+      "valor igual ao usado nao diverge", dv == [
+    {"agente": "fiscal", "exogena": "x", "papel": "subordinado", "trimestre": "1T27", "valor": 20.0,
+     "usado": 10.0, "diferenca": 10.0, "usado_de": "cambio (principal)"},
+    {"agente": "externo", "exogena": "x", "papel": "sem papel", "trimestre": "4T26", "valor": 99.0,
+     "usado": 10.0, "diferenca": 89.0, "usado_de": "cambio (principal)"}], dv)
+u, o, dv = cs.juntar({"x": {"cambio": "principal", "fiscal": "subordinado"}},
+                     {"fiscal": {"x": {"1T27": 7.0}}}, jj, {"x": [5.0, 6.0, 6.0]})
+check("juntar: o principal nao escreveu -> padrao do simulador, e o subordinado que escreveu "
+      "diverge contra o padrao (o caminho dele NAO e usado)",
+      "x" not in u and o["x"]["tipo"] == "padrão" and o["x"]["principal"] == "cambio"
+      and [(d["trimestre"], d["usado"], d["papel"], d["usado_de"]) for d in dv]
+      == [("1T27", 6.0, "subordinado", "padrão do simulador")], (u, dv))
+u, o, dv = cs.juntar({"x": {"cambio": "principal"}}, {"cambio": {"x": {"1T27": 3.0}}, "fiscal": {"x": {"1T27": 3.0}}},
                      jj, {"x": [1.0, 1.0, 1.0]})
-check("juntar: valor igual ao usado nao e divergencia", dv == [] and u["x"]["4T26"] == 5.0, dv)
+check("juntar: o principal comeca depois -> antes dele vale o padrao; valor igual ao usado nao e divergencia",
+      u["x"] == {"1T27": 3.0, "2T27": 3.0} and dv == [], (u, dv))
+u, o, dv = cs.juntar({}, {"cambio": {"x": {"1T27": 7.0}}}, jj, {"x": [5.0, 6.0, 6.0]})
+check("juntar: exogena fora da aba fica no padrao e quem escreveu diverge ('sem papel')",
+      "x" not in u and [(d["papel"], d["usado"]) for d in dv] == [("sem papel", 6.0)], (u, dv))
 
 with tempfile.TemporaryDirectory() as tmp:
     tmp = Path(tmp)
@@ -141,9 +155,9 @@ with tempfile.TemporaryDirectory() as tmp:
 
     # 1. a tutela lida da aba, pelos nomes das colunas
     t = cs.ler_tutela(tk)
-    check("ler_tutela le os niveis da copia, coluna achada pelo nome",
-          t["niveis"]["rr_10a"] == {"politica_monetaria": 1, "fiscal": 1}
-          and t["niveis"]["icbr_agr_usd"] == {}, t["niveis"])
+    check("ler_tutela le os papeis da copia, coluna achada pelo nome",
+          t["papeis"]["rr_10a"] == {"politica_monetaria": "subordinado", "fiscal": "principal"}
+          and t["papeis"]["icbr_agr_usd"] == {"externo": "principal"}, t["papeis"])
     check("a aba tem as 11 exogenas do modelo", set(t["chaves"]) == set(CTX["exogenas"]), t["chaves"])
 
     # 2. os caminhos de cada agente na rodada 1
@@ -165,51 +179,56 @@ with tempfile.TemporaryDirectory() as tmp:
     r = cs.consolidar(CICLO, "r1", raiz=raiz, tracker=tk, sim=SIM, faixa=True)
     us = r["caminhos_usados"]
 
-    # 3. tutela e nivel
-    check("fiscal: usado o caminho do agente fiscal (nivel 1), nao o da PM (nivel 3)",
+    # 3. so o principal
+    check("fiscal: usado o caminho do agente fiscal (principal), nao o da PM (subordinada)",
           us["fiscal"] == {t: v for t, v in zip(JAN, cs.expandir(fis, JAN)) if v is not None}
-          and r["origem"]["fiscal"]["agentes"] == ["fiscal"], us["fiscal"])
+          and r["origem"]["fiscal"]["principal"] == "fiscal", us["fiscal"])
     check("vol: usado o do cambio, segurado depois do ultimo trimestre escrito",
           all(us["vol"][t] == 14.0 for t in JAN), us.get("vol"))
-    check("icbr_met_usd: a inflacao (nivel 1) nao escreveu, vale o externo (nivel 2)",
-          r["origem"]["icbr_met_usd"]["nivel"] == 2 and us["icbr_met_usd"]["4T26"] == 335.0,
+    check("icbr_met_usd: o externo e o principal e escreveu; a inflacao subordinada nao escreveu",
+          r["origem"]["icbr_met_usd"]["principal"] == "externo" and us["icbr_met_usd"]["4T26"] == 335.0,
           r["origem"]["icbr_met_usd"])
 
-    # 4. media no mesmo nivel
-    esp = {"4T26": 7.5, "1T27": (7.2 + 7.6) / 2, "2T27": (7.0 + 7.4) / 2, "3T27": (7.0 + 7.4) / 2}
-    check("rr_10a: dois agentes no nivel 1 -> media trimestre a trimestre, so de quem tem valor",
-          all(perto(us["rr_10a"][t], v) for t, v in esp.items()), {t: us["rr_10a"][t] for t in esp})
-    check("e a origem diz media de quem",
-          r["origem"]["rr_10a"]["agentes"] == ["politica_monetaria", "fiscal"]
-          and r["origem"]["rr_10a"]["por_trimestre"][0] == ["fiscal"], r["origem"]["rr_10a"])
+    # 4. sem media
+    check("rr_10a: vale so o caminho do principal (fiscal), sem media com o da PM",
+          all(perto(us["rr_10a"][t], v) for t, v in
+              {"4T26": 7.5, "1T27": 7.2, "2T27": 7.0, "3T27": 7.0}.items()),
+          {t: us["rr_10a"][t] for t in ("4T26", "1T27", "2T27", "3T27")})
+    check("e a origem diz de quem",
+          r["origem"]["rr_10a"]["principal"] == "fiscal"
+          and r["origem"]["rr_10a"]["por_trimestre"][0] == ["fiscal"]
+          and list(r["origem"]["rr_10a"]["valores"]) == ["fiscal"], r["origem"]["rr_10a"])
 
     # 5. divergencias
     dv = {(d["agente"], d["exogena"], d["trimestre"]): d for d in r["divergencias"]}
-    check("a PM (nivel 3) escreveu outro CDS em 4T26 -> divergencia, com os dois valores",
+    check("a PM (subordinada) escreveu outro CDS em 4T26 -> divergencia, com os dois valores",
           ("politica_monetaria", "fiscal", "4T26") in dv
           and dv[("politica_monetaria", "fiscal", "4T26")]["usado"] == 140.0
           and dv[("politica_monetaria", "fiscal", "4T26")]["diferenca"] == 20.0
-          and dv[("politica_monetaria", "fiscal", "4T26")]["nivel"] == 3, list(dv))
+          and dv[("politica_monetaria", "fiscal", "4T26")]["papel"] == "subordinado", list(dv))
+    check("a PM (subordinada) escreveu outro juro real -> divergencia nos dois trimestres em que escreveu",
+          ("politica_monetaria", "rr_10a", "1T27") in dv and ("politica_monetaria", "rr_10a", "2T27") in dv
+          and perto(dv[("politica_monetaria", "rr_10a", "1T27")]["diferenca"], 0.4), list(dv))
     check("e o 1T27 igual ao usado nao diverge", ("politica_monetaria", "fiscal", "1T27") not in dv)
-    check("o cambio escreveu dxy_em sem tutela -> divergencia, nao usado",
-          ("cambio", "dxy_em", "4T26") in dv and dv[("cambio", "dxy_em", "4T26")]["nivel"] is None
+    check("o cambio escreveu dxy_em sem papel -> divergencia, nao usado",
+          ("cambio", "dxy_em", "4T26") in dv and dv[("cambio", "dxy_em", "4T26")]["papel"] == "sem papel"
           and us["dxy_em"]["4T26"] == 129.0, us.get("dxy_em"))
-    check("a inflacao escreveu icbr_agr_usd sem tutela de ninguem -> divergencia contra o padrao",
+    check("a inflacao escreveu icbr_agr_usd sem papel (o principal, o externo, nao escreveu) -> divergencia contra o padrao",
           ("inflacao", "icbr_agr_usd", "4T26") in dv
           and perto(dv[("inflacao", "icbr_agr_usd", "4T26")]["usado"], PAD["icbr_agr_usd"][0]))
-    check("so essas tres divergencias (o externo no icbr_met_usd e o usado)", len(r["divergencias"]) == 3, list(dv))
+    check("so essas cinco divergencias (CDS da PM, 2 do juro real da PM, dxy do cambio, icbr_agr da inflacao)",
+          len(r["divergencias"]) == 5, list(dv))
 
     # 6. padrao e avisos
     check("meta_12m e icbr_agr_usd ficam no padrao (fora dos caminhos usados)",
           "meta_12m" not in us and "icbr_agr_usd" not in us, sorted(us))
     av = "\n".join(r["avisos"])
-    check("aviso: exogena sem tutela", "`icbr_agr_usd`: sem tutela" in av, av)
-    check("aviso: tutela que nao escreveu (meta_12m)",
-          "`meta_12m`: nenhum agente com tutela escreveu" in av, av)
-    check("aviso: o nivel 1 nao escreveu e valeu o 2 (icbr_met_usd)",
-          "`icbr_met_usd`: inflacao (nível 1) não escreveu" in av, av)
-    check("aviso: o padrao antes do primeiro valor de quem tem a tutela? (nenhum aqui: todos comecam em 4T26)",
-          "no padrão do simulador; o caminho de quem tem a tutela começa depois" not in av, av)
+    check("aviso: o principal do icbr_agr_usd nao escreveu",
+          "`icbr_agr_usd`: o principal (externo) não escreveu o caminho" in av, av)
+    check("aviso: o principal nao escreveu (meta_12m), com o subordinado nomeado",
+          "`meta_12m`: o principal (politica_monetaria) não escreveu o caminho "
+          "(subordinados: fiscal); ficou no padrão do simulador" in av, av)
+    check("aviso: sem o antigo texto de nivel", "nível" not in av, av)
     check("aviso: agentes sem JSON", "atividade_r1.json" in av and "expectativas_r1.json" in av,
           r["agentes_faltando"])
 
@@ -243,10 +262,12 @@ with tempfile.TemporaryDirectory() as tmp:
     check("o P1.md traz as quatro secoes",
           all(s in md for s in ("## Avisos", "## 1. Exógenas usadas", "## 2. Saída do modelo",
                                 "## 3. Divergências", "## 4. As teses")))
-    check("a linha do rr_10a diz a media e de quem",
-          "média de politica_monetaria e fiscal (nível 1)" in md, md[:2000])
-    check("a tabela de divergencias tem a linha da PM no CDS",
-          "| Política monetária | `fiscal` | 3 | 4T26 | 160,00 | 140,00 | +20,00 |" in md)
+    check("a linha do rr_10a diz de quem (o principal)",
+          "| fiscal (principal) |" in md and "média de " not in md and "(nível" not in md, md[:2000])
+    check("a tabela de divergencias tem a linha da PM no CDS, com o papel",
+          "| Política monetária | `fiscal` | subordinado | 4T26 | 160,00 | 140,00 | +20,00 |" in md)
+    check("e a do cambio sem papel",
+          "| Câmbio | `dxy_em` | sem papel | 4T26 | 131,00 |" in md)
     check("a saida do modelo vem com a faixa e sem a lista repetida de exogenas",
           "**Endógenas** — central e faixa" in md and "**Exógenas do cenário**" not in md)
     check("e com os quatro grupos do IPCA (contribuicao para o de 12 meses) e o residuo",
@@ -327,19 +348,44 @@ with tempfile.TemporaryDirectory() as tmp:
     check("arquivo da rodada com agente desconhecido no nome levanta",
           levanta(lambda: cs.ler_caminhos(CICLO, "r2", CTX, raiz), "agente desconhecido") is True)
 
-    # 12. a aba vazia
+    # 12. a aba mal preenchida
     (tmp / "vazia").mkdir()
     vazia = planilha(tmp / "vazia", None)
-    check("aba Exogenas sem nenhum nivel levanta, dizendo que o usuario preenche",
-          levanta(lambda: cs.ler_tutela(vazia), "Exógenas", "Quem preenche é o", "usuário") is True)
+    check("aba Exogenas sem nenhum Principal levanta, nomeando a linha e dizendo que e um por exogena",
+          levanta(lambda: cs.ler_tutela(vazia), "Exógenas", "linha 3 (meta_12m)", "0 agentes Principal",
+                  "exatamente um") is True)
     check("e a consolidacao tambem",
           levanta(lambda: cs.consolidar(CICLO, "r1", raiz=raiz, tracker=vazia, sim=SIM, faixa=False),
-                  "sem nenhum nível") is True)
-    wb = openpyxl.load_workbook(vazia)
+                  "0 agentes Principal") is True)
+    (tmp / "dois").mkdir()
+    dois = planilha(tmp / "dois", TUTELA)
+    wb = openpyxl.load_workbook(dois)
+    ws = wb[cs.ABA]
+    ws.cell(3, 8).value = "Principal"          # meta_12m ja tem a PM como Principal (coluna I)
+    wb.save(dois)
+    check("dois Principais na mesma linha levantam, nomeando os dois",
+          levanta(lambda: cs.ler_tutela(dois), "linha 3 (meta_12m)", "2 agentes Principal", "cambio",
+                  "politica_monetaria") is True)
+    wb = openpyxl.load_workbook(tk)
     ws = wb[cs.ABA]
     ws.cell(3, 8).value = 7
     wb.save(vazia)
-    check("nivel fora de 1 a 5 levanta", levanta(lambda: cs.ler_tutela(vazia), "nível 7") is True)
+    check("valor desconhecido (7) levanta, dizendo o que vale",
+          levanta(lambda: cs.ler_tutela(vazia), "valor 7", "'Principal', 'Subordinado'") is True)
+    wb = openpyxl.load_workbook(tk)
+    ws = wb[cs.ABA]
+    ws.cell(3, 8).value = "Nivel 2"
+    wb.save(vazia)
+    check("o antigo nivel (texto) tambem levanta",
+          levanta(lambda: cs.ler_tutela(vazia), "valor 'Nivel 2'") is True)
+    wb = openpyxl.load_workbook(tk)
+    ws = wb[cs.ABA]
+    ws.cell(3, 9).value = " principal "         # caixa e espacos nao importam
+    ws.cell(3, 12).value = "SUBORDINADO"
+    wb.save(vazia)
+    check("caixa e espacos nao importam",
+          cs.ler_tutela(vazia)["papeis"]["meta_12m"] == {"politica_monetaria": "principal",
+                                                         "fiscal": "subordinado"})
 
     # 13. a pasta real do ciclo nao foi tocada
     real = cs.pasta(CICLO)

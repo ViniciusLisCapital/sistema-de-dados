@@ -252,8 +252,8 @@ const DET_AGENTES = {
   p: { nome: 'Política monetária', de: 'de política monetária', secao: 'V.II', tese: 'a central vem do modelo estrutural no cenário base (a Selic); a faixa, as caudas e as probabilidades são do agente.' },
   i: { nome: 'Inflação', de: 'de inflação', secao: 'V.III', tese: 'a central vem do modelo estrutural no cenário base (o IPCA e os quatro grupos); a faixa, as caudas e as probabilidades são do agente.' },
   a: { nome: 'Atividade', de: 'de atividade', secao: 'V.IV', tese: 'a central vem do modelo estrutural no cenário base (o hiato do produto); a faixa, as caudas e as probabilidades são do agente.' },
-  f: { nome: 'Fiscal', de: 'fiscal', secao: 'V.V', tese: 'não há variável fiscal no modelo: a tese é o caminho base de cada exógena em que o agente tem nível (o CDS e o juro real de 10 anos), com a distribuição em volta.' },
-  e: { nome: 'Externo', de: 'externo', secao: 'V.VI', tese: 'não há variável do ambiente global no modelo: a tese é o caminho base de cada exógena em que o agente tem nível (Fed funds, dólar, S&P, IC-Br, inflação americana), com a distribuição em volta.' },
+  f: { nome: 'Fiscal', de: 'fiscal', secao: 'V.V', tese: 'não há variável fiscal no modelo: a tese é o caminho base de cada exógena em que o agente é o principal (o CDS e o juro real de 10 anos), com a distribuição em volta.' },
+  e: { nome: 'Externo', de: 'externo', secao: 'V.VI', tese: 'não há variável do ambiente global no modelo: a tese é o caminho base de cada exógena em que o agente é o principal (Fed funds, dólar, S&P, IC-Br, inflação americana), com a distribuição em volta.' },
   x: { nome: 'Expectativas', de: 'de expectativas', secao: 'V.VII', tese: 'a central vem do modelo estrutural no cenário base (a expectativa de inflação); a faixa, as caudas e as probabilidades são do agente.' },
 };
 Object.keys(DET_AGENTES).forEach(k => {
@@ -312,7 +312,7 @@ function detModelo() {
     <li>As exógenas que a área não usa ficam no padrão do modelo (o último valor repetido) até terem dono.</li>
     </ul>
     <h3>Entre as rodadas: P1, P2 e PF* ${badge('parcial', 'em construção')}</h3>
-    <ul class="lst"><li>O <code>consolidacao.py</code> lê o JSON de caminhos dos agentes, usa o caminho de quem tem nível em cada exógena, roda o modelo sem multiplicadores e grava P1, P2 e PF*. Falta decidir o peso de cada nível e o que acontece quando o modelo e um agente divergem (IV.vi).</li></ul>
+    <ul class="lst"><li>O <code>consolidacao.py</code> lê o JSON de caminhos dos agentes, usa só o caminho do agente principal de cada exógena, roda o modelo sem multiplicadores e grava P1, P2 e PF*. Falta decidir o que acontece quando o modelo e um agente divergem (IV.vi).</li></ul>
     <h3>A função que o G chama ${badge('existe')}</h3>
     <ul class="lst"><li>O <code>modelo.py</code> recebe os caminhos das exógenas e os multiplicadores, e devolve as endógenas por trimestre, com a faixa de incerteza dos pesos.</li></ul>
     <h3>O modelo hoje ${badge('existe')}</h3>
@@ -329,7 +329,7 @@ function detP1() {
     </ul>
     <h3>Como deve funcionar ${badge('planejado', 'proposta')}</h3>
     <ul class="lst">
-    <li><strong>Entra:</strong> o caminho base de cada exógena, vindo de quem tem nível nela na aba "Exógenas" do tracker, em JSON. O P é uma rodada do modelo sem multiplicadores; os temperos do tipo (i) ficam na distribuição de cada agente.</li>
+    <li><strong>Entra:</strong> o caminho base de cada exógena, vindo do agente principal dela na aba "Exógenas" do tracker (cada exógena tem um principal; os subordinados dão insumos e argumentam), em JSON. O P é uma rodada do modelo sem multiplicadores; os temperos do tipo (i) ficam na distribuição de cada agente.</li>
     <li><strong>O modelo resolve as endógenas uma vez, com tudo junto.</strong> A Selic que o câmbio usa passa a ser a que sai das premissas da política monetária, e o câmbio que a política monetária usa passa a ser o que sai das premissas do câmbio.</li>
     <li><strong>Sai:</strong> o caminho de cada endógena por trimestre, no cenário base e nas caudas, com a faixa de incerteza dos pesos.</li>
     <li><strong>Para a rodada 2:</strong> onde a central de cada agente difere do P1, e qual premissa de outro agente explica a diferença. É isso que os agentes discutem na rodada 2.</li>
@@ -338,11 +338,10 @@ function detP1() {
     <ul class="lst">
     <li>Quem roda o P1: a sessão que conduz o ciclo, com o <code>consolidacao.py</code>, que lê o JSON de caminhos de cada agente.</li>
     <li>As caudas: cada agente entrega upside e downside com probabilidades. O PF* é a central conjunta mais a distribuição de cada agente.</li>
-    <li>Quem escreve uma exógena sem ter nível nela, ou com caminho diferente do usado, gera divergência, que o agente responde na rodada seguinte.</li>
+    <li>Quem escreve, para uma exógena, um caminho diferente do usado (o do principal) gera divergência, seja subordinado ou sem papel nela; que o agente responde na rodada seguinte.</li>
     </ul>
     <h3>A definir ${badge('planejado')}</h3>
     <ul class="lst">
-    <li>O peso de cada nível da aba "Exógenas" na média dos caminhos.</li>
     <li>O que fazer com dois temperos do tipo (i) sobre o mesmo peso, vindos de agentes diferentes.</li>
     <li>O que acontece quando o modelo e um agente divergem.</li>
     </ul>`;
