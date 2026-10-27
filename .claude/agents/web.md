@@ -127,7 +127,7 @@ rest of the vault. You are not to know what the analysts think.
   the Diário Oficial, a company release), open the official page to confirm it: it costs one search
   or fetch and takes the item to level A.
 - **Queries:** Portuguese for Brazil, English for the US and global markets; put the month and year
-  in the query to pull the window; `allowed_domains` with the outlets above when a topic drowns in
+  in the query to pull the window; `allowed_domains` with the outlets above (never `estadao.com.br`: the search tool rejects the whole call; no duplicates in the list) when a topic drowns in
   noise.
 - **Budget, per call — a hard cap:** pauta mode at most **25 searches** and ~10–20 news items;
   demand mode ~3–5 searches per request, at most **15** in all. Count every WebSearch call; at the
