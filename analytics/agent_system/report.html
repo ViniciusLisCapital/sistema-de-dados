@@ -201,6 +201,8 @@ function rodadasGeral() {
     { id: 'g_p2', x: 964, y: 170, w: 68, h: 44, st: 'parcial', lines: ['P2', 'consolida'] },
     { id: 'g_pf', x: 1050, y: ZBASE + 34, w: 94, h: 56, st: 'parcial', lines: ['PF*', 'cenário final'] },
     { id: 'g_escr', x: 820, y: ZBASE + 34, w: 150, h: 56, st: 'parcial', lines: ['Escrivão', 'redige o relatório'] },
+    // o agente web roda entre as rodadas, uma vez para todos; fica abaixo das linhas dos agentes
+    { id: 'g_web', x: 672, y: ZBASE + 34, w: 118, h: 56, st: 'parcial', lines: ['Agente web', 'notícias sob demanda'], det: 'web' },
   ];
   cols.forEach(c => AGENTES.forEach((a, i) => nos.push({ id: `m${c.r}${a.k}`, x: c.x + 7, y: Y[i], w: mw, h: mh, st: a.st, lines: [a.nome, c.memo], det: DETALHES[`m${c.r}${a.k}`] ? `m${c.r}${a.k}` : null })));
   const arestas = [
@@ -216,6 +218,8 @@ function rodadasGeral() {
     { from: 'g_p2', fs: 'r', to: 'zr3', ts: 't', ta: 0.25, label: '' },
     { from: 'zr3', fs: 'b', to: 'g_pf', ts: 't', label: '' },
     { from: 'g_pf', fs: 'l', to: 'g_escr', ts: 'r', label: 'RF + PF*' },
+    { pts: [[700, ZBASE], [700, ZBASE + 34]], cls: 'dashed', label: 'pedidos', lpos: [694, ZBASE + 22, 'end'] },
+    { pts: [[770, ZBASE + 34], [770, ZBASE + 17], [880, ZBASE + 17], [880, ZBASE]], cls: 'dashed', label: 'notícias', lpos: [825, ZBASE + 11, 'middle'] },
     { pts: [[956, ZBASE + 34], [956, ZBASE - 4], [1034, ZBASE - 4]], cls: 'dashed', label: 'cobra clareza', lpos: [950, ZBASE + 23, 'end'] },
   ];
   // todos leem os reports de todos: com sete agentes, uma seta só entre as rodadas em vez de
@@ -243,6 +247,7 @@ const DETALHES = {
   'ferr': { titulo: 'Ferramentas', st: 'existe', render: detFerramentas },
   'mod': { titulo: 'Modelo estrutural', st: 'parcial', render: detModelo },
   'p1': { titulo: 'P1 · cenário consolidado da rodada 1', st: 'planejado', render: detP1 },
+  'web': { titulo: 'Agente web', st: 'parcial', render: detWeb },
 };
 
 // MySQL → agente e report 1 de cada agente do ciclo: a lista de dados vem da seção V do SISTEMA_AGENTES.md
@@ -345,6 +350,16 @@ function detP1() {
     <li>O que fazer com dois temperos do tipo (i) sobre o mesmo peso, vindos de agentes diferentes.</li>
     <li>O que acontece quando o modelo e um agente divergem.</li>
     </ul>`;
+}
+
+function detWeb() {
+  return `<ul class="lst">
+    <li><strong>O que faz:</strong> traz notícia de veículos tradicionais, com data, veículo, citação literal e nível: A fato comprovado · B fonte identificada · C fonte anônima ou boato · desmentida.</li>
+    <li><strong>Quando roda:</strong> depois de cada rodada, uma vez para todos, a partir dos pedidos dos reports. A rodada 1 não tem notícia.</li>
+    <li><strong>Não faz:</strong> analisar, ler os reports, trazer preço que o banco já tem.</li>
+    <li><strong>Grava:</strong> <code>noticias/demanda_r&lt;n&gt;.md</code> e <code>INDICE.md</code>.</li>
+    <li>Sonnet, em avaliação (<code>SISTEMA_AGENTES.md</code> I.II.viii).</li>
+  </ul>`;
 }
 
 function detFerramentas() {
