@@ -1,0 +1,230 @@
+# PF* — consolidação do report final · ciclo 2026-10-27
+
+Uma rodada do Modelo Estrutural com o caminho base de cada exógena vindo do agente principal dela (aba 'Exógenas' do `data_tracker.xlsx`; os subordinados dão insumos e argumentam, a decisão é do principal), sem multiplicadores: o multiplicador fica no tempero de cada agente. A central do PF* é a desta rodada conjunta, feita dos caminhos dos reports finais; a distribuição em volta dela é a de cada agente (seção 4).
+
+Lidos: Câmbio, Política monetária, Inflação, Atividade, Fiscal, Externo, Expectativas · horizonte: 4T26 a 1T28 (a janela inteira, até 3T29, está em `PF.json`) · gerado em 2026-10-28T14:24:03
+
+## Avisos
+
+Nenhum.
+
+## 1. Exógenas usadas
+
+| Exógena | De onde | 4T26 | 1T27 | 2T27 | 3T27 | 4T27 | 1T28 |
+|---|---|---|---|---|---|---|---|
+| Meta de inflação (12 meses) (% ao ano) `meta_12m` | politica_monetaria (principal) | 3,00 | 3,00 | 3,00 | 3,00 | 3,00 | 3,00 |
+| Juro real de 10 anos (NTN-B) (% ao ano) `rr_10a` | fiscal (principal) | 7,75 | 7,95 | 7,90 | 7,80 | 7,75 | 7,70 |
+| Risco fiscal (CDS de 5 anos) (pontos-base) `fiscal` | fiscal (principal) | 140,00 | 142,00 | 139,00 | 135,00 | 130,00 | 125,00 |
+| Volatilidade implícita do dólar (% ao ano) `vol` | cambio (principal) | 17,00 | 15,50 | 14,50 | 14,00 | 13,50 | 13,50 |
+| Inflação dos Estados Unidos no trimestre (% no trimestre) `infl_us` | externo (principal) | 0,86 | 0,61 | 0,61 | 0,65 | 0,63 | 0,65 |
+| Juro dos Fed Funds (% ao ano) `ffr` | externo (principal) | 4,13 | 4,13 | 4,13 | 4,13 | 4,13 | 3,88 |
+| Dólar contra emergentes (pontos do índice) `dxy_em` | externo (principal) | 130,50 | 131,00 | 130,50 | 130,00 | 129,50 | 129,00 |
+| Bolsa americana (S&P 500) (pontos do índice) `sp500` | externo (principal) | 7.750,00 | 7.900,00 | 8.050,00 | 8.200,00 | 8.350,00 | 8.500,00 |
+| Commodities em dólar (IC-Br) (pontos do índice) `icbr_usd` | externo (principal) | 206,20 | 202,60 | 201,00 | 199,90 | 199,00 | 198,30 |
+| Commodities agrícolas em dólar (IC-Br agropecuária) (pontos do índice) `icbr_agr_usd` | externo (principal) | 203,90 | 200,90 | 199,30 | 198,40 | 197,80 | 197,40 |
+| Metais em dólar (IC-Br metal) (pontos do índice) `icbr_met_usd` | externo (principal) | 331,70 | 330,00 | 330,00 | 328,70 | 327,30 | 325,70 |
+
+## 2. Saída do modelo
+
+Modelo Estrutural · ciclo 2026-10-27 · parte do 3T26 observado · 11 voltas
+Sem o dado de 3T26: Volatilidade implícita do dólar, segurada em 12,19 (2T26).
+
+**Endógenas** — central e faixa
+
+| | 3T26 (observado) | 4T26 | 1T27 | 2T27 | 3T27 | 4T27 | 1T28 |
+|---|---|---|---|---|---|---|---|
+| PTAX de venda, fechamento do trimestre (R$/US$) | 5,181 | 5,426 [5,338; 5,516] | 5,515 [5,416; 5,619] | 5,517 [5,388; 5,650] | 5,501 [5,341; 5,672] | 5,511 [5,317; 5,722] | 5,528 [5,301; 5,779] |
+| Selic, média do trimestre (% a.a.) | 14,06 | 13,51 [13,31; 13,71] | 13,37 [12,93; 13,79] | 13,04 [12,39; 13,65] | 12,69 [11,93; 13,44] | 12,43 [11,61; 13,28] | 12,18 [11,38; 13,10] |
+| Selic, fechamento do trimestre (derivada) (% a.a.) | 13,75 | 13,44 [13,12; 13,75] | 13,21 [12,65; 13,72] | 12,87 [12,16; 13,54] | 12,56 [11,77; 13,35] | 12,30 [11,49; 13,19] | 12,10 [11,32; 13,02] |
+| IPCA acumulado em 12 meses, no fim do trimestre (%) | 4,58 | 5,34 [5,15; 5,53] | 4,95 [4,68; 5,20] | 4,46 [4,17; 4,75] | 4,48 [4,23; 4,74] | 4,32 [4,04; 4,63] | 4,14 [3,82; 4,50] |
+| IPCA 12m: contribuição de serviços (p.p.) | 2,14 | 2,06 [2,00; 2,11] | 1,96 [1,87; 2,05] | 1,96 [1,85; 2,08] | 1,86 [1,72; 2,01] | 1,77 [1,60; 1,96] | 1,69 [1,50; 1,92] |
+| IPCA 12m: contribuição de alimentação (p.p.) | 0,66 | 1,02 [0,91; 1,12] | 0,96 [0,82; 1,09] | 0,67 [0,51; 0,82] | 0,70 [0,60; 0,81] | 0,63 [0,54; 0,73] | 0,58 [0,48; 0,69] |
+| IPCA 12m: contribuição de bens industriais (p.p.) | 0,69 | 0,90 [0,85; 0,95] | 0,83 [0,75; 0,91] | 0,82 [0,73; 0,92] | 0,88 [0,78; 0,97] | 0,91 [0,81; 1,02] | 0,89 [0,77; 1,01] |
+| IPCA 12m: contribuição de monitorados (p.p.) | 1,09 | 1,37 [1,22; 1,50] | 1,21 [1,03; 1,39] | 1,01 [0,83; 1,18] | 1,04 [0,94; 1,14] | 1,01 [0,89; 1,12] | 0,98 [0,85; 1,09] |
+| IPCA 12m: resíduo de agregação dos trimestres observados (p.p.) | 0,00 | 0,00 | -0,01 | 0,00 | 0,00 | 0,00 | 0,00 |
+| IPCA no trimestre (%) | 0,57 | 1,33 [1,15; 1,51] | 1,55 [1,36; 1,72] | 0,94 [0,77; 1,12] | 0,59 [0,42; 0,76] | 1,17 [0,98; 1,38] | 1,37 [1,17; 1,58] |
+| Focus IPCA 12 meses à frente, média do trimestre (% a.a.) | 4,37 | 4,17 [4,07; 4,28] | 4,00 [3,85; 4,16] | 3,82 [3,65; 4,01] | 3,71 [3,55; 3,92] | 3,63 [3,47; 3,84] | 3,55 [3,39; 3,77] |
+| Hiato do produto (% do potencial) | 0,41 | 0,13 [-0,03; 0,30] | -0,08 [-0,36; 0,21] | -0,24 [-0,62; 0,13] | -0,36 [-0,81; 0,08] | -0,45 [-0,97; 0,03] | -0,52 [-1,11; 0,00] |
+
+Grupos do IPCA: contribuição de cada um para o IPCA de 12 meses, em p.p.; os quatro mais o resíduo somam o IPCA de 12 meses. Contribuição = soma, nos quatro trimestres da janela, de peso do grupo × variação dele no trimestre, encadeada pelo IPCA cheio dos trimestres anteriores da janela. O resíduo só existe enquanto a janela tem trimestre observado (o IPCA publicado não é exatamente peso × grupos trimestrais: o IBGE agrega mês a mês) e é zero do quarto trimestre projetado em diante. A faixa de cada grupo é só dele: as faixas não somam.
+
+Selic de fechamento: DERIVADA, não sai do modelo (que só tem a média). Fechamento de um trimestre = (média dele + média do seguinte) / 2, na central e em cada desenho; o último trimestre fica em branco. No observado, o fechamento de fato (2026-09-30, A/br_interest_rate.csv.gz). Erro histórico da regra: 0,12 p.p. em média, 0,55 no pior trimestre.
+
+Faixa: 90% do posterior dos pesos, 1000 desenhos. Não inclui o erro das equações.
+
+## 3. Divergências
+
+Quem escreveu, para uma exógena, um caminho diferente do usado (o do principal): um subordinado, ou um agente sem papel nela. O P usa o do principal; a divergência é respondida na rodada seguinte: o principal mantém ou muda o caminho, e diz por quê.
+
+Nenhuma.
+
+## 4. A central conjunta e a distribuição de cada agente
+
+A faixa e as probabilidades são as do report final de cada agente, escritas em volta da central que ele tinha. Elas não foram deslocadas para a central conjunta: a coluna da diferença diz quanto as duas se separam, e a marca **fora da faixa** diz quando a central conjunta saiu da faixa do agente.
+
+### Câmbio — PTAX de venda, fechamento do trimestre (R$/US$)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 5,427 | 5,426 [5,338; 5,516] | -0,001 | 5,300 a 5,600 · 47% | abaixo de 5,300 · 22% | acima de 5,600 · 31% | +0,09 |
+| 1T27 | 5,515 | 5,515 [5,416; 5,619] | +0,000 | 5,340 a 5,780 · 46% | abaixo de 5,340 · 24% | acima de 5,780 · 30% | +0,06 |
+| 2T27 | 5,517 | 5,517 [5,388; 5,650] | +0,000 | 5,340 a 5,820 · 45% | abaixo de 5,340 · 26% | acima de 5,820 · 29% | +0,03 |
+| 3T27 | 5,501 | 5,501 [5,341; 5,672] | +0,000 | 5,340 a 5,820 · 44% | abaixo de 5,340 · 28% | acima de 5,820 · 28% | +0,00 |
+| 4T27 | 5,511 | 5,511 [5,317; 5,722] | +0,000 | 5,360 a 5,820 · 44% | abaixo de 5,360 · 26% | acima de 5,820 · 30% | +0,04 |
+| 1T28 | 5,528 | 5,528 [5,301; 5,779] | +0,000 | 5,380 a 5,830 · 43% | abaixo de 5,380 · 30% | acima de 5,830 · 27% | -0,03 |
+
+### Política monetária — Selic, fechamento do trimestre (derivada) (% a.a.)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 13,43 | 13,44 [13,12; 13,75] | +0,01 | 13,30 a 13,80 · 62% | abaixo de 13,30 · 6% | acima de 13,80 · 32% | +0,26 |
+| 1T27 | 13,21 | 13,21 [12,65; 13,72] | +0,00 | 13,00 a 14,05 · 67% | abaixo de 13,00 · 4% | acima de 14,05 · 29% | +0,25 |
+| 2T27 | 12,87 | 12,87 [12,16; 13,54] | +0,00 | 12,65 a 14,05 · 62% | abaixo de 12,65 · 8% | acima de 14,05 · 30% | +0,22 |
+| 3T27 | 12,56 | 12,56 [11,77; 13,35] | +0,00 | 12,35 a 14,05 · 61% | abaixo de 12,35 · 12% | acima de 14,05 · 27% | +0,15 |
+| 4T27 | 12,30 | 12,30 [11,49; 13,19] | +0,00 | 12,10 a 14,05 · 64% | abaixo de 12,10 · 14% | acima de 14,05 · 22% | +0,08 |
+| 1T28 | 12,10 | 12,10 [11,32; 13,02] | +0,00 | 11,90 a 14,05 · 70% | abaixo de 11,90 · 14% | acima de 14,05 · 16% | +0,02 |
+
+### Inflação — IPCA acumulado em 12 meses, no fim do trimestre (%)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 5,34 | 5,34 [5,15; 5,53] | +0,00 | 5,15 a 5,50 · 65% | abaixo de 5,15 · 13% | acima de 5,50 · 22% | +0,09 |
+| 1T27 | 4,95 | 4,95 [4,68; 5,20] | +0,00 | 4,70 a 5,25 · 58% | abaixo de 4,70 · 13% | acima de 5,25 · 29% | +0,16 |
+| 2T27 | 4,46 | 4,46 [4,17; 4,75] | +0,00 | 4,15 a 4,85 · 57% | abaixo de 4,15 · 13% | acima de 4,85 · 30% | +0,17 |
+| 3T27 | 4,48 | 4,48 [4,23; 4,74] | +0,00 | 4,20 a 4,90 · 57% | abaixo de 4,20 · 13% | acima de 4,90 · 30% | +0,17 |
+| 4T27 | 4,32 | 4,32 [4,04; 4,63] | +0,00 | 4,05 a 4,75 · 57% | abaixo de 4,05 · 14% | acima de 4,75 · 29% | +0,15 |
+| 1T28 | 4,14 | 4,14 [3,82; 4,50] | +0,00 | 3,85 a 4,55 · 58% | abaixo de 3,85 · 15% | acima de 4,55 · 27% | +0,12 |
+
+### Atividade — Hiato do produto (% do potencial)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 0,13 | 0,13 [-0,03; 0,30] | +0,00 | -0,17 a 0,43 · 51% | abaixo de -0,17 · 32% | acima de 0,43 · 17% | -0,15 |
+| 1T27 | -0,08 | -0,08 [-0,36; 0,21] | +0,00 | -0,43 a 0,27 · 49% | abaixo de -0,43 · 31% | acima de 0,27 · 20% | -0,11 |
+| 2T27 | -0,24 | -0,24 [-0,62; 0,13] | +0,00 | -0,64 a 0,16 · 50% | abaixo de -0,64 · 30% | acima de 0,16 · 20% | -0,10 |
+| 3T27 | -0,36 | -0,36 [-0,81; 0,08] | +0,00 | -0,81 a 0,09 · 51% | abaixo de -0,81 · 30% | acima de 0,09 · 19% | -0,11 |
+| 4T27 | -0,45 | -0,45 [-0,97; 0,03] | +0,00 | -0,90 a 0,00 · 47% | abaixo de -0,90 · 34% | acima de 0,00 · 19% | -0,15 |
+| 1T28 | -0,52 | -0,52 [-1,11; 0,00] | +0,00 | -1,02 a -0,02 · 50% | abaixo de -1,02 · 34% | acima de -0,02 · 16% | -0,18 |
+
+### Atividade — PIB, variação contra o mesmo trimestre do ano anterior (IBGE) (%)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 1,89 | — | — | 1,54 a 2,24 · 46% | abaixo de 1,54 · 42% | acima de 2,24 · 12% | -0,30 |
+| 1T27 | 1,82 | — | — | 1,42 a 2,22 · 48% | abaixo de 1,42 · 36% | acima de 2,22 · 16% | -0,20 |
+| 2T27 | 1,75 | — | — | 1,30 a 2,20 · 51% | abaixo de 1,30 · 29% | acima de 2,20 · 20% | -0,09 |
+| 3T27 | 1,73 | — | — | 1,23 a 2,23 · 52% | abaixo de 1,23 · 23% | acima de 2,23 · 25% | +0,02 |
+| 4T27 | 1,92 | — | — | 1,42 a 2,42 · 53% | abaixo de 1,42 · 26% | acima de 2,42 · 21% | -0,05 |
+| 1T28 | 2,07 | — | — | 1,57 a 2,57 · 51% | abaixo de 1,57 · 30% | acima de 2,57 · 19% | -0,11 |
+
+Variável própria da área, fora do modelo: o P não tem central para ela.
+
+### Fiscal — Risco fiscal (CDS de 5 anos) (pontos-base)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 140,00 | 140,00 | +0,00 | 125,00 a 160,00 · 60% | abaixo de 125,00 · 13% | acima de 160,00 · 27% | +0,14 |
+| 1T27 | 142,00 | 142,00 | +0,00 | 125,00 a 170,00 · 55% | abaixo de 125,00 · 15% | acima de 170,00 · 30% | +0,15 |
+| 2T27 | 139,00 | 139,00 | +0,00 | 121,00 a 174,00 · 55% | abaixo de 121,00 · 15% | acima de 174,00 · 30% | +0,15 |
+| 3T27 | 135,00 | 135,00 | +0,00 | 117,00 a 175,00 · 54% | abaixo de 117,00 · 16% | acima de 175,00 · 30% | +0,14 |
+| 4T27 | 130,00 | 130,00 | +0,00 | 113,00 a 176,00 · 54% | abaixo de 113,00 · 16% | acima de 176,00 · 30% | +0,14 |
+| 1T28 | 125,00 | 125,00 | +0,00 | 110,00 a 176,00 · 54% | abaixo de 110,00 · 16% | acima de 176,00 · 30% | +0,14 |
+
+### Fiscal — Juro real de 10 anos (NTN-B) (% ao ano)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 7,75 | 7,75 | +0,00 | 7,55 a 7,89 · 60% | abaixo de 7,55 · 15% | acima de 7,89 · 25% | +0,10 |
+| 1T27 | 7,95 | 7,95 | +0,00 | 7,55 a 8,45 · 55% | abaixo de 7,55 · 17% | acima de 8,45 · 28% | +0,11 |
+| 2T27 | 7,90 | 7,90 | +0,00 | 7,45 a 8,55 · 55% | abaixo de 7,45 · 17% | acima de 8,55 · 28% | +0,11 |
+| 3T27 | 7,80 | 7,80 | +0,00 | 7,35 a 8,60 · 54% | abaixo de 7,35 · 18% | acima de 8,60 · 28% | +0,10 |
+| 4T27 | 7,75 | 7,75 | +0,00 | 7,30 a 8,60 · 54% | abaixo de 7,30 · 18% | acima de 8,60 · 28% | +0,10 |
+| 1T28 | 7,70 | 7,70 | +0,00 | 7,25 a 8,60 · 54% | abaixo de 7,25 · 18% | acima de 8,60 · 28% | +0,10 |
+
+### Externo — Juro dos Fed Funds (% ao ano)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 4,13 | 4,13 | +0,00 | 4,00 a 4,25 · 55% | abaixo de 4,00 · 15% | acima de 4,25 · 30% | +0,15 |
+| 1T27 | 4,13 | 4,13 | +0,00 | 3,88 a 4,38 · 55% | abaixo de 3,88 · 15% | acima de 4,38 · 30% | +0,15 |
+| 2T27 | 4,13 | 4,13 | +0,00 | 3,75 a 4,38 · 55% | abaixo de 3,75 · 15% | acima de 4,38 · 30% | +0,15 |
+| 3T27 | 4,13 | 4,13 | +0,00 | 3,63 a 4,38 · 55% | abaixo de 3,63 · 15% | acima de 4,38 · 30% | +0,15 |
+| 4T27 | 4,13 | 4,13 | +0,00 | 3,63 a 4,38 · 55% | abaixo de 3,63 · 15% | acima de 4,38 · 30% | +0,15 |
+| 1T28 | 3,88 | 3,88 | +0,00 | 3,50 a 4,25 · 55% | abaixo de 3,50 · 15% | acima de 4,25 · 30% | +0,15 |
+
+### Externo — Inflação dos Estados Unidos no trimestre (% no trimestre)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 0,86 | 0,86 | +0,00 | 0,65 a 1,10 · 55% | abaixo de 0,65 · 15% | acima de 1,10 · 30% | +0,15 |
+| 1T27 | 0,61 | 0,61 | +0,00 | 0,46 a 0,76 · 55% | abaixo de 0,46 · 15% | acima de 0,76 · 30% | +0,15 |
+| 2T27 | 0,61 | 0,61 | +0,00 | 0,46 a 0,76 · 50% | abaixo de 0,46 · 20% | acima de 0,76 · 30% | +0,10 |
+| 3T27 | 0,65 | 0,65 | +0,00 | 0,50 a 0,80 · 50% | abaixo de 0,50 · 20% | acima de 0,80 · 30% | +0,10 |
+| 4T27 | 0,63 | 0,63 | +0,00 | 0,48 a 0,78 · 50% | abaixo de 0,48 · 20% | acima de 0,78 · 30% | +0,10 |
+| 1T28 | 0,65 | 0,65 | +0,00 | 0,50 a 0,80 · 50% | abaixo de 0,50 · 20% | acima de 0,80 · 30% | +0,10 |
+
+### Externo — Dólar contra emergentes (pontos do índice)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 130,50 | 130,50 | +0,00 | 129,20 a 132,00 · 55% | abaixo de 129,20 · 19% | acima de 132,00 · 26% | +0,07 |
+| 1T27 | 131,00 | 131,00 | +0,00 | 129,00 a 133,80 · 55% | abaixo de 129,00 · 19% | acima de 133,80 · 26% | +0,07 |
+| 2T27 | 130,50 | 130,50 | +0,00 | 128,20 a 133,00 · 55% | abaixo de 128,20 · 19% | acima de 133,00 · 26% | +0,07 |
+| 3T27 | 130,00 | 130,00 | +0,00 | 127,50 a 132,20 · 55% | abaixo de 127,50 · 19% | acima de 132,20 · 26% | +0,07 |
+| 4T27 | 129,50 | 129,50 | +0,00 | 127,00 a 131,50 · 55% | abaixo de 127,00 · 19% | acima de 131,50 · 26% | +0,07 |
+| 1T28 | 129,00 | 129,00 | +0,00 | 126,50 a 130,80 · 55% | abaixo de 126,50 · 19% | acima de 130,80 · 26% | +0,07 |
+
+### Externo — Bolsa americana (S&P 500) (pontos do índice)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 7.750,00 | 7.750,00 | +0,00 | 7.375,00 a 7.982,00 · 55% | abaixo de 7.375,00 · 25% | acima de 7.982,00 · 20% | -0,05 |
+| 1T27 | 7.900,00 | 7.900,00 | +0,00 | 7.200,00 a 8.137,00 · 55% | abaixo de 7.200,00 · 25% | acima de 8.137,00 · 20% | -0,05 |
+| 2T27 | 8.050,00 | 8.050,00 | +0,00 | 7.375,00 a 8.350,00 · 55% | abaixo de 7.375,00 · 25% | acima de 8.350,00 · 20% | -0,05 |
+| 3T27 | 8.200,00 | 8.200,00 | +0,00 | 7.575,00 a 8.575,00 · 55% | abaixo de 7.575,00 · 25% | acima de 8.575,00 · 20% | -0,05 |
+| 4T27 | 8.350,00 | 8.350,00 | +0,00 | 7.775,00 a 8.775,00 · 55% | abaixo de 7.775,00 · 25% | acima de 8.775,00 · 20% | -0,05 |
+| 1T28 | 8.500,00 | 8.500,00 | +0,00 | 7.975,00 a 8.975,00 · 55% | abaixo de 7.975,00 · 25% | acima de 8.975,00 · 20% | -0,05 |
+
+### Externo — Commodities em dólar (IC-Br) (pontos do índice)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 206,20 | 206,20 | +0,00 | 201,00 a 211,40 · 55% | abaixo de 201,00 · 20% | acima de 211,40 · 25% | +0,05 |
+| 1T27 | 202,60 | 202,60 | +0,00 | 195,40 a 209,80 · 55% | abaixo de 195,40 · 20% | acima de 209,80 · 25% | +0,05 |
+| 2T27 | 201,00 | 201,00 | +0,00 | 192,70 a 209,10 · 55% | abaixo de 192,70 · 20% | acima de 209,10 · 25% | +0,05 |
+| 3T27 | 199,90 | 199,90 | +0,00 | 191,60 a 208,40 · 55% | abaixo de 191,60 · 20% | acima de 208,40 · 25% | +0,05 |
+| 4T27 | 199,00 | 199,00 | +0,00 | 191,20 a 207,30 · 55% | abaixo de 191,20 · 20% | acima de 207,30 · 25% | +0,05 |
+| 1T28 | 198,30 | 198,30 | +0,00 | 191,10 a 206,80 · 55% | abaixo de 191,10 · 20% | acima de 206,80 · 25% | +0,05 |
+
+### Externo — Commodities agrícolas em dólar (IC-Br agropecuária) (pontos do índice)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 203,90 | 203,90 | +0,00 | 199,80 a 208,00 · 70% | abaixo de 199,80 · 15% | acima de 208,00 · 15% | +0,00 |
+| 1T27 | 200,90 | 200,90 | +0,00 | 196,40 a 206,00 · 60% | abaixo de 196,40 · 20% | acima de 206,00 · 20% | +0,00 |
+| 2T27 | 199,30 | 199,30 | +0,00 | 193,90 a 205,60 · 60% | abaixo de 193,90 · 20% | acima de 205,60 · 20% | +0,00 |
+| 3T27 | 198,40 | 198,40 | +0,00 | 192,50 a 205,60 · 60% | abaixo de 192,50 · 20% | acima de 205,60 · 20% | +0,00 |
+| 4T27 | 197,80 | 197,80 | +0,00 | 192,10 a 205,10 · 60% | abaixo de 192,10 · 20% | acima de 205,10 · 20% | +0,00 |
+| 1T28 | 197,40 | 197,40 | +0,00 | 192,10 a 204,60 · 60% | abaixo de 192,10 · 20% | acima de 204,60 · 20% | +0,00 |
+
+### Externo — Metais em dólar (IC-Br metal) (pontos do índice)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 331,70 | 331,70 | +0,00 | 321,70 a 341,70 · 50% | abaixo de 321,70 · 30% | acima de 341,70 · 20% | -0,10 |
+| 1T27 | 330,00 | 330,00 | +0,00 | 314,10 a 344,00 · 50% | abaixo de 314,10 · 30% | acima de 344,00 · 20% | -0,10 |
+| 2T27 | 330,00 | 330,00 | +0,00 | 306,60 a 346,00 · 50% | abaixo de 306,60 · 30% | acima de 346,00 · 20% | -0,10 |
+| 3T27 | 328,70 | 328,70 | +0,00 | 302,90 a 345,40 · 50% | abaixo de 302,90 · 30% | acima de 345,40 · 20% | -0,10 |
+| 4T27 | 327,30 | 327,30 | +0,00 | 301,10 a 344,60 · 50% | abaixo de 301,10 · 30% | acima de 344,60 · 20% | -0,10 |
+| 1T28 | 325,70 | 325,70 | +0,00 | 300,40 a 343,90 · 50% | abaixo de 300,40 · 30% | acima de 343,90 · 20% | -0,10 |
+
+### Expectativas — Focus IPCA 12 meses à frente, média do trimestre (% a.a.)
+
+| Trimestre | Central do agente | Central do PF* | Diferença | Faixa base · P | Downside · P | Upside · P | P(up) − P(down) |
+|---|---|---|---|---|---|---|---|
+| 4T26 | 4,17 | 4,17 [4,07; 4,28] | +0,00 | 4,05 a 4,45 · 14% | abaixo de 4,05 · 1% | acima de 4,45 · 85% | +0,84 |
+| 1T27 | 4,00 | 4,00 [3,85; 4,16] | +0,00 | 3,80 a 4,15 · 26% | abaixo de 3,80 · 4% | acima de 4,15 · 70% | +0,66 |
+| 2T27 | 3,82 | 3,82 [3,65; 4,01] | +0,00 | 3,60 a 3,95 · 35% | abaixo de 3,60 · 7% | acima de 3,95 · 58% | +0,51 |
+| 3T27 | 3,71 | 3,71 [3,55; 3,92] | +0,00 | 3,50 a 3,90 · 39% | abaixo de 3,50 · 9% | acima de 3,90 · 52% | +0,43 |
+| 4T27 | 3,63 | 3,63 [3,47; 3,84] | +0,00 | 3,40 a 3,90 · 41% | abaixo de 3,40 · 11% | acima de 3,90 · 48% | +0,37 |
+| 1T28 | 3,55 | 3,55 [3,39; 3,77] | +0,00 | 3,30 a 3,75 · 41% | abaixo de 3,30 · 12% | acima de 3,75 · 47% | +0,35 |

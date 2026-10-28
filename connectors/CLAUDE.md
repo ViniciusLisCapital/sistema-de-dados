@@ -882,6 +882,84 @@ df = st.get_series_bulk({"nome": 12345})   # uma chamada HTTP por série
   o RTN (`apiapex.tesouro.gov.br`) segue **morta** (loop de redirecionamento, testado ao vivo) —
   o RTN continua vindo do xlsx via `tesouro.py`.
 
+### `connectors/tesouro_leiloes.py` — resultado dos leilões da DPMFi (2026-10-27)
+
+```python
+from connectors import tesouro_leiloes
+df = tesouro_leiloes.get_ano(2026)            # uma planilha; get_anos(range(2000, 2027)) para o histórico
+```
+
+- `sisweb.tesouro.gov.br/apex/cosis/rleiloes/arquivos/unico/desc/historico-leiloes-{ano}.xlsx`, sem
+  autenticação, 2000 em diante. O CKAN (`ds013`) só lista até 2023, mas a mesma URL serve todo ano, e a
+  do ano corrente é atualizada **no dia do leilão** (medido: às 13h de 27/10 já trazia o leilão da
+  manhã). É outro host que o `tesourotransparente.gov.br`, e **não** estava sob o 429 que bloqueou o
+  CKAN no mesmo dia.
+- Existe um `historico-leiloes-todos.xls` com uma aba por ano: não usado, porque é `.xls` e pediria
+  `xlrd`. A API `apiapexprd.tesouro.gov.br/aria/v1/api-leiloes-pub` respondia 404 ("Azure Container App
+  - Unavailable").
+- Casa o cabeçalho em português **por nome normalizado** (sem acento, minúsculo) e levanta se faltar
+  coluna — conferido igual de 2000 a 2026. Devolve cru: taxa em decimal, 0 quando nada foi aceito.
+- **Não publica a quantidade demandada**, só ofertada e aceita.
+
+### `connectors/bcb_negociacoes.py` — mercado secundário de títulos federais (2026-10-27)
+
+```python
+from connectors import bcb_negociacoes
+df = bcb_negociacoes.get_mes("2026-10", "E")   # "T" = todas as operações, "E" = só extragrupo
+```
+
+- `www4.bcb.gov.br/pom/demab/negociacoes/download/Neg{T|E}{AAAAMM}.ZIP`, um zip com um CSV por mês,
+  2003-01 → D-1, sem autenticação. Dicionário no portal de dados abertos do BCB ("Negociação de Títulos
+  Federais no Mercado Secundário"). Só operações **definitivas**.
+- **17 colunas nos arquivos antigos, 19 nos novos** (as de corretagem, desde 2011-01-03): a leitura é
+  por nome. Decimal com vírgula, `latin-1`. Mês sem arquivo = 404 → `None`, distinto de falha de rede,
+  que levanta.
+- Taxa só para LTN e LFT; `VALOR NEGOCIADO` descontinuado (preenchido até 2006-09-29); ISIN pode vir
+  `000000000000` ou vazio no dia da primeira emissão de um vencimento — não use como chave.
+
+### `connectors/b3_premio.py` — prêmio de referência das opções de dólar (2026-10-27)
+
+```python
+from connectors import b3_premio
+P = b3_premio.premios("2026-10-23")   # tipo (C/V), vencimento, strike, premio -- só DOL
+```
+
+- Mesmo endpoint e mesmo empacotamento do TaxaSwap: `pesquisapregao/download?filelist=RE{AAMMDD}.ex_`,
+  zip com auto-extraível dentro, `Premio.txt` de largura fixa (68 caracteres). 2006 em diante.
+- **A B3 não publica a vol implícita num arquivo aberto** (a `SupVol` está descrita e não está na lista de
+  download). O prêmio de referência sai dessa superfície, então a vol se recupera invertendo Black —
+  call e put do mesmo strike devolvem a mesma vol até a 4ª casa. Quem faz isso é
+  `domain/db/brasil/b3/cmb_vol_implicita.py`.
+- Strike × 10 (R$ por US$ 1.000); o número de casas do prêmio vem **na última coluna**.
+- Mesmas regras de ausência do `b3_curvas` (zip vazio = sem pregão; nunca cachear ausência do dia
+  corrente), 2 workers, cache em `domain/db/brasil/b3/cache_premio/`.
+
+### `connectors/b3_precos.py` — boletim de preços da B3 (2026-10-28)
+
+```python
+from connectors import b3_precos
+D = b3_precos.precos("2026-10-27")   # um registro por instrumento de PRODUTOS, campos crus
+b3_precos.classificar("DOLZ26C005700")  # ativo, tipo, vencimento (mês), opcao, strike
+```
+
+- `pesquisapregao/download?filelist=PR{AAMMDD}.zip`, BVBG.086 ("PriceReport") em XML. **Só desde
+  2018-01** (2017 volta vazio). Zip dentro de zip, e dentro **3 ou 4 versões do boletim inteiro** na
+  mesma noite — só a última vale (o nome cresce no tempo). ~127 MB de XML por versão hoje; o cache
+  (`domain/db/brasil/b3/cache_precos/`) guarda só `PRODUTOS` (DOL, WDO, DDI, FRC, DR1, FRP, DI1, DAP,
+  IND, WIN), ~2.500 linhas por pregão. O download chega a ~100 s num dia ruim da B3.
+- **`OpnIntrst` é a posição do INÍCIO do pregão** (fechamento de D-1): conferido em seis contratos
+  contra o Boletim Diário. O conector devolve cru (`oi_abertura`); quem desloca para o fechamento é
+  `domain/db/brasil/b3/_contratos_b3.py`.
+- Códigos fora do padrão ficam fora (`classificar` → None): contratos especiais (DOLB11, DOLA11T,
+  DOLL39, INDE11) e a série de **exercício** com sufixo E no dia do vencimento, cujo "volume" é a
+  quantidade exercida.
+- `FinInstrmQty`/`NtlFinVol`/`IntlFinVol` são os totais do dia (o dólar tem negócio fora do pregão
+  regular). `AdjstdQt` é PU ou preço; `AdjstdQtTax` é a taxa — o regex não confunde as duas.
+- Mesmas regras de ausência do `b3_curvas`, 2 workers.
+- O Boletim Diário da B3 (`arquivos.b3.com.br/bdi`, POST `/bdi/table/{nome}/{data}/{data}/{pág}/{tam}`
+  com corpo `{}`) tem os mesmos números **só dos últimos 21 dias** e **sem quebra por tipo de
+  participante** — essa quebra saiu da consulta pública em abr/2025 e vive no UP2DATA (pago).
+
 ### `connectors/mysql.py` — Insert/Update no banco
 
 ```python

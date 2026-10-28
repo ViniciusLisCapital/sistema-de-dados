@@ -24,11 +24,24 @@ A curva 076 **e** a taxa indicativa da ANBIMA (confere na 4a decimal em toda
 maturidade compartilhada), o que resolve de graca o historico que a ANBIMA so
 vende. Codigos usados aqui:
 
-    PRE  -> DIPRE   DI x pre (swap DI contra prefixado; o mais liquido)
-    095  -> PREJS   NTN-F / Tesouro Prefixado com Juros Semestrais
-    076  -> NTNBJS  NTN-B / Tesouro IPCA+ com Juros Semestrais
-    DIC  -> (nao carregado) DI x IPCA, disponivel se o breakeven precisar de
-            fonte homogenea em vez de PRE contra 076
+    PRE  -> DIPRE        DI x pre (swap DI contra prefixado; o mais liquido)
+    095  -> PREJS        NTN-F / Tesouro Prefixado com Juros Semestrais
+    076  -> NTNBJS       NTN-B / Tesouro IPCA+ com Juros Semestrais
+    010  -> LTN          LTN / Tesouro Prefixado (2026-10-27)
+    DIC  -> DIIPCA       swap DI x IPCA, juro REAL (2026-10-27)
+    DOL  -> CUPOM_SUJO   DI x dolar: cupom cambial sujo (2026-10-27)
+    DOC  -> CUPOM_LIMPO  DI x dolar: cupom cambial limpo (2026-10-27)
+    LIB  -> JUROS_USD    juro em dolar de referencia da B3 (2026-10-27)
+
+As cinco de 2026-10-27 existem para duas leituras: o spread dos titulos
+sobre o swap (LTN - DIPRE, NTNBJS - DIIPCA, no mesmo vertice) e o cupom
+cambial, cujo premio sobre o juro americano e CUPOM_LIMPO - JUROS_USD.
+
+O layout e de LARGURA FIXA (codigo 5, nome 15) e o parse e por posicao. Ate
+2026-10-27 ele era um regex que exigia espaco depois do nome, e um nome de 15
+caracteres cheios -- "DIxXDOL Cupom l", o cupom limpo -- nao casava: a curva
+sumia do parse sem erro. As tres curvas que ja eram lidas sairam identicas nos
+dois parsers (conferido em pregoes de 2006, 2016, 2020 e 2026).
 
 Achado que vale para qualquer conector desta fonte: **resposta nao-zip NAO e
 prova de "pregao inexistente" -- e o que uma resposta throttled parece.**
@@ -78,11 +91,15 @@ _HEADERS = {"User-Agent": "Mozilla/5.0"}
 # (2-3 chars), nome, dias corridos (5), dias uteis (5), sinal, taxa (14 digitos
 # com 7 decimais implicitos -- por isso a divisao por 1e7).
 _LINHA = re.compile(
-    r"^\d{6}\d{5}(\d{8})T1(\S{2,3})\s+(.{1,15}?)\s+(\d{5})(\d{5})([+-])(\d{14})"
+    r"^\d{6}\d{5}(\d{8})T1(.{5})(.{15})(\d{5})(\d{5})([+-])(\d{14})"
 )
 
 # Codigo no TaxaSwap -> nome da curva no nosso schema.
-CODIGOS = {"PRE": "DIPRE", "095": "PREJS", "076": "NTNBJS"}
+CODIGOS = {
+    "PRE": "DIPRE", "095": "PREJS", "076": "NTNBJS",
+    "010": "LTN", "DIC": "DIIPCA",
+    "DOL": "CUPOM_SUJO", "DOC": "CUPOM_LIMPO", "LIB": "JUROS_USD",
+}
 
 # Dias corridos por mes -- 365,25/12, a mesma convencao do conector antigo,
 # mantida de proposito para a serie nova ser comparavel vertice a vertice.
@@ -97,14 +114,34 @@ VERTICES = {
     "DIPRE": [1, 3, 6, 9, 12, 24, 60, 120, 240],
     "PREJS": [6, 9, 12, 24, 60, 120],
     "NTNBJS": [3, 6, 9, 12, 24, 60, 120, 240],
+    # LTN para em 60M porque a LTN mais longa raramente passa de 5 anos.
+    # DIIPCA espelha a NTNBJS vertice a vertice, que e o par do spread.
+    "LTN": [3, 6, 9, 12, 24, 60],
+    "DIIPCA": [3, 6, 9, 12, 24, 60, 120, 240],
+    # O cupom e o juro em dolar compartilham a grade, que e o par do premio. Sem
+    # 1M: medido em 2006-2010, o cupom de 1 mes vai de -88% a +119% (sujo) e de
+    # -12% a +20% (limpo) -- e a ponta em que poucos dias de carregamento sao
+    # anualizados, nao um preco de prazo.
+    "CUPOM_SUJO": [3, 6, 9, 12, 24, 60, 120],
+    "CUPOM_LIMPO": [3, 6, 9, 12, 24, 60, 120],
+    "JUROS_USD": [3, 6, 9, 12, 24, 60, 120],
 }
 
-# Cache local do parse, um CSV por pregao. Fica fora do git (ver .gitignore):
-# sao ~5.100 arquivos e o conteudo e reproduzivel a partir da fonte.
+# Cache local do parse, um CSV gzip por pregao. Fica fora do git (ver
+# .gitignore): sao ~5.200 arquivos e o conteudo e reproduzivel a partir da
+# fonte. `cache_v2` desde 2026-10-27, quando o parse passou de 3 para 8 curvas:
+# um arquivo do cache antigo nao tem as cinco novas, e le-lo como completo
+# faria a curva nova simplesmente nao existir naquele pregao, sem erro. O gzip
+# e porque as 8 curvas sao ~26 KB por pregao em texto (~135 MB no Dropbox).
 CACHE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "domain", "db", "brasil", "b3", "cache",
+    "domain", "db", "brasil", "b3", "cache_v2",
 )
+
+
+def caminho_cache(data) -> str:
+    """Arquivo de cache daquele pregao (existindo ou nao)."""
+    return os.path.join(CACHE, pd.Timestamp(data).strftime("%y%m%d") + ".csv.gz")
 
 
 # ---------------------------------------------------------------------------
@@ -144,8 +181,8 @@ def parse(txt: str, codigos=tuple(CODIGOS)) -> pd.DataFrame | None:
     linhas = []
     for linha in txt.split("\n"):
         m = _LINHA.match(linha.rstrip("\r"))
-        if m and m.group(2) in codigos:
-            linhas.append((m.group(2), int(m.group(4)), int(m.group(5)),
+        if m and m.group(2).strip() in codigos:
+            linhas.append((m.group(2).strip(), int(m.group(4)), int(m.group(5)),
                            (1 if m.group(6) == "+" else -1) * int(m.group(7)) / 1e7))
     if not linhas:
         return None
@@ -162,9 +199,9 @@ def grades(data, usar_cache: bool = True) -> pd.DataFrame | None:
     """
     yymmdd = pd.Timestamp(data).strftime("%y%m%d")
     os.makedirs(CACHE, exist_ok=True)
-    caminho = os.path.join(CACHE, yymmdd + ".csv")
+    caminho = caminho_cache(data)
     if usar_cache and os.path.exists(caminho):
-        D = pd.read_csv(caminho)
+        D = pd.read_csv(caminho, dtype={"cod": str})
         return D if len(D) else None
     txt, sem_sessao = _baixar_com_retry(yymmdd)
     D = parse(txt) if txt else None
@@ -188,11 +225,7 @@ def grades(data, usar_cache: bool = True) -> pd.DataFrame | None:
 def baixar_muitos(datas, workers: int = 2) -> None:
     """Preenche o cache. 2 workers de proposito -- com 6 a B3 throttla, e foi
     isso que envenenou 438 datas antes do guarda de sem_sessao existir."""
-    faltando = [
-        d for d in datas
-        if not os.path.exists(os.path.join(
-            CACHE, pd.Timestamp(d).strftime("%y%m%d") + ".csv"))
-    ]
+    faltando = [d for d in datas if not os.path.exists(caminho_cache(d))]
     if not faltando:
         return
     logger.info("b3_curvas: baixando %d pregoes", len(faltando))

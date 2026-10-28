@@ -924,6 +924,9 @@ table.scen-table tr.scen-kind-hd td {
   <button class="tab-btn" data-tab="tab-flow">Fluxo Cambial</button>
   <button class="tab-btn" data-tab="tab-bcb">Posicionamento: BCB e mercado</button>
   <button class="tab-btn" data-tab="tab-valuation">Valuation</button>
+  <button class="tab-btn" data-tab="tab-mercado">Mercado B3</button>
+  <button class="tab-btn" data-tab="tab-opcoes">Opções de Dólar</button>
+  <button class="tab-btn" data-tab="tab-jurosbolsa">Juros e Bolsa na B3</button>
   <button class="tab-btn" data-tab="tab-data">Equilíbrio PPP</button>
   <button class="tab-btn" data-tab="tab-fxattr">FX Attribution</button>
   <button class="tab-btn" data-tab="tab-ridge">FX Model</button>
@@ -1329,7 +1332,15 @@ table.scen-table tr.scen-kind-hd td {
         </table>
       </div>
       <div class="chart-card"><div id="chart-cot-brl"></div></div>
-      <div class="note">Semanal, com data de <strong>terça-feira</strong> (a foto que a CFTC publica na sexta seguinte). O BRL só entra no relatório TFF em <strong>abr/2011</strong> — não há histórico anterior na fonte — e tem 16 buracos maiores que uma semana até 2015, incluindo um de <strong>196 dias</strong> entre out/2011 e abr/2012. Por isso a média móvel de 12 e 24 semanas <strong>sai em branco onde a janela estaria esticada</strong> por um buraco, em vez de fingir que 12 observações são 12 semanas: na prática isso só apaga pontos anteriores a 2016. Cobre apenas o real negociado em <strong>Chicago</strong>, não o dólar futuro da B3, que é o mercado maior.</div>
+      <div class="note">Semanal, com data de <strong>terça-feira</strong> (a foto que a CFTC publica na sexta seguinte). O BRL só entra no relatório TFF em <strong>abr/2011</strong> — não há histórico anterior na fonte — e tem 16 buracos maiores que uma semana até 2015, incluindo um de <strong>196 dias</strong> entre out/2011 e abr/2012. Por isso a média móvel de 12 e 24 semanas <strong>sai em branco onde a janela estaria esticada</strong> por um buraco, em vez de fingir que 12 observações são 12 semanas: na prática isso só apaga pontos anteriores a 2016. Cobre apenas o real negociado em <strong>Chicago</strong>, não o dólar futuro da B3, que é o mercado maior — que é a seção seguinte.</div>
+    </section>
+
+    <section id="sec-bcb-b3">
+      <h2>Dólar e Cupom na B3 — Posição em Aberto e Volume</h2>
+      <div class="note">O mercado maior: o dólar futuro e o cupom cambial da B3. A <strong>posição em aberto</strong> é quanto está contratado e ainda não venceu — o tamanho do mercado, convertido em dólares pelo tamanho de cada contrato (US$ 50 mil no dólar cheio e no cupom, US$ 10 mil no minidólar). Ela não diz quem está comprado: a B3 deixou de publicar a abertura por tipo de investidor (estrangeiro, banco, fundo) em abril de 2025. O <strong>cupom cambial</strong> é o juro em dólar dentro do país, a perna em dólar da arbitragem que o prêmio do dólar onshore mede; ele negocia quase todo pelo FRA, e cada FRA abre posição em dois vencimentos de cupom.</div>
+      <div class="chart-card"><div id="chart-b3-oi"></div></div>
+      <div class="note">O volume financeiro de cada dia, em média de 21 pregões (um mês). O <strong>FRA de cupom</strong> é como o cupom de fato negocia — o futuro de cupom quase não troca de mão sozinho. A <strong>rolagem</strong> é a troca do vencimento que está acabando pelo seguinte, e por isso se concentra nos últimos dias de cada mês; o <strong>casado</strong> é a operação que troca dólar à vista por dólar futuro de uma vez, e é a ponte entre os dois mercados.</div>
+      <div class="chart-card"><div id="chart-b3-vol"></div></div>
     </section>
 
   </div>
@@ -1353,6 +1364,110 @@ table.scen-table tr.scen-kind-hd td {
       <h2>Termos de Troca</h2>
       <div class="chart-card"><div id="chart-termos"></div></div>
       <div class="note">Razão entre índices de preço de exportação e de importação (Funcex) — alta beneficia a balança comercial e tende a se associar a apreciação do câmbio real.</div>
+    </section>
+
+  </div>
+
+  <div class="tab-panel" id="tab-mercado">
+
+    <section id="sec-mercado-resumo">
+      <h2>O mercado de câmbio da B3 no último pregão</h2>
+      <div class="note">Tudo o que esta aba mede, prazo a prazo, no último pregão com dado. O <strong>dólar futuro</strong> é o preço de hoje para receber o dólar naquele prazo; o <strong>prêmio a termo</strong> é quanto ele paga por ano sobre o dólar de hoje, que é o carry de quem fica vendido em dólar. O <strong>cupom cambial</strong> é o juro em dólar pago dentro do Brasil; o <strong>juro em dólar</strong> é o de fora; a diferença entre os dois é o prêmio que o dólar paga aqui. A <strong>vol implícita</strong> é a volatilidade anual que as opções de dólar precificam. Célula vazia: aquele prazo não existe na fonte daquele dado.</div>
+      <div class="table-card">
+        <table class="data-table" id="mercado-tabela">
+          <thead id="mercado-tabela-head"></thead>
+          <tbody id="mercado-tabela-body"></tbody>
+        </table>
+      </div>
+      <div class="note" id="mercado-tabela-datas"></div>
+    </section>
+
+    <section id="sec-mercado-futuro">
+      <h2>Curva Futura do Dólar</h2>
+      <div class="note">O dólar futuro em cada prazo, no último pregão e em quatro datas anteriores. A curva sobe com o prazo porque o juro em reais é maior que o juro em dólar: quem vende dólar no futuro recebe essa diferença, e é por isso que a inclinação é o carry e não uma previsão de desvalorização. Uma curva que sobe inteira de uma data para outra é o dólar à vista que subiu; uma curva que fica mais inclinada é o carry que aumentou. O preço sai das duas pernas que a B3 publica — o DI e o cupom cambial — e confere com o futuro implícito nas opções de dólar em até R$ 0,00004 por dólar.</div>
+      <div class="chart-card"><div id="chart-dol-curva"></div></div>
+      <div class="note">O prêmio a termo ao longo do tempo, anualizado. É o carry do real em três prazos, medido contra o dólar do próprio dia. O de 1 mês fica fora do gráfico por ser ruidoso perto do vencimento do contrato mais curto.</div>
+      <div class="chart-card"><div id="chart-dol-premio"></div></div>
+    </section>
+
+    <section id="sec-mercado-cupom">
+      <h2>Cupom Cambial</h2>
+      <div class="note">O <strong>cupom limpo</strong> é o juro em dólar pago dentro do Brasil, calculado contra o dólar do próprio dia — é o que se lê. O <strong>cupom sujo</strong> é a convenção dos contratos da B3, calculada contra o dólar oficial (PTAX) do dia anterior; no prazo curto ele carrega a variação do câmbio de um dia para o outro, dividida por poucos dias, e por isso vem desligado (clique na legenda para ver). O <strong>juro em dólar</strong> é o de fora do país, na curva que a B3 publica, que se chamava Libor até a extinção dela; começa em fev/2008.</div>
+      <div class="chart-ctrl">
+        <div class="ctrl-field">
+          <label for="sel-cupom-prazo">Prazo</label>
+          <select class="chart-select" id="sel-cupom-prazo">
+            <option value="3M">3 meses</option>
+            <option value="6M">6 meses</option>
+            <option value="12M" selected>1 ano</option>
+            <option value="24M">2 anos</option>
+            <option value="60M">5 anos</option>
+            <option value="120M">10 anos</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-card"><div id="chart-cupom"></div></div>
+      <div class="note">O prêmio do dólar onshore: cupom limpo menos juro em dólar, no mesmo prazo. Um dólar dentro do Brasil rende mais que lá fora porque carrega risco de conversibilidade, risco-país e a escassez de dólar no mercado local. No curto prazo ele lê sobretudo a liquidez em dólar aqui — sobe quando falta dólar, como em fim de ano, saída forte de fluxo ou em 2008; no longo, se parece mais com risco soberano. As faixas cinza marcam episódios de estresse.</div>
+      <div class="chart-card"><div id="chart-cupom-premio"></div></div>
+    </section>
+
+    <section id="sec-mercado-vol">
+      <h2>Volatilidade Implícita do Dólar</h2>
+      <div class="note">A volatilidade anual que as opções de dólar da B3 precificam, no dinheiro, em quatro prazos fixos. A B3 não publica a volatilidade: ela sai do prêmio de referência de cada opção, invertendo a fórmula de Black, e os prazos fixos são interpolados entre os vencimentos — nada é extrapolado. Como as opções vencem no primeiro dia útil de cada mês, um evento com data marcada (uma eleição) fica diluído no prazo fixo que o contém: o de 3 meses, por isso, pode ficar abaixo da cotação de mercado nesses períodos.</div>
+      <div class="chart-card"><div id="chart-vol"></div></div>
+      <div class="note">O carry sobre a volatilidade: o prêmio a termo dividido pela volatilidade implícita do mesmo prazo. Diz quanto o real paga de carry por unidade do risco de câmbio que as opções precificam — é a régua usual para comparar moedas de carry, e a que separa um carry alto porque o juro subiu de um carry alto que só compensa um risco maior. Sobe quando o juro aqui sobe ou quando o mercado de opções se acalma; cai quando a volatilidade esperada dispara, mesmo com o juro parado.</div>
+      <div class="chart-card"><div id="chart-carry-vol"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ══ Opções de Dólar ══ -->
+  <div class="tab-panel" id="tab-opcoes">
+
+    <section id="sec-opc-strike">
+      <h2>Onde Está a Proteção: Posição por Strike</h2>
+      <div class="note">Cada barra é a posição em aberto num preço de exercício, em milhões de dólares de exposição, no último pregão com posição conhecida. <strong>Call</strong> é o direito de comprar dólar naquele preço — protege quem perde se o dólar subir; <strong>put</strong> é o direito de vender — protege quem perde se ele cair. A linha tracejada é o dólar futuro do mesmo vencimento: strikes à direita dela são calls fora do dinheiro, que só valem se o dólar subir até lá. Uma concentração de calls muito acima do futuro é o mercado pagando por proteção contra um salto.</div>
+      <div class="chart-ctrl">
+        <div class="ctrl-field">
+          <label for="sel-opc-venc">Vencimento</label>
+          <select class="chart-select" id="sel-opc-venc"></select>
+        </div>
+      </div>
+      <div class="chart-card"><div id="chart-opc-strike"></div></div>
+    </section>
+
+    <section id="sec-opc-hist">
+      <h2>Calls e Puts ao Longo do Tempo</h2>
+      <div class="note">A posição em aberto somada de todas as calls e de todas as puts de dólar (cheio e mini), em bilhões de dólares de exposição. É o tamanho do seguro contratado em cada direção, não o valor pago por ele.</div>
+      <div class="chart-card"><div id="chart-opc-oi"></div></div>
+      <div class="note">A razão put/call: puts divididas por calls, na posição em aberto e no volume (média de 21 pregões). Abaixo de 1, há mais proteção contratada contra a alta do dólar do que contra a queda; acima de 1, o contrário. Não há um nível normal: a razão muda de patamar de um ano para outro, conforme quem domina o mercado de opções (exportador vendendo dólar ou importador e devedor comprando), então o que se lê é a variação. Uma queda da razão é o mercado comprando mais proteção contra desvalorização do real.</div>
+      <div class="chart-card"><div id="chart-opc-pc"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ══ Juros e Bolsa na B3 ══ -->
+  <div class="tab-panel" id="tab-jurosbolsa">
+
+    <section id="sec-jb-volume">
+      <h2>Volume nos Mercados de Juros e Bolsa</h2>
+      <div class="note">Os outros dois grandes mercados futuros da B3, lado a lado com o câmbio porque o investidor de fora entra pelos três ao mesmo tempo: o <strong>DI futuro</strong> (juro prefixado), o <strong>DAP</strong> (juro real, o cupom de IPCA) e o <strong>Ibovespa futuro</strong> (cheio e mini somados). Volume financeiro de cada dia em média de 21 pregões, em bilhões de reais.</div>
+      <div class="chart-card"><div id="chart-jb-vol"></div></div>
+    </section>
+
+    <section id="sec-jb-di">
+      <h2>Posição em Aberto no DI Futuro</h2>
+      <div class="note">Quantos contratos de DI e de DAP estão em aberto, em milhões. O DI é, de longe, o maior mercado de juros do país: é nele que bancos, fundos e estrangeiros posicionam a aposta sobre a Selic.</div>
+      <div class="chart-card"><div id="chart-jb-oi"></div></div>
+      <div class="note">A mesma posição do DI, aberta por vencimento, no último pregão com posição conhecida: onde na curva o risco está carregado. Os vencimentos de janeiro são os de referência de cada ano<span id="jb-di-jan"></span>.</div>
+      <div class="chart-card"><div id="chart-jb-di-venc"></div></div>
+    </section>
+
+    <section id="sec-jb-ibov">
+      <h2>Ibovespa Futuro</h2>
+      <div class="note">O preço de ajuste do contrato mais negociado de cada dia (o vencimento corrente, salvo na semana da troca), em pontos — fica um pouco acima do índice à vista, pelo juro até o vencimento. E a posição em aberto, em milhares de contratos-equivalentes do cheio (o mini vale um quinto).</div>
+      <div class="chart-card"><div id="chart-jb-ibov"></div></div>
+      <div class="chart-card"><div id="chart-jb-ibov-oi"></div></div>
     </section>
 
   </div>
@@ -2075,7 +2190,9 @@ function renderChartHead(divId, meta, dates) {
     card.insertBefore(head, card.children[0]);
   }
   var bits = (meta.bits || []).filter(Boolean);
-  var periodo = _periodoDe(dates);
+  // Grafico cujo X nao e tempo (a curva futura, por prazo) traz o `periodo` pronto:
+  // derivado das abscissas ele leria "1 a 60" como um intervalo de datas.
+  var periodo = meta.periodo || _periodoDe(dates);
   var fonte = meta.source || '';
   head.innerHTML =
     '<h3>' + meta.title + '</h3>' +
@@ -3837,6 +3954,451 @@ var COT_ROWS = [
     yaxis: { zeroline: false },
   }), CONFIG);
   finishChart('chart-termos', d.dates);
+})();
+
+// ── d) Mercado B3: curva futura, cupom cambial e vol implícita ───────────────
+// Tudo do arquivo de pregão da B3, numa grade de pregões só (REPORT_DATA.mercado.dates).
+
+function _fmtBR(v, casas) {
+  if (v === null || v === undefined || isNaN(v)) return '';
+  return v.toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
+}
+
+function _dataBR(iso) {
+  return iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) + '/' + iso.slice(0, 4) : '';
+}
+
+(function() {
+  var d = REPORT_DATA.mercado;
+  if (!d || !d.tabela) return;
+  var cols = [
+    ['prazo',        'Prazo',                    null],
+    ['futuro',       'Dólar futuro, R$',         4],
+    ['premio',       'Prêmio a termo, % a.a.',   2],
+    ['limpo',        'Cupom limpo, % a.a.',      2],
+    ['sujo',         'Cupom sujo, % a.a.',       2],
+    ['usd',          'Juro em dólar, % a.a.',    2],
+    ['premio_cupom', 'Limpo − juro em dólar, p.p.', 2],
+    ['vol',          'Vol implícita, % a.a.',    2],
+    ['carry_vol',    'Prêmio a termo ÷ vol',     2],
+  ];
+  // Calculado na leitura, como o prêmio do cupom: as duas pernas já estão na linha.
+  d.tabela.forEach(function(r) {
+    r.carry_vol = (r.premio == null || !r.vol) ? null : r.premio / r.vol;
+  });
+  document.getElementById('mercado-tabela-head').innerHTML = '<tr>' + cols.map(function(c, i) {
+    return '<th' + (i ? ' class="col-value"' : '') + '>' + c[1] + '</th>';
+  }).join('') + '</tr>';
+  document.getElementById('mercado-tabela-body').innerHTML = d.tabela.map(function(r) {
+    return '<tr>' + cols.map(function(c, i) {
+      if (!i) return '<td class="col-label">' + r.prazo + '</td>';
+      var v = r[c[0]];
+      var na = (v === null || v === undefined);
+      return '<td class="col-value' + (na ? ' is-na' : '') + '">' + (na ? '—' : _fmtBR(v, c[2])) + '</td>';
+    }).join('') + '</tr>';
+  }).join('');
+  var dt = d.datas_tabela || {};
+  // As três fontes podem estar em pregões diferentes (a vol carrega à parte) --
+  // a nota diz de quando é cada coluna em vez de supor que é o mesmo dia.
+  var partes = ['dólar futuro e prêmio a termo em ' + _dataBR(dt.futuro),
+                'cupom e juro em dólar em ' + _dataBR(dt.juros)];
+  if (dt.vol) partes.push('vol implícita em ' + _dataBR(dt.vol));
+  document.getElementById('mercado-tabela-datas').textContent =
+    'Pregão de cada coluna: ' + partes.join('; ') + '. Fonte: B3, arquivo de pregão (curvas de referência e prêmio de referência das opções de dólar).';
+})();
+
+(function() {
+  var d = REPORT_DATA.mercado;
+  if (!d || !d.curvas || !d.curvas.length) return;
+  var cores = [C.azul, C.dourado, C.verde, C.laranja, C.azulCl];
+  var traces = d.curvas.map(function(c, i) {
+    return {
+      x: c.meses, y: c.value, type: 'scatter', mode: 'lines+markers',
+      name: c.rotulo + ' (' + _dataBR(c.date) + ')',
+      line: { color: cores[i % cores.length], width: i ? 1.8 : 3 },
+      marker: { size: i ? 4 : 6 },
+      customdata: c.prazo,
+      hovertemplate: '%{customdata}: R$ %{y:.4f}<extra>' + _dataBR(c.date) + '</extra>',
+    };
+  });
+  var meses = d.curvas[0].meses;
+  // Eixo em PRAZO, não em data: `type: 'linear'` explícito, senão a fábrica de
+  // layout herda o eixo de data das séries temporais e lê 1..60 como milissegundos
+  // (a "oitava face" de .claude/rules/lis-dashboards.md). Sem régua de período.
+  Plotly.newPlot('chart-dol-curva', traces, mkLayout({
+    hovermode: 'closest',
+    xaxis: { type: 'linear', title: { text: 'prazo, meses' }, tickvals: meses,
+             ticktext: d.curvas[0].prazo, range: [0, meses[meses.length - 1] + 2],
+             rangeslider: { visible: false } },
+    yaxis: { title: { text: 'reais por dólar (BRL/USD)', standoff: 8 }, zeroline: false },
+  }), CONFIG);
+  renderChartHead('chart-dol-curva', {
+    title: 'Curva Futura do Dólar',
+    bits: ['Dólar futuro em prazos fixos, no último pregão e em quatro datas anteriores',
+           'reais por dólar (BRL/USD)'],
+    source: 'B3 — curvas DI × pré e cupom cambial (TaxaSwap), mais a PTAX de D-1 do BCB',
+    periodo: 'pregão de ' + _dataBR(d.curvas[0].date),
+  }, []);
+})();
+
+(function() {
+  var d = REPORT_DATA.mercado;
+  if (!d || !d.premio) return;
+  var defs = [['3M', '3 meses', C.azulCl], ['12M', '1 ano', C.azul], ['60M', '5 anos', C.dourado]];
+  Plotly.newPlot('chart-dol-premio', defs.map(function(t) {
+    return tLine(d.dates, d.premio[t[0]], t[1], t[2], {});
+  }), mkLayout({
+    yaxis: { title: { text: '% a.a. sobre o dólar do dia', standoff: 8 }, zeroline: false },
+  }), CONFIG);
+  finishChart('chart-dol-premio', d.dates, {
+    title: 'Prêmio a Termo do Dólar — o Carry do Real',
+    bits: ['Quanto o dólar futuro paga por ano sobre o dólar do dia, em três prazos',
+           '% a.a.'],
+    source: 'B3 — curvas DI × pré e cupom cambial limpo (TaxaSwap)',
+  });
+})();
+
+(function() {
+  var d = REPORT_DATA.mercado;
+  if (!d || !d.cupom) return;
+  var sel = document.getElementById('sel-cupom-prazo');
+  var nomes = { '3M': '3 meses', '6M': '6 meses', '12M': '1 ano', '24M': '2 anos',
+                '60M': '5 anos', '120M': '10 anos' };
+  function draw() {
+    var t = sel.value;
+    var cu = d.cupom;
+    // Plotly.react, não newPlot: o seletor redesenha, e a régua/zoom guardados por
+    // _rangeSelected continuam valendo para a vista escolhida.
+    Plotly.react('chart-cupom', [
+      tLine(d.dates, cu.CUPOM_LIMPO[t], 'Cupom limpo', C.azul, { line: { color: C.azul, width: 2.5 } }),
+      tLine(d.dates, cu.JUROS_USD[t], 'Juro em dólar', C.dourado, {}),
+      tLine(d.dates, cu.CUPOM_SUJO[t], 'Cupom sujo', C.cinza, { visible: 'legendonly' }),
+    ], mkLayout({
+      yaxis: { title: { text: '% a.a., dias corridos base 360', standoff: 8 }, zeroline: true },
+    }), CONFIG);
+    finishChart('chart-cupom', d.dates, {
+      title: 'Cupom Cambial e Juro em Dólar — ' + nomes[t],
+      bits: ['Juro em dólar dentro do Brasil (cupom) contra o juro em dólar de fora',
+             '% a.a., linear, base 360'],
+      source: 'B3 — curvas de cupom cambial e de juro em dólar (TaxaSwap)',
+    });
+  }
+  sel.addEventListener('change', draw);
+  draw();
+})();
+
+// Episódios de estresse marcados no prêmio do dólar onshore. Lista editorial: as
+// datas são a do evento que abriu o episódio e a de quando o prêmio voltou ao
+// normal, conferidas contra a série em 2026-10-28. Nem todo episódio subiu o prêmio
+// (o taper tantrum quase não mexeu nele) -- marcar também esses é o que mostra isso.
+var EPISODIOS_ESTRESSE = [
+  { inicio: '2008-09-15', fim: '2009-01-30', rotulo: 'Crise de 2008',
+    descricao: 'Quebra do Lehman Brothers: as linhas de dólar dos bancos lá fora secaram' },
+  { inicio: '2011-03-29', fim: '2011-10-31', rotulo: 'IOF e compulsório',
+    descricao: 'IOF de 6% sobre empréstimo externo e depósito compulsório sobre a posição vendida dos bancos: o próprio governo encareceu o dólar dentro do país' },
+  { inicio: '2013-05-22', fim: '2013-09-06', rotulo: 'Taper tantrum',
+    descricao: 'O Fed sinaliza o fim das compras de títulos; o BC lança o programa diário de swaps em 22/08' },
+  { inicio: '2015-08-03', fim: '2016-06-30', rotulo: 'Crise Dilma',
+    descricao: 'Recessão, perda do grau de investimento (S&P em 09/09/2015) e impeachment' },
+  { inicio: '2018-05-21', fim: '2018-10-26', rotulo: 'Caminhoneiros e eleição',
+    descricao: 'Greve dos caminhoneiros e a corrida eleitoral de 2018' },
+  { inicio: '2020-02-24', fim: '2020-05-29', rotulo: 'Covid',
+    descricao: 'Pandemia: corrida global por dólar' },
+  { inicio: '2024-11-28', fim: '2025-01-31', rotulo: 'Pacote fiscal',
+    descricao: 'Pacote de gastos frustra o mercado, o dólar passa de R$ 6 e o BC vende US$ 32,6 bi em dezembro' },
+];
+
+(function() {
+  var d = REPORT_DATA.mercado;
+  if (!d || !d.cupom) return;
+  var cu = d.cupom;
+  function diff(t) {
+    return cu.CUPOM_LIMPO[t].map(function(v, i) {
+      var u = cu.JUROS_USD[t][i];
+      return (v === null || u === null) ? null : v - u;
+    });
+  }
+  var defs = [['3M', '3 meses', C.azulCl], ['12M', '1 ano', C.azul], ['120M', '10 anos', C.dourado]];
+  // Faixas: x em data, y em fração da área (yref 'paper'), atrás das linhas. Ficam
+  // como `shapes` e não como traço para não entrarem no hover, na legenda nem no
+  // ajuste automático do eixo Y. O rótulo alterna duas alturas para dois episódios
+  // próximos não escreverem um por cima do outro.
+  var faixas = EPISODIOS_ESTRESSE.filter(function(e) { return e.fim >= d.dates[0]; });
+  Plotly.newPlot('chart-cupom-premio', defs.map(function(t) {
+    return tLine(d.dates, diff(t[0]), t[1], t[2], {});
+  }), mkLayout({
+    yaxis: { title: { text: 'cupom limpo − juro em dólar, p.p.', standoff: 8 }, zeroline: true },
+    shapes: faixas.map(function(e) {
+      return { type: 'rect', xref: 'x', yref: 'paper', x0: e.inicio, x1: e.fim, y0: 0, y1: 1,
+               fillcolor: 'rgba(110, 118, 140, 0.13)', line: { width: 0 }, layer: 'below' };
+    }),
+    annotations: faixas.map(function(e, i) {
+      return { xref: 'x', yref: 'paper', x: e.inicio, xanchor: 'left', y: i % 2 ? 0.92 : 0.99,
+               yanchor: 'top', text: e.rotulo, showarrow: false,
+               font: { size: 10, color: '#5b6275' }, hovertext: e.descricao };
+    }),
+  }), CONFIG);
+  finishChart('chart-cupom-premio', d.dates, {
+    title: 'Prêmio do Dólar Onshore',
+    bits: ['Cupom limpo menos o juro em dólar de fora, no mesmo prazo', 'pontos percentuais'],
+    source: 'B3 — curvas de cupom cambial limpo e de juro em dólar (TaxaSwap)',
+  });
+})();
+
+(function() {
+  var d = REPORT_DATA.mercado;
+  if (!d || !d.vol || !d.vol['3M']) return;
+  var defs = [['1M', '1 mês', C.laranja], ['3M', '3 meses', C.azul],
+              ['6M', '6 meses', C.verde], ['1Y', '1 ano', C.dourado]];
+  Plotly.newPlot('chart-vol', defs.map(function(t) {
+    return tLine(d.dates, d.vol[t[0]], t[1], t[2], { line: { color: t[2], width: t[0] === '3M' ? 2.5 : 1.6 } });
+  }), mkLayout({
+    yaxis: { title: { text: 'volatilidade anual implícita, %', standoff: 8 }, zeroline: false },
+  }), CONFIG);
+  finishChart('chart-vol', d.dates, {
+    title: 'Volatilidade Implícita do Dólar',
+    bits: ['Volatilidade no dinheiro que as opções de dólar precificam, em prazos fixos', '% a.a.'],
+    source: 'B3 — prêmio de referência das opções de dólar comercial, invertido por Black',
+  });
+})();
+
+(function() {
+  var d = REPORT_DATA.mercado;
+  if (!d || !d.vol || !d.vol['3M'] || !d.premio) return;
+  // Prêmio e vol no MESMO prazo: 3M com 3M, 12M com a vol de 1 ano. Nulo onde falta
+  // uma perna -- a vol não existe em prazo longo, então o 5 anos fica de fora.
+  function razao(p, v) {
+    return d.premio[p].map(function(x, i) {
+      var y = d.vol[v][i];
+      return (x === null || y === null || !y) ? null : x / y;
+    });
+  }
+  var defs = [['3M', '3M', '3 meses', C.azulCl], ['12M', '1Y', '1 ano', C.azul]];
+  Plotly.newPlot('chart-carry-vol', defs.map(function(t) {
+    return tLine(d.dates, razao(t[0], t[1]), t[2], t[3], {});
+  }), mkLayout({
+    yaxis: { title: { text: 'prêmio a termo ÷ vol implícita', standoff: 8 }, zeroline: true },
+  }), CONFIG);
+  finishChart('chart-carry-vol', d.dates, {
+    title: 'Carry sobre Volatilidade',
+    bits: ['Prêmio a termo dividido pela volatilidade implícita do mesmo prazo',
+           'razão (% a.a. ÷ % a.a.)'],
+    source: 'B3 — curvas DI × pré e cupom cambial limpo (TaxaSwap) e prêmio de referência das opções de dólar',
+  });
+})();
+
+// ── Derivativos da B3: volume e posição em aberto (2026-10-28) ────────────────
+// Três lugares, um payload (REPORT_DATA.derivativos): a seção de dólar e cupom da
+// aba Posicionamento, a aba Opções de Dólar e a aba Juros e Bolsa. Fonte comum:
+// o boletim de preços da B3 (BVBG.086), diário desde 2018.
+
+var B3_FONTE = 'B3 — boletim de preços do pregão (BVBG.086)';
+// Cinco séries no gráfico de volume: azulCl × verde da marca ficam perto demais
+// (ΔE2000 de 13,0, abaixo do piso de 20), então o mini e a rolagem saem da paleta de séries da skill.
+var B3_COR = { WDO: '#1565C0', DR1: '#8E44AD' };
+
+// Média de 21 pregões; nula se faltar qualquer dia da janela (dia sem negócio
+// já vem zero do gerador, então nulo aqui é dado que ainda não chegou).
+function _mm21(v) {
+  var out = new Array((v || []).length).fill(null);
+  for (var i = 20; i < out.length; i++) {
+    var s = 0, ok = true;
+    for (var k = i - 20; k <= i; k++) {
+      if (v[k] === null || v[k] === undefined) { ok = false; break; }
+      s += v[k];
+    }
+    out[i] = ok ? s / 21 : null;
+  }
+  return out;
+}
+
+function _razao(a, b) {
+  return (a || []).map(function(x, i) {
+    var y = (b || [])[i];
+    return (x === null || x === undefined || !y) ? null : x / y;
+  });
+}
+
+(function() {
+  var d = REPORT_DATA.derivativos;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-b3-oi', [
+    tLine(d.dates, d.oi_usd.DOL, 'Dólar cheio', C.azul, {}),
+    tLine(d.dates, d.oi_usd.WDO, 'Minidólar', B3_COR.WDO, {}),
+    tLine(d.dates, d.oi_usd.DDI, 'Cupom cambial', C.dourado, {}),
+  ], mkLayout({
+    yaxis: { title: { text: 'posição em aberto, US$ bilhões de exposição', standoff: 8 }, zeroline: true },
+  }), CONFIG);
+  finishChart('chart-b3-oi', d.dates, {
+    title: 'Dólar e Cupom na B3 — Posição em Aberto',
+    bits: ['Contratos em aberto no fim de cada pregão × tamanho do contrato', 'US$ bilhões'],
+    source: B3_FONTE,
+  });
+
+  var defs = [['DOL', 'Dólar cheio', C.azul], ['WDO', 'Minidólar', B3_COR.WDO],
+              ['FRC', 'FRA de cupom', C.dourado], ['DR1', 'Rolagem', B3_COR.DR1],
+              ['FRP', 'Casado', C.laranja]];
+  Plotly.newPlot('chart-b3-vol', defs.map(function(t) {
+    return tLine(d.dates, _mm21(d.vol_usd[t[0]]), t[1], t[2], {});
+  }), mkLayout({
+    yaxis: { title: { text: 'volume por dia, US$ bilhões (média de 21 pregões)', standoff: 8 }, zeroline: true },
+  }), CONFIG);
+  finishChart('chart-b3-vol', d.dates, {
+    title: 'Dólar e Cupom na B3 — Volume',
+    bits: ['Volume financeiro diário em média móvel de 21 pregões', 'US$ bilhões por dia'],
+    source: B3_FONTE,
+  });
+})();
+
+(function() {
+  var d = REPORT_DATA.derivativos;
+  if (!d || !d.strikes || !d.strikes.vencimentos || !d.strikes.vencimentos.length) return;
+  var st = d.strikes;
+  var sel = document.getElementById('sel-opc-venc');
+  sel.innerHTML = st.vencimentos.map(function(v, i) {
+    return '<option value="' + i + '"' + (i ? '' : ' selected') + '>' + v.rotulo + '</option>';
+  }).join('');
+  function draw() {
+    var v = st.vencimentos[+sel.value];
+    // Eixo em STRIKE, não em data: `type: 'linear'` declarado (a "oitava face").
+    // A linha do futuro vai como shape e é passada vazia quando não existe -- com
+    // Plotly.react, omitir a chave herdaria a linha do vencimento anterior.
+    Plotly.react('chart-opc-strike', [
+      { x: v.strike, y: v.call, type: 'bar', name: 'Calls', marker: { color: C.azul },
+        hovertemplate: 'R$ %{x:.3f}: US$ %{y:,.0f} mi<extra>calls</extra>' },
+      { x: v.strike, y: v.put, type: 'bar', name: 'Puts', marker: { color: C.laranja },
+        hovertemplate: 'R$ %{x:.3f}: US$ %{y:,.0f} mi<extra>puts</extra>' },
+    ], mkLayout({
+      barmode: 'group', hovermode: 'closest',
+      xaxis: { type: 'linear', title: { text: 'preço de exercício, reais por dólar' },
+               rangeslider: { visible: false } },
+      yaxis: { title: { text: 'posição em aberto, US$ milhões', standoff: 8 }, zeroline: true },
+      shapes: v.futuro === null ? [] : [{
+        type: 'line', xref: 'x', yref: 'paper', x0: v.futuro, x1: v.futuro, y0: 0, y1: 1,
+        line: { color: C.cinza, width: 2, dash: 'dash' } }],
+      annotations: v.futuro === null ? [] : [{
+        xref: 'x', yref: 'paper', x: v.futuro, y: 1, yanchor: 'bottom', showarrow: false,
+        text: 'futuro ' + _fmtBR(v.futuro, 3), font: { size: 10, color: '#5b6275' } }],
+    }), CONFIG);
+    renderChartHead('chart-opc-strike', {
+      title: 'Opções de Dólar — Posição por Strike, Vencimento ' + v.rotulo,
+      bits: ['Calls e puts em aberto em cada preço de exercício (cheio + mini)', 'US$ milhões de exposição'],
+      source: B3_FONTE,
+      periodo: 'pregão de ' + _dataBR(st.date),
+    }, []);
+  }
+  sel.addEventListener('change', draw);
+  draw();
+})();
+
+(function() {
+  var d = REPORT_DATA.derivativos;
+  if (!d || !d.opcoes) return;
+  var o = d.opcoes;
+  Plotly.newPlot('chart-opc-oi', [
+    tLine(d.dates, o.oi_call, 'Calls', C.azul, {}),
+    tLine(d.dates, o.oi_put, 'Puts', C.laranja, {}),
+  ], mkLayout({
+    yaxis: { title: { text: 'posição em aberto, US$ bilhões de exposição', standoff: 8 }, zeroline: true },
+  }), CONFIG);
+  finishChart('chart-opc-oi', d.dates, {
+    title: 'Opções de Dólar — Calls e Puts em Aberto',
+    bits: ['Todas as séries de dólar cheio e mini somadas', 'US$ bilhões'],
+    source: B3_FONTE,
+  });
+
+  Plotly.newPlot('chart-opc-pc', [
+    tLine(d.dates, _razao(o.oi_put, o.oi_call), 'Na posição em aberto', C.azul, {}),
+    tLine(d.dates, _razao(_mm21(o.vol_put), _mm21(o.vol_call)), 'No volume (média de 21 pregões)', C.dourado, {}),
+  ], mkLayout({
+    yaxis: { title: { text: 'puts ÷ calls', standoff: 8 }, zeroline: false },
+    shapes: [{ type: 'line', xref: 'paper', yref: 'y', x0: 0, x1: 1, y0: 1, y1: 1,
+               line: { color: C.cinza, width: 1, dash: 'dot' }, layer: 'below' }],
+  }), CONFIG);
+  finishChart('chart-opc-pc', d.dates, {
+    title: 'Opções de Dólar — Razão Put/Call',
+    bits: ['Puts divididas por calls, em exposição', 'razão'],
+    source: B3_FONTE,
+  });
+})();
+
+(function() {
+  var d = REPORT_DATA.derivativos;
+  if (!d || !d.juros_bolsa) return;
+  var j = d.juros_bolsa;
+  var defs = [['DI1', 'DI futuro', C.azul], ['DAP', 'Cupom de IPCA (DAP)', C.verde],
+              ['IBOV', 'Ibovespa futuro', C.dourado]];
+  Plotly.newPlot('chart-jb-vol', defs.filter(function(t) { return j.vol_brl[t[0]]; }).map(function(t) {
+    return tLine(d.dates, _mm21(j.vol_brl[t[0]]), t[1], t[2], {});
+  }), mkLayout({
+    yaxis: { title: { text: 'volume por dia, R$ bilhões (média de 21 pregões)', standoff: 8 }, zeroline: true },
+  }), CONFIG);
+  finishChart('chart-jb-vol', d.dates, {
+    title: 'Juros e Bolsa na B3 — Volume',
+    bits: ['Volume financeiro diário em média móvel de 21 pregões', 'R$ bilhões por dia'],
+    source: B3_FONTE,
+  });
+
+  Plotly.newPlot('chart-jb-oi', [
+    tLine(d.dates, j.oi.DI1, 'DI futuro', C.azul, {}),
+    tLine(d.dates, j.oi.DAP, 'Cupom de IPCA (DAP)', C.verde, {}),
+  ], mkLayout({
+    yaxis: { title: { text: 'posição em aberto, milhões de contratos', standoff: 8 }, zeroline: true },
+  }), CONFIG);
+  finishChart('chart-jb-oi', d.dates, {
+    title: 'DI Futuro e DAP — Posição em Aberto',
+    bits: ['Contratos em aberto no fim de cada pregão, todos os vencimentos', 'milhões de contratos'],
+    source: B3_FONTE,
+  });
+
+  var dv = j.di_venc;
+  if (dv && dv.rotulo) {
+    // Eixo de CATEGORIA (o vencimento), declarado: não é série temporal.
+    Plotly.newPlot('chart-jb-di-venc', [{
+      x: dv.rotulo, y: dv.oi, type: 'bar', name: 'DI futuro', marker: { color: C.azul },
+      customdata: dv.taxa,
+      hovertemplate: '%{x}: %{y:,.2f} mi contratos · taxa %{customdata:.2f}%<extra></extra>',
+    }], mkLayout({
+      hovermode: 'closest', showlegend: false,
+      xaxis: { type: 'category', title: { text: 'vencimento' }, rangeslider: { visible: false } },
+      yaxis: { title: { text: 'posição em aberto, milhões de contratos', standoff: 8 }, zeroline: true },
+    }), CONFIG);
+    // A frase da nota é derivada do mesmo payload do gráfico, não escrita à mão.
+    var tot = 0, jan = 0;
+    dv.rotulo.forEach(function(r, i) { tot += dv.oi[i] || 0; if (r.indexOf('jan/') === 0) jan += dv.oi[i] || 0; });
+    var alvo = document.getElementById('jb-di-jan');
+    if (alvo && tot > 0) alvo.textContent = ': no pregão de ' + _dataBR(dv.date) + ' eles somavam ' +
+      _fmtBR(100 * jan / tot, 0) + '% da posição em aberto';
+    renderChartHead('chart-jb-di-venc', {
+      title: 'DI Futuro — Posição em Aberto por Vencimento',
+      bits: ['Contratos em aberto em cada vencimento', 'milhões de contratos'],
+      source: B3_FONTE,
+      periodo: 'pregão de ' + _dataBR(dv.date),
+    }, []);
+  }
+
+  if (j.ibov_preco) {
+    Plotly.newPlot('chart-jb-ibov', [
+      tLine(d.dates, j.ibov_preco, 'Ibovespa futuro', C.azul, {}),
+    ], mkLayout({
+      yaxis: { title: { text: 'pontos', standoff: 8 }, zeroline: false },
+    }), CONFIG);
+    finishChart('chart-jb-ibov', d.dates, {
+      title: 'Ibovespa Futuro — Preço',
+      bits: ['Ajuste do contrato mais negociado do dia', 'pontos do índice'],
+      source: B3_FONTE,
+    });
+    Plotly.newPlot('chart-jb-ibov-oi', [
+      tLine(d.dates, j.ibov_oi, 'Cheio + mini', C.dourado, {}),
+    ], mkLayout({
+      yaxis: { title: { text: 'posição em aberto, mil contratos do cheio', standoff: 8 }, zeroline: true },
+    }), CONFIG);
+    finishChart('chart-jb-ibov-oi', d.dates, {
+      title: 'Ibovespa Futuro — Posição em Aberto',
+      bits: ['Contratos em aberto, o mini convertido em um quinto do cheio', 'mil contratos'],
+      source: B3_FONTE,
+    });
+  }
 })();
 
 // ── Default tab ───────────────────────────────────────────────────────────────

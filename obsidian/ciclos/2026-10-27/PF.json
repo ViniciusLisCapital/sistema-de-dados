@@ -1,0 +1,4953 @@
+{
+ "ciclo": "2026-10-27",
+ "rodada": "rf",
+ "p": "PF",
+ "gerado_em": "2026-10-28T14:24:03",
+ "tracker": "C:\\Users\\LIS CAPITAL\\LIS Capital Dropbox\\LIS Capital\\Macro\\Sistema de dados\\repository\\agent_mapping\\data_tracker.xlsx",
+ "tutela": {
+  "meta_12m": {
+   "politica_monetaria": "principal",
+   "fiscal": "subordinado"
+  },
+  "rr_10a": {
+   "politica_monetaria": "subordinado",
+   "fiscal": "principal",
+   "externo": "subordinado"
+  },
+  "fiscal": {
+   "fiscal": "principal",
+   "externo": "subordinado"
+  },
+  "vol": {
+   "cambio": "principal"
+  },
+  "infl_us": {
+   "externo": "principal"
+  },
+  "ffr": {
+   "externo": "principal"
+  },
+  "dxy_em": {
+   "cambio": "subordinado",
+   "externo": "principal"
+  },
+  "sp500": {
+   "externo": "principal"
+  },
+  "icbr_usd": {
+   "cambio": "subordinado",
+   "externo": "principal"
+  },
+  "icbr_agr_usd": {
+   "inflacao": "subordinado",
+   "externo": "principal"
+  },
+  "icbr_met_usd": {
+   "inflacao": "subordinado",
+   "externo": "principal"
+  }
+ },
+ "agentes_lidos": [
+  "cambio",
+  "politica_monetaria",
+  "inflacao",
+  "atividade",
+  "fiscal",
+  "externo",
+  "expectativas"
+ ],
+ "agentes_faltando": [],
+ "caminhos_usados": {
+  "meta_12m": {
+   "4T26": 3.0,
+   "1T27": 3.0,
+   "2T27": 3.0,
+   "3T27": 3.0,
+   "4T27": 3.0,
+   "1T28": 3.0,
+   "2T28": 3.0,
+   "3T28": 3.0,
+   "4T28": 3.0,
+   "1T29": 3.0,
+   "2T29": 3.0,
+   "3T29": 3.0
+  },
+  "rr_10a": {
+   "4T26": 7.75,
+   "1T27": 7.95,
+   "2T27": 7.9,
+   "3T27": 7.8,
+   "4T27": 7.75,
+   "1T28": 7.7,
+   "2T28": 7.7,
+   "3T28": 7.7,
+   "4T28": 7.7,
+   "1T29": 7.7,
+   "2T29": 7.7,
+   "3T29": 7.7
+  },
+  "fiscal": {
+   "4T26": 140.0,
+   "1T27": 142.0,
+   "2T27": 139.0,
+   "3T27": 135.0,
+   "4T27": 130.0,
+   "1T28": 125.0,
+   "2T28": 125.0,
+   "3T28": 125.0,
+   "4T28": 125.0,
+   "1T29": 125.0,
+   "2T29": 125.0,
+   "3T29": 125.0
+  },
+  "vol": {
+   "4T26": 17.0,
+   "1T27": 15.5,
+   "2T27": 14.5,
+   "3T27": 14.0,
+   "4T27": 13.5,
+   "1T28": 13.5,
+   "2T28": 13.5,
+   "3T28": 13.5,
+   "4T28": 13.5,
+   "1T29": 13.5,
+   "2T29": 13.5,
+   "3T29": 13.5
+  },
+  "infl_us": {
+   "4T26": 0.86,
+   "1T27": 0.61,
+   "2T27": 0.61,
+   "3T27": 0.65,
+   "4T27": 0.63,
+   "1T28": 0.65,
+   "2T28": 0.65,
+   "3T28": 0.65,
+   "4T28": 0.65,
+   "1T29": 0.65,
+   "2T29": 0.65,
+   "3T29": 0.65
+  },
+  "ffr": {
+   "4T26": 4.13,
+   "1T27": 4.13,
+   "2T27": 4.13,
+   "3T27": 4.13,
+   "4T27": 4.13,
+   "1T28": 3.88,
+   "2T28": 3.88,
+   "3T28": 3.88,
+   "4T28": 3.88,
+   "1T29": 3.88,
+   "2T29": 3.88,
+   "3T29": 3.88
+  },
+  "dxy_em": {
+   "4T26": 130.5,
+   "1T27": 131.0,
+   "2T27": 130.5,
+   "3T27": 130.0,
+   "4T27": 129.5,
+   "1T28": 129.0,
+   "2T28": 129.0,
+   "3T28": 129.0,
+   "4T28": 129.0,
+   "1T29": 129.0,
+   "2T29": 129.0,
+   "3T29": 129.0
+  },
+  "sp500": {
+   "4T26": 7750.0,
+   "1T27": 7900.0,
+   "2T27": 8050.0,
+   "3T27": 8200.0,
+   "4T27": 8350.0,
+   "1T28": 8500.0,
+   "2T28": 8500.0,
+   "3T28": 8500.0,
+   "4T28": 8500.0,
+   "1T29": 8500.0,
+   "2T29": 8500.0,
+   "3T29": 8500.0
+  },
+  "icbr_usd": {
+   "4T26": 206.2,
+   "1T27": 202.6,
+   "2T27": 201.0,
+   "3T27": 199.9,
+   "4T27": 199.0,
+   "1T28": 198.3,
+   "2T28": 198.3,
+   "3T28": 198.3,
+   "4T28": 198.3,
+   "1T29": 198.3,
+   "2T29": 198.3,
+   "3T29": 198.3
+  },
+  "icbr_agr_usd": {
+   "4T26": 203.9,
+   "1T27": 200.9,
+   "2T27": 199.3,
+   "3T27": 198.4,
+   "4T27": 197.8,
+   "1T28": 197.4,
+   "2T28": 197.4,
+   "3T28": 197.4,
+   "4T28": 197.4,
+   "1T29": 197.4,
+   "2T29": 197.4,
+   "3T29": 197.4
+  },
+  "icbr_met_usd": {
+   "4T26": 331.7,
+   "1T27": 330.0,
+   "2T27": 330.0,
+   "3T27": 328.7,
+   "4T27": 327.3,
+   "1T28": 325.7,
+   "2T28": 325.7,
+   "3T28": 325.7,
+   "4T28": 325.7,
+   "1T29": 325.7,
+   "2T29": 325.7,
+   "3T29": 325.7
+  }
+ },
+ "origem": {
+  "meta_12m": {
+   "tipo": "principal",
+   "principal": "politica_monetaria",
+   "por_trimestre": [
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ],
+    [
+     "politica_monetaria"
+    ]
+   ],
+   "valores": {
+    "politica_monetaria": [
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0
+    ]
+   }
+  },
+  "rr_10a": {
+   "tipo": "principal",
+   "principal": "fiscal",
+   "por_trimestre": [
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ]
+   ],
+   "valores": {
+    "fiscal": [
+     7.75,
+     7.95,
+     7.9,
+     7.8,
+     7.75,
+     7.7,
+     7.7,
+     7.7,
+     7.7,
+     7.7,
+     7.7,
+     7.7
+    ]
+   }
+  },
+  "fiscal": {
+   "tipo": "principal",
+   "principal": "fiscal",
+   "por_trimestre": [
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ],
+    [
+     "fiscal"
+    ]
+   ],
+   "valores": {
+    "fiscal": [
+     140.0,
+     142.0,
+     139.0,
+     135.0,
+     130.0,
+     125.0,
+     125.0,
+     125.0,
+     125.0,
+     125.0,
+     125.0,
+     125.0
+    ]
+   }
+  },
+  "vol": {
+   "tipo": "principal",
+   "principal": "cambio",
+   "por_trimestre": [
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ],
+    [
+     "cambio"
+    ]
+   ],
+   "valores": {
+    "cambio": [
+     17.0,
+     15.5,
+     14.5,
+     14.0,
+     13.5,
+     13.5,
+     13.5,
+     13.5,
+     13.5,
+     13.5,
+     13.5,
+     13.5
+    ]
+   }
+  },
+  "infl_us": {
+   "tipo": "principal",
+   "principal": "externo",
+   "por_trimestre": [
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ]
+   ],
+   "valores": {
+    "externo": [
+     0.86,
+     0.61,
+     0.61,
+     0.65,
+     0.63,
+     0.65,
+     0.65,
+     0.65,
+     0.65,
+     0.65,
+     0.65,
+     0.65
+    ]
+   }
+  },
+  "ffr": {
+   "tipo": "principal",
+   "principal": "externo",
+   "por_trimestre": [
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ]
+   ],
+   "valores": {
+    "externo": [
+     4.13,
+     4.13,
+     4.13,
+     4.13,
+     4.13,
+     3.88,
+     3.88,
+     3.88,
+     3.88,
+     3.88,
+     3.88,
+     3.88
+    ]
+   }
+  },
+  "dxy_em": {
+   "tipo": "principal",
+   "principal": "externo",
+   "por_trimestre": [
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ]
+   ],
+   "valores": {
+    "externo": [
+     130.5,
+     131.0,
+     130.5,
+     130.0,
+     129.5,
+     129.0,
+     129.0,
+     129.0,
+     129.0,
+     129.0,
+     129.0,
+     129.0
+    ]
+   }
+  },
+  "sp500": {
+   "tipo": "principal",
+   "principal": "externo",
+   "por_trimestre": [
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ]
+   ],
+   "valores": {
+    "externo": [
+     7750.0,
+     7900.0,
+     8050.0,
+     8200.0,
+     8350.0,
+     8500.0,
+     8500.0,
+     8500.0,
+     8500.0,
+     8500.0,
+     8500.0,
+     8500.0
+    ]
+   }
+  },
+  "icbr_usd": {
+   "tipo": "principal",
+   "principal": "externo",
+   "por_trimestre": [
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ]
+   ],
+   "valores": {
+    "externo": [
+     206.2,
+     202.6,
+     201.0,
+     199.9,
+     199.0,
+     198.3,
+     198.3,
+     198.3,
+     198.3,
+     198.3,
+     198.3,
+     198.3
+    ]
+   }
+  },
+  "icbr_agr_usd": {
+   "tipo": "principal",
+   "principal": "externo",
+   "por_trimestre": [
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ]
+   ],
+   "valores": {
+    "externo": [
+     203.9,
+     200.9,
+     199.3,
+     198.4,
+     197.8,
+     197.4,
+     197.4,
+     197.4,
+     197.4,
+     197.4,
+     197.4,
+     197.4
+    ]
+   }
+  },
+  "icbr_met_usd": {
+   "tipo": "principal",
+   "principal": "externo",
+   "por_trimestre": [
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ],
+    [
+     "externo"
+    ]
+   ],
+   "valores": {
+    "externo": [
+     331.7,
+     330.0,
+     330.0,
+     328.7,
+     327.3,
+     325.7,
+     325.7,
+     325.7,
+     325.7,
+     325.7,
+     325.7,
+     325.7
+    ]
+   }
+  }
+ },
+ "divergencias": [],
+ "avisos": [],
+ "teses": [
+  {
+   "agente": "cambio",
+   "variavel": "ptax",
+   "tipo": "modelo",
+   "trimestre": "4T26",
+   "central": 5.427,
+   "faixa": [
+    5.3,
+    5.6
+   ],
+   "p_faixa": 47.0,
+   "p_upside": 31.0,
+   "p_downside": 22.0,
+   "assimetria": 0.09,
+   "central_p": 5.425820732139331,
+   "lo_p": 5.337705996184453,
+   "hi_p": 5.515666167658622,
+   "diferenca": -0.0011792678606683538,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "cambio",
+   "variavel": "ptax",
+   "tipo": "modelo",
+   "trimestre": "1T27",
+   "central": 5.515,
+   "faixa": [
+    5.34,
+    5.78
+   ],
+   "p_faixa": 46.0,
+   "p_upside": 30.0,
+   "p_downside": 24.0,
+   "assimetria": 0.06,
+   "central_p": 5.514712456103786,
+   "lo_p": 5.416376970349611,
+   "hi_p": 5.6188209898424555,
+   "diferenca": -0.00028754389621354903,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "cambio",
+   "variavel": "ptax",
+   "tipo": "modelo",
+   "trimestre": "2T27",
+   "central": 5.517,
+   "faixa": [
+    5.34,
+    5.82
+   ],
+   "p_faixa": 45.0,
+   "p_upside": 29.0,
+   "p_downside": 26.0,
+   "assimetria": 0.03,
+   "central_p": 5.516506087220798,
+   "lo_p": 5.388486852416473,
+   "hi_p": 5.65041473322793,
+   "diferenca": -0.000493912779202077,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "cambio",
+   "variavel": "ptax",
+   "tipo": "modelo",
+   "trimestre": "3T27",
+   "central": 5.501,
+   "faixa": [
+    5.34,
+    5.82
+   ],
+   "p_faixa": 44.0,
+   "p_upside": 28.0,
+   "p_downside": 28.0,
+   "assimetria": 0.0,
+   "central_p": 5.50136088792925,
+   "lo_p": 5.3410601077294935,
+   "hi_p": 5.672054245645507,
+   "diferenca": 0.00036088792924982016,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "cambio",
+   "variavel": "ptax",
+   "tipo": "modelo",
+   "trimestre": "4T27",
+   "central": 5.511,
+   "faixa": [
+    5.36,
+    5.82
+   ],
+   "p_faixa": 44.0,
+   "p_upside": 30.0,
+   "p_downside": 26.0,
+   "assimetria": 0.04,
+   "central_p": 5.510668667323442,
+   "lo_p": 5.3171847324806,
+   "hi_p": 5.721846878381645,
+   "diferenca": -0.0003313326765583824,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "cambio",
+   "variavel": "ptax",
+   "tipo": "modelo",
+   "trimestre": "1T28",
+   "central": 5.528,
+   "faixa": [
+    5.38,
+    5.83
+   ],
+   "p_faixa": 43.0,
+   "p_upside": 27.0,
+   "p_downside": 30.0,
+   "assimetria": -0.03,
+   "central_p": 5.528327285968658,
+   "lo_p": 5.300822432118018,
+   "hi_p": 5.779308507793761,
+   "diferenca": 0.00032728596865805315,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "politica_monetaria",
+   "variavel": "selic_fim",
+   "tipo": "modelo",
+   "trimestre": "4T26",
+   "central": 13.43,
+   "faixa": [
+    13.3,
+    13.8
+   ],
+   "p_faixa": 62.0,
+   "p_upside": 32.0,
+   "p_downside": 6.0,
+   "assimetria": 0.26,
+   "central_p": 13.442947035339497,
+   "lo_p": 13.118446460114683,
+   "hi_p": 13.751945043088103,
+   "diferenca": 0.012947035339497148,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "politica_monetaria",
+   "variavel": "selic_fim",
+   "tipo": "modelo",
+   "trimestre": "1T27",
+   "central": 13.21,
+   "faixa": [
+    13.0,
+    14.05
+   ],
+   "p_faixa": 67.0,
+   "p_upside": 29.0,
+   "p_downside": 4.0,
+   "assimetria": 0.25,
+   "central_p": 13.20628948258749,
+   "lo_p": 12.650250126253802,
+   "hi_p": 13.719626264437018,
+   "diferenca": -0.0037105174125109386,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "politica_monetaria",
+   "variavel": "selic_fim",
+   "tipo": "modelo",
+   "trimestre": "2T27",
+   "central": 12.87,
+   "faixa": [
+    12.65,
+    14.05
+   ],
+   "p_faixa": 62.0,
+   "p_upside": 30.0,
+   "p_downside": 8.0,
+   "assimetria": 0.22,
+   "central_p": 12.86556815057962,
+   "lo_p": 12.164310363055932,
+   "hi_p": 13.538490121472694,
+   "diferenca": -0.004431849420379663,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "politica_monetaria",
+   "variavel": "selic_fim",
+   "tipo": "modelo",
+   "trimestre": "3T27",
+   "central": 12.56,
+   "faixa": [
+    12.35,
+    14.05
+   ],
+   "p_faixa": 61.0,
+   "p_upside": 27.0,
+   "p_downside": 12.0,
+   "assimetria": 0.15,
+   "central_p": 12.559108133067678,
+   "lo_p": 11.771396477459612,
+   "hi_p": 13.350600302260908,
+   "diferenca": -0.0008918669323225714,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "politica_monetaria",
+   "variavel": "selic_fim",
+   "tipo": "modelo",
+   "trimestre": "4T27",
+   "central": 12.3,
+   "faixa": [
+    12.1,
+    14.05
+   ],
+   "p_faixa": 64.0,
+   "p_upside": 22.0,
+   "p_downside": 14.0,
+   "assimetria": 0.08,
+   "central_p": 12.304530553665018,
+   "lo_p": 11.492721870021184,
+   "hi_p": 13.1876522948635,
+   "diferenca": 0.004530553665016868,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "politica_monetaria",
+   "variavel": "selic_fim",
+   "tipo": "modelo",
+   "trimestre": "1T28",
+   "central": 12.1,
+   "faixa": [
+    11.9,
+    14.05
+   ],
+   "p_faixa": 70.0,
+   "p_upside": 16.0,
+   "p_downside": 14.0,
+   "assimetria": 0.02,
+   "central_p": 12.096421293905594,
+   "lo_p": 11.316054429232562,
+   "hi_p": 13.015446295610806,
+   "diferenca": -0.0035787060944052485,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "inflacao",
+   "variavel": "ipca_12m",
+   "tipo": "modelo",
+   "trimestre": "4T26",
+   "central": 5.34,
+   "faixa": [
+    5.15,
+    5.5
+   ],
+   "p_faixa": 65.0,
+   "p_upside": 22.0,
+   "p_downside": 13.0,
+   "assimetria": 0.09,
+   "central_p": 5.337323910246172,
+   "lo_p": 5.1501111343714046,
+   "hi_p": 5.52523265622713,
+   "diferenca": -0.002676089753827604,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "inflacao",
+   "variavel": "ipca_12m",
+   "tipo": "modelo",
+   "trimestre": "1T27",
+   "central": 4.95,
+   "faixa": [
+    4.7,
+    5.25
+   ],
+   "p_faixa": 58.0,
+   "p_upside": 29.0,
+   "p_downside": 13.0,
+   "assimetria": 0.16,
+   "central_p": 4.948497704024923,
+   "lo_p": 4.6798584854672365,
+   "hi_p": 5.196871740410192,
+   "diferenca": -0.001502295975076784,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "inflacao",
+   "variavel": "ipca_12m",
+   "tipo": "modelo",
+   "trimestre": "2T27",
+   "central": 4.46,
+   "faixa": [
+    4.15,
+    4.85
+   ],
+   "p_faixa": 57.0,
+   "p_upside": 30.0,
+   "p_downside": 13.0,
+   "assimetria": 0.17,
+   "central_p": 4.4580821435354245,
+   "lo_p": 4.167230139078981,
+   "hi_p": 4.748509530337519,
+   "diferenca": -0.0019178564645754292,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "inflacao",
+   "variavel": "ipca_12m",
+   "tipo": "modelo",
+   "trimestre": "3T27",
+   "central": 4.48,
+   "faixa": [
+    4.2,
+    4.9
+   ],
+   "p_faixa": 57.0,
+   "p_upside": 30.0,
+   "p_downside": 13.0,
+   "assimetria": 0.17,
+   "central_p": 4.481933587769538,
+   "lo_p": 4.233393603430469,
+   "hi_p": 4.736414019906343,
+   "diferenca": 0.0019335877695372261,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "inflacao",
+   "variavel": "ipca_12m",
+   "tipo": "modelo",
+   "trimestre": "4T27",
+   "central": 4.32,
+   "faixa": [
+    4.05,
+    4.75
+   ],
+   "p_faixa": 57.0,
+   "p_upside": 29.0,
+   "p_downside": 14.0,
+   "assimetria": 0.15,
+   "central_p": 4.317803246199015,
+   "lo_p": 4.0408317493006995,
+   "hi_p": 4.629289146324278,
+   "diferenca": -0.002196753800985718,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "inflacao",
+   "variavel": "ipca_12m",
+   "tipo": "modelo",
+   "trimestre": "1T28",
+   "central": 4.14,
+   "faixa": [
+    3.85,
+    4.55
+   ],
+   "p_faixa": 58.0,
+   "p_upside": 27.0,
+   "p_downside": 15.0,
+   "assimetria": 0.12,
+   "central_p": 4.138347441981494,
+   "lo_p": 3.8193390941941185,
+   "hi_p": 4.498763209066814,
+   "diferenca": -0.0016525580185060562,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "hiato",
+   "tipo": "modelo",
+   "trimestre": "4T26",
+   "central": 0.13,
+   "faixa": [
+    -0.17,
+    0.43
+   ],
+   "p_faixa": 51.0,
+   "p_upside": 17.0,
+   "p_downside": 32.0,
+   "assimetria": -0.15,
+   "central_p": 0.1305054730934225,
+   "lo_p": -0.03232347765799998,
+   "hi_p": 0.296299488856,
+   "diferenca": 0.0005054730934224982,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "hiato",
+   "tipo": "modelo",
+   "trimestre": "1T27",
+   "central": -0.08,
+   "faixa": [
+    -0.43,
+    0.27
+   ],
+   "p_faixa": 49.0,
+   "p_upside": 20.0,
+   "p_downside": 31.0,
+   "assimetria": -0.11,
+   "central_p": -0.08173267151630258,
+   "lo_p": -0.3636777791130999,
+   "hi_p": 0.20535278135426727,
+   "diferenca": -0.0017326715163025752,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "hiato",
+   "tipo": "modelo",
+   "trimestre": "2T27",
+   "central": -0.24,
+   "faixa": [
+    -0.64,
+    0.16
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 20.0,
+   "p_downside": 30.0,
+   "assimetria": -0.1,
+   "central_p": -0.24337730826934956,
+   "lo_p": -0.6162252594464699,
+   "hi_p": 0.1328625958494777,
+   "diferenca": -0.003377308269349566,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "hiato",
+   "tipo": "modelo",
+   "trimestre": "3T27",
+   "central": -0.36,
+   "faixa": [
+    -0.81,
+    0.09
+   ],
+   "p_faixa": 51.0,
+   "p_upside": 19.0,
+   "p_downside": 30.0,
+   "assimetria": -0.11,
+   "central_p": -0.364559892265661,
+   "lo_p": -0.812958798966922,
+   "hi_p": 0.07937534314698574,
+   "diferenca": -0.004559892265661003,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "hiato",
+   "tipo": "modelo",
+   "trimestre": "4T27",
+   "central": -0.45,
+   "faixa": [
+    -0.9,
+    0.0
+   ],
+   "p_faixa": 47.0,
+   "p_upside": 19.0,
+   "p_downside": 34.0,
+   "assimetria": -0.15,
+   "central_p": -0.4530745879536989,
+   "lo_p": -0.9688008657046445,
+   "hi_p": 0.031692101018450894,
+   "diferenca": -0.003074587953698915,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "hiato",
+   "tipo": "modelo",
+   "trimestre": "1T28",
+   "central": -0.52,
+   "faixa": [
+    -1.02,
+    -0.02
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 16.0,
+   "p_downside": 34.0,
+   "assimetria": -0.18,
+   "central_p": -0.5151506639223565,
+   "lo_p": -1.1065744116952936,
+   "hi_p": 0.001475855216773951,
+   "diferenca": 0.004849336077643485,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "pib_yoy",
+   "tipo": "propria",
+   "trimestre": "4T26",
+   "central": 1.89,
+   "faixa": [
+    1.54,
+    2.24
+   ],
+   "p_faixa": 46.0,
+   "p_upside": 12.0,
+   "p_downside": 42.0,
+   "assimetria": -0.3,
+   "central_p": null,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": null,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "pib_yoy",
+   "tipo": "propria",
+   "trimestre": "1T27",
+   "central": 1.82,
+   "faixa": [
+    1.42,
+    2.22
+   ],
+   "p_faixa": 48.0,
+   "p_upside": 16.0,
+   "p_downside": 36.0,
+   "assimetria": -0.2,
+   "central_p": null,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": null,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "pib_yoy",
+   "tipo": "propria",
+   "trimestre": "2T27",
+   "central": 1.75,
+   "faixa": [
+    1.3,
+    2.2
+   ],
+   "p_faixa": 51.0,
+   "p_upside": 20.0,
+   "p_downside": 29.0,
+   "assimetria": -0.09,
+   "central_p": null,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": null,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "pib_yoy",
+   "tipo": "propria",
+   "trimestre": "3T27",
+   "central": 1.73,
+   "faixa": [
+    1.23,
+    2.23
+   ],
+   "p_faixa": 52.0,
+   "p_upside": 25.0,
+   "p_downside": 23.0,
+   "assimetria": 0.02,
+   "central_p": null,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": null,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "pib_yoy",
+   "tipo": "propria",
+   "trimestre": "4T27",
+   "central": 1.92,
+   "faixa": [
+    1.42,
+    2.42
+   ],
+   "p_faixa": 53.0,
+   "p_upside": 21.0,
+   "p_downside": 26.0,
+   "assimetria": -0.05,
+   "central_p": null,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": null,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "atividade",
+   "variavel": "pib_yoy",
+   "tipo": "propria",
+   "trimestre": "1T28",
+   "central": 2.07,
+   "faixa": [
+    1.57,
+    2.57
+   ],
+   "p_faixa": 51.0,
+   "p_upside": 19.0,
+   "p_downside": 30.0,
+   "assimetria": -0.11,
+   "central_p": null,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": null,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "fiscal",
+   "tipo": "exogena",
+   "trimestre": "4T26",
+   "central": 140.0,
+   "faixa": [
+    125.0,
+    160.0
+   ],
+   "p_faixa": 60.0,
+   "p_upside": 27.0,
+   "p_downside": 13.0,
+   "assimetria": 0.14,
+   "central_p": 140.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "fiscal",
+   "tipo": "exogena",
+   "trimestre": "1T27",
+   "central": 142.0,
+   "faixa": [
+    125.0,
+    170.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 142.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "fiscal",
+   "tipo": "exogena",
+   "trimestre": "2T27",
+   "central": 139.0,
+   "faixa": [
+    121.0,
+    174.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 139.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "fiscal",
+   "tipo": "exogena",
+   "trimestre": "3T27",
+   "central": 135.0,
+   "faixa": [
+    117.0,
+    175.0
+   ],
+   "p_faixa": 54.0,
+   "p_upside": 30.0,
+   "p_downside": 16.0,
+   "assimetria": 0.14,
+   "central_p": 135.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "fiscal",
+   "tipo": "exogena",
+   "trimestre": "4T27",
+   "central": 130.0,
+   "faixa": [
+    113.0,
+    176.0
+   ],
+   "p_faixa": 54.0,
+   "p_upside": 30.0,
+   "p_downside": 16.0,
+   "assimetria": 0.14,
+   "central_p": 130.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "fiscal",
+   "tipo": "exogena",
+   "trimestre": "1T28",
+   "central": 125.0,
+   "faixa": [
+    110.0,
+    176.0
+   ],
+   "p_faixa": 54.0,
+   "p_upside": 30.0,
+   "p_downside": 16.0,
+   "assimetria": 0.14,
+   "central_p": 125.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "rr_10a",
+   "tipo": "exogena",
+   "trimestre": "4T26",
+   "central": 7.75,
+   "faixa": [
+    7.55,
+    7.89
+   ],
+   "p_faixa": 60.0,
+   "p_upside": 25.0,
+   "p_downside": 15.0,
+   "assimetria": 0.1,
+   "central_p": 7.75,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "rr_10a",
+   "tipo": "exogena",
+   "trimestre": "1T27",
+   "central": 7.95,
+   "faixa": [
+    7.55,
+    8.45
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 28.0,
+   "p_downside": 17.0,
+   "assimetria": 0.11,
+   "central_p": 7.95,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "rr_10a",
+   "tipo": "exogena",
+   "trimestre": "2T27",
+   "central": 7.9,
+   "faixa": [
+    7.45,
+    8.55
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 28.0,
+   "p_downside": 17.0,
+   "assimetria": 0.11,
+   "central_p": 7.9,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "rr_10a",
+   "tipo": "exogena",
+   "trimestre": "3T27",
+   "central": 7.8,
+   "faixa": [
+    7.35,
+    8.6
+   ],
+   "p_faixa": 54.0,
+   "p_upside": 28.0,
+   "p_downside": 18.0,
+   "assimetria": 0.1,
+   "central_p": 7.8,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "rr_10a",
+   "tipo": "exogena",
+   "trimestre": "4T27",
+   "central": 7.75,
+   "faixa": [
+    7.3,
+    8.6
+   ],
+   "p_faixa": 54.0,
+   "p_upside": 28.0,
+   "p_downside": 18.0,
+   "assimetria": 0.1,
+   "central_p": 7.75,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "fiscal",
+   "variavel": "rr_10a",
+   "tipo": "exogena",
+   "trimestre": "1T28",
+   "central": 7.7,
+   "faixa": [
+    7.25,
+    8.6
+   ],
+   "p_faixa": 54.0,
+   "p_upside": 28.0,
+   "p_downside": 18.0,
+   "assimetria": 0.1,
+   "central_p": 7.7,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "ffr",
+   "tipo": "exogena",
+   "trimestre": "4T26",
+   "central": 4.13,
+   "faixa": [
+    4.0,
+    4.25
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 4.13,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "ffr",
+   "tipo": "exogena",
+   "trimestre": "1T27",
+   "central": 4.13,
+   "faixa": [
+    3.88,
+    4.38
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 4.13,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "ffr",
+   "tipo": "exogena",
+   "trimestre": "2T27",
+   "central": 4.13,
+   "faixa": [
+    3.75,
+    4.38
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 4.13,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "ffr",
+   "tipo": "exogena",
+   "trimestre": "3T27",
+   "central": 4.13,
+   "faixa": [
+    3.63,
+    4.38
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 4.13,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "ffr",
+   "tipo": "exogena",
+   "trimestre": "4T27",
+   "central": 4.13,
+   "faixa": [
+    3.63,
+    4.38
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 4.13,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "ffr",
+   "tipo": "exogena",
+   "trimestre": "1T28",
+   "central": 3.88,
+   "faixa": [
+    3.5,
+    4.25
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 3.88,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "infl_us",
+   "tipo": "exogena",
+   "trimestre": "4T26",
+   "central": 0.86,
+   "faixa": [
+    0.65,
+    1.1
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 0.86,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "infl_us",
+   "tipo": "exogena",
+   "trimestre": "1T27",
+   "central": 0.61,
+   "faixa": [
+    0.46,
+    0.76
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 30.0,
+   "p_downside": 15.0,
+   "assimetria": 0.15,
+   "central_p": 0.61,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "infl_us",
+   "tipo": "exogena",
+   "trimestre": "2T27",
+   "central": 0.61,
+   "faixa": [
+    0.46,
+    0.76
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 30.0,
+   "p_downside": 20.0,
+   "assimetria": 0.1,
+   "central_p": 0.61,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "infl_us",
+   "tipo": "exogena",
+   "trimestre": "3T27",
+   "central": 0.65,
+   "faixa": [
+    0.5,
+    0.8
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 30.0,
+   "p_downside": 20.0,
+   "assimetria": 0.1,
+   "central_p": 0.65,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "infl_us",
+   "tipo": "exogena",
+   "trimestre": "4T27",
+   "central": 0.63,
+   "faixa": [
+    0.48,
+    0.78
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 30.0,
+   "p_downside": 20.0,
+   "assimetria": 0.1,
+   "central_p": 0.63,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "infl_us",
+   "tipo": "exogena",
+   "trimestre": "1T28",
+   "central": 0.65,
+   "faixa": [
+    0.5,
+    0.8
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 30.0,
+   "p_downside": 20.0,
+   "assimetria": 0.1,
+   "central_p": 0.65,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "dxy_em",
+   "tipo": "exogena",
+   "trimestre": "4T26",
+   "central": 130.5,
+   "faixa": [
+    129.2,
+    132.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 26.0,
+   "p_downside": 19.0,
+   "assimetria": 0.07,
+   "central_p": 130.5,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "dxy_em",
+   "tipo": "exogena",
+   "trimestre": "1T27",
+   "central": 131.0,
+   "faixa": [
+    129.0,
+    133.8
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 26.0,
+   "p_downside": 19.0,
+   "assimetria": 0.07,
+   "central_p": 131.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "dxy_em",
+   "tipo": "exogena",
+   "trimestre": "2T27",
+   "central": 130.5,
+   "faixa": [
+    128.2,
+    133.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 26.0,
+   "p_downside": 19.0,
+   "assimetria": 0.07,
+   "central_p": 130.5,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "dxy_em",
+   "tipo": "exogena",
+   "trimestre": "3T27",
+   "central": 130.0,
+   "faixa": [
+    127.5,
+    132.2
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 26.0,
+   "p_downside": 19.0,
+   "assimetria": 0.07,
+   "central_p": 130.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "dxy_em",
+   "tipo": "exogena",
+   "trimestre": "4T27",
+   "central": 129.5,
+   "faixa": [
+    127.0,
+    131.5
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 26.0,
+   "p_downside": 19.0,
+   "assimetria": 0.07,
+   "central_p": 129.5,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "dxy_em",
+   "tipo": "exogena",
+   "trimestre": "1T28",
+   "central": 129.0,
+   "faixa": [
+    126.5,
+    130.8
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 26.0,
+   "p_downside": 19.0,
+   "assimetria": 0.07,
+   "central_p": 129.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "sp500",
+   "tipo": "exogena",
+   "trimestre": "4T26",
+   "central": 7750.0,
+   "faixa": [
+    7375.0,
+    7982.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 20.0,
+   "p_downside": 25.0,
+   "assimetria": -0.05,
+   "central_p": 7750.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "sp500",
+   "tipo": "exogena",
+   "trimestre": "1T27",
+   "central": 7900.0,
+   "faixa": [
+    7200.0,
+    8137.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 20.0,
+   "p_downside": 25.0,
+   "assimetria": -0.05,
+   "central_p": 7900.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "sp500",
+   "tipo": "exogena",
+   "trimestre": "2T27",
+   "central": 8050.0,
+   "faixa": [
+    7375.0,
+    8350.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 20.0,
+   "p_downside": 25.0,
+   "assimetria": -0.05,
+   "central_p": 8050.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "sp500",
+   "tipo": "exogena",
+   "trimestre": "3T27",
+   "central": 8200.0,
+   "faixa": [
+    7575.0,
+    8575.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 20.0,
+   "p_downside": 25.0,
+   "assimetria": -0.05,
+   "central_p": 8200.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "sp500",
+   "tipo": "exogena",
+   "trimestre": "4T27",
+   "central": 8350.0,
+   "faixa": [
+    7775.0,
+    8775.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 20.0,
+   "p_downside": 25.0,
+   "assimetria": -0.05,
+   "central_p": 8350.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "sp500",
+   "tipo": "exogena",
+   "trimestre": "1T28",
+   "central": 8500.0,
+   "faixa": [
+    7975.0,
+    8975.0
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 20.0,
+   "p_downside": 25.0,
+   "assimetria": -0.05,
+   "central_p": 8500.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_usd",
+   "tipo": "exogena",
+   "trimestre": "4T26",
+   "central": 206.2,
+   "faixa": [
+    201.0,
+    211.4
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 25.0,
+   "p_downside": 20.0,
+   "assimetria": 0.05,
+   "central_p": 206.2,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_usd",
+   "tipo": "exogena",
+   "trimestre": "1T27",
+   "central": 202.6,
+   "faixa": [
+    195.4,
+    209.8
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 25.0,
+   "p_downside": 20.0,
+   "assimetria": 0.05,
+   "central_p": 202.6,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_usd",
+   "tipo": "exogena",
+   "trimestre": "2T27",
+   "central": 201.0,
+   "faixa": [
+    192.7,
+    209.1
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 25.0,
+   "p_downside": 20.0,
+   "assimetria": 0.05,
+   "central_p": 201.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_usd",
+   "tipo": "exogena",
+   "trimestre": "3T27",
+   "central": 199.9,
+   "faixa": [
+    191.6,
+    208.4
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 25.0,
+   "p_downside": 20.0,
+   "assimetria": 0.05,
+   "central_p": 199.9,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_usd",
+   "tipo": "exogena",
+   "trimestre": "4T27",
+   "central": 199.0,
+   "faixa": [
+    191.2,
+    207.3
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 25.0,
+   "p_downside": 20.0,
+   "assimetria": 0.05,
+   "central_p": 199.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_usd",
+   "tipo": "exogena",
+   "trimestre": "1T28",
+   "central": 198.3,
+   "faixa": [
+    191.1,
+    206.8
+   ],
+   "p_faixa": 55.0,
+   "p_upside": 25.0,
+   "p_downside": 20.0,
+   "assimetria": 0.05,
+   "central_p": 198.3,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_agr_usd",
+   "tipo": "exogena",
+   "trimestre": "4T26",
+   "central": 203.9,
+   "faixa": [
+    199.8,
+    208.0
+   ],
+   "p_faixa": 70.0,
+   "p_upside": 15.0,
+   "p_downside": 15.0,
+   "assimetria": 0.0,
+   "central_p": 203.9,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_agr_usd",
+   "tipo": "exogena",
+   "trimestre": "1T27",
+   "central": 200.9,
+   "faixa": [
+    196.4,
+    206.0
+   ],
+   "p_faixa": 60.0,
+   "p_upside": 20.0,
+   "p_downside": 20.0,
+   "assimetria": 0.0,
+   "central_p": 200.9,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_agr_usd",
+   "tipo": "exogena",
+   "trimestre": "2T27",
+   "central": 199.3,
+   "faixa": [
+    193.9,
+    205.6
+   ],
+   "p_faixa": 60.0,
+   "p_upside": 20.0,
+   "p_downside": 20.0,
+   "assimetria": 0.0,
+   "central_p": 199.3,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_agr_usd",
+   "tipo": "exogena",
+   "trimestre": "3T27",
+   "central": 198.4,
+   "faixa": [
+    192.5,
+    205.6
+   ],
+   "p_faixa": 60.0,
+   "p_upside": 20.0,
+   "p_downside": 20.0,
+   "assimetria": 0.0,
+   "central_p": 198.4,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_agr_usd",
+   "tipo": "exogena",
+   "trimestre": "4T27",
+   "central": 197.8,
+   "faixa": [
+    192.1,
+    205.1
+   ],
+   "p_faixa": 60.0,
+   "p_upside": 20.0,
+   "p_downside": 20.0,
+   "assimetria": 0.0,
+   "central_p": 197.8,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_agr_usd",
+   "tipo": "exogena",
+   "trimestre": "1T28",
+   "central": 197.4,
+   "faixa": [
+    192.1,
+    204.6
+   ],
+   "p_faixa": 60.0,
+   "p_upside": 20.0,
+   "p_downside": 20.0,
+   "assimetria": 0.0,
+   "central_p": 197.4,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_met_usd",
+   "tipo": "exogena",
+   "trimestre": "4T26",
+   "central": 331.7,
+   "faixa": [
+    321.7,
+    341.7
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 20.0,
+   "p_downside": 30.0,
+   "assimetria": -0.1,
+   "central_p": 331.7,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_met_usd",
+   "tipo": "exogena",
+   "trimestre": "1T27",
+   "central": 330.0,
+   "faixa": [
+    314.1,
+    344.0
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 20.0,
+   "p_downside": 30.0,
+   "assimetria": -0.1,
+   "central_p": 330.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_met_usd",
+   "tipo": "exogena",
+   "trimestre": "2T27",
+   "central": 330.0,
+   "faixa": [
+    306.6,
+    346.0
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 20.0,
+   "p_downside": 30.0,
+   "assimetria": -0.1,
+   "central_p": 330.0,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_met_usd",
+   "tipo": "exogena",
+   "trimestre": "3T27",
+   "central": 328.7,
+   "faixa": [
+    302.9,
+    345.4
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 20.0,
+   "p_downside": 30.0,
+   "assimetria": -0.1,
+   "central_p": 328.7,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_met_usd",
+   "tipo": "exogena",
+   "trimestre": "4T27",
+   "central": 327.3,
+   "faixa": [
+    301.1,
+    344.6
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 20.0,
+   "p_downside": 30.0,
+   "assimetria": -0.1,
+   "central_p": 327.3,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "externo",
+   "variavel": "icbr_met_usd",
+   "tipo": "exogena",
+   "trimestre": "1T28",
+   "central": 325.7,
+   "faixa": [
+    300.4,
+    343.9
+   ],
+   "p_faixa": 50.0,
+   "p_upside": 20.0,
+   "p_downside": 30.0,
+   "assimetria": -0.1,
+   "central_p": 325.7,
+   "lo_p": null,
+   "hi_p": null,
+   "diferenca": 0.0,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "expectativas",
+   "variavel": "focus_12m",
+   "tipo": "modelo",
+   "trimestre": "4T26",
+   "central": 4.17,
+   "faixa": [
+    4.05,
+    4.45
+   ],
+   "p_faixa": 14.0,
+   "p_upside": 85.0,
+   "p_downside": 1.0,
+   "assimetria": 0.84,
+   "central_p": 4.172813553707974,
+   "lo_p": 4.066668961862495,
+   "hi_p": 4.276866203896285,
+   "diferenca": 0.0028135537079743145,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "expectativas",
+   "variavel": "focus_12m",
+   "tipo": "modelo",
+   "trimestre": "1T27",
+   "central": 4.0,
+   "faixa": [
+    3.8,
+    4.15
+   ],
+   "p_faixa": 26.0,
+   "p_upside": 70.0,
+   "p_downside": 4.0,
+   "assimetria": 0.66,
+   "central_p": 3.9967820205292752,
+   "lo_p": 3.8474094413525357,
+   "hi_p": 4.159867773445756,
+   "diferenca": -0.0032179794707247744,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "expectativas",
+   "variavel": "focus_12m",
+   "tipo": "modelo",
+   "trimestre": "2T27",
+   "central": 3.82,
+   "faixa": [
+    3.6,
+    3.95
+   ],
+   "p_faixa": 35.0,
+   "p_upside": 58.0,
+   "p_downside": 7.0,
+   "assimetria": 0.51,
+   "central_p": 3.8151526836473093,
+   "lo_p": 3.6490556087811075,
+   "hi_p": 4.014918853667667,
+   "diferenca": -0.004847316352690534,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "expectativas",
+   "variavel": "focus_12m",
+   "tipo": "modelo",
+   "trimestre": "3T27",
+   "central": 3.71,
+   "faixa": [
+    3.5,
+    3.9
+   ],
+   "p_faixa": 39.0,
+   "p_upside": 52.0,
+   "p_downside": 9.0,
+   "assimetria": 0.43,
+   "central_p": 3.713450347612978,
+   "lo_p": 3.550684607266308,
+   "hi_p": 3.9159832977805644,
+   "diferenca": 0.003450347612977911,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "expectativas",
+   "variavel": "focus_12m",
+   "tipo": "modelo",
+   "trimestre": "4T27",
+   "central": 3.63,
+   "faixa": [
+    3.4,
+    3.9
+   ],
+   "p_faixa": 41.0,
+   "p_upside": 48.0,
+   "p_downside": 11.0,
+   "assimetria": 0.37,
+   "central_p": 3.6277951623664517,
+   "lo_p": 3.4663352636018003,
+   "hi_p": 3.8431570653500895,
+   "diferenca": -0.0022048376335481734,
+   "fora_da_faixa": false
+  },
+  {
+   "agente": "expectativas",
+   "variavel": "focus_12m",
+   "tipo": "modelo",
+   "trimestre": "1T28",
+   "central": 3.55,
+   "faixa": [
+    3.3,
+    3.75
+   ],
+   "p_faixa": 41.0,
+   "p_upside": 47.0,
+   "p_downside": 12.0,
+   "assimetria": 0.35,
+   "central_p": 3.5489875121192496,
+   "lo_p": 3.3892256952125686,
+   "hi_p": 3.7730404217084503,
+   "diferenca": -0.0010124878807502569,
+   "fora_da_faixa": false
+  }
+ ],
+ "contratos": {
+  "cambio": {
+   "agente": "cambio",
+   "rodada": "rf",
+   "ciclo": "2026-10-27",
+   "caminhos": {
+    "vol": {
+     "4T26": 17.0,
+     "1T27": 15.5,
+     "2T27": 14.5,
+     "3T27": 14.0,
+     "4T27": 13.5,
+     "1T28": 13.5
+    }
+   },
+   "tese": {
+    "ptax": {
+     "tipo": "modelo",
+     "nome": "PTAX de venda, fechamento do trimestre",
+     "unidade": "R$/US$",
+     "trimestres": {
+      "4T26": {
+       "central": 5.427,
+       "faixa": [
+        5.3,
+        5.6
+       ],
+       "p_faixa": 47.0,
+       "p_upside": 31.0,
+       "p_downside": 22.0
+      },
+      "1T27": {
+       "central": 5.515,
+       "faixa": [
+        5.34,
+        5.78
+       ],
+       "p_faixa": 46.0,
+       "p_upside": 30.0,
+       "p_downside": 24.0
+      },
+      "2T27": {
+       "central": 5.517,
+       "faixa": [
+        5.34,
+        5.82
+       ],
+       "p_faixa": 45.0,
+       "p_upside": 29.0,
+       "p_downside": 26.0
+      },
+      "3T27": {
+       "central": 5.501,
+       "faixa": [
+        5.34,
+        5.82
+       ],
+       "p_faixa": 44.0,
+       "p_upside": 28.0,
+       "p_downside": 28.0
+      },
+      "4T27": {
+       "central": 5.511,
+       "faixa": [
+        5.36,
+        5.82
+       ],
+       "p_faixa": 44.0,
+       "p_upside": 30.0,
+       "p_downside": 26.0
+      },
+      "1T28": {
+       "central": 5.528,
+       "faixa": [
+        5.38,
+        5.83
+       ],
+       "p_faixa": 43.0,
+       "p_upside": 27.0,
+       "p_downside": 30.0
+      }
+     }
+    }
+   },
+   "nota": "Report final. Caminho base da vol (principal) mantido desde a rodada 1; sem caminho de referência para dxy_em e icbr_usd. Central = PTAX do P2."
+  },
+  "politica_monetaria": {
+   "agente": "politica_monetaria",
+   "rodada": "rf",
+   "ciclo": "2026-10-27",
+   "caminhos": {
+    "meta_12m": {
+     "4T26": 3.0,
+     "1T27": 3.0,
+     "2T27": 3.0,
+     "3T27": 3.0,
+     "4T27": 3.0,
+     "1T28": 3.0
+    }
+   },
+   "tese": {
+    "selic_fim": {
+     "tipo": "modelo",
+     "nome": "Selic, fechamento do trimestre (derivada)",
+     "unidade": "% a.a.",
+     "trimestres": {
+      "4T26": {
+       "central": 13.43,
+       "faixa": [
+        13.3,
+        13.8
+       ],
+       "p_faixa": 62.0,
+       "p_upside": 32.0,
+       "p_downside": 6.0
+      },
+      "1T27": {
+       "central": 13.21,
+       "faixa": [
+        13.0,
+        14.05
+       ],
+       "p_faixa": 67.0,
+       "p_upside": 29.0,
+       "p_downside": 4.0
+      },
+      "2T27": {
+       "central": 12.87,
+       "faixa": [
+        12.65,
+        14.05
+       ],
+       "p_faixa": 62.0,
+       "p_upside": 30.0,
+       "p_downside": 8.0
+      },
+      "3T27": {
+       "central": 12.56,
+       "faixa": [
+        12.35,
+        14.05
+       ],
+       "p_faixa": 61.0,
+       "p_upside": 27.0,
+       "p_downside": 12.0
+      },
+      "4T27": {
+       "central": 12.3,
+       "faixa": [
+        12.1,
+        14.05
+       ],
+       "p_faixa": 64.0,
+       "p_upside": 22.0,
+       "p_downside": 14.0
+      },
+      "1T28": {
+       "central": 12.1,
+       "faixa": [
+        11.9,
+        14.05
+       ],
+       "p_faixa": 70.0,
+       "p_upside": 16.0,
+       "p_downside": 14.0
+      }
+     }
+    }
+   },
+   "nota": "Report final. meta_12m: caminho de principal (3,00). rr_10a: sem caminho de referência (divergência fechada na moderação da rodada 2). Central = selic_fim do P2. Faixas, probabilidades e passos por reunião sem mudança desde a rodada 2 (G pm_r2_distribuicao.py)."
+  },
+  "inflacao": {
+   "agente": "inflacao",
+   "rodada": "rf",
+   "ciclo": "2026-10-27",
+   "caminhos": {},
+   "tese": {
+    "ipca_12m": {
+     "tipo": "modelo",
+     "nome": "IPCA acumulado em 12 meses, no fim do trimestre",
+     "unidade": "%",
+     "trimestres": {
+      "4T26": {
+       "central": 5.34,
+       "faixa": [
+        5.15,
+        5.5
+       ],
+       "p_faixa": 65.0,
+       "p_upside": 22.0,
+       "p_downside": 13.0
+      },
+      "1T27": {
+       "central": 4.95,
+       "faixa": [
+        4.7,
+        5.25
+       ],
+       "p_faixa": 58.0,
+       "p_upside": 29.0,
+       "p_downside": 13.0
+      },
+      "2T27": {
+       "central": 4.46,
+       "faixa": [
+        4.15,
+        4.85
+       ],
+       "p_faixa": 57.0,
+       "p_upside": 30.0,
+       "p_downside": 13.0
+      },
+      "3T27": {
+       "central": 4.48,
+       "faixa": [
+        4.2,
+        4.9
+       ],
+       "p_faixa": 57.0,
+       "p_upside": 30.0,
+       "p_downside": 13.0
+      },
+      "4T27": {
+       "central": 4.32,
+       "faixa": [
+        4.05,
+        4.75
+       ],
+       "p_faixa": 57.0,
+       "p_upside": 29.0,
+       "p_downside": 14.0
+      },
+      "1T28": {
+       "central": 4.14,
+       "faixa": [
+        3.85,
+        4.55
+       ],
+       "p_faixa": 58.0,
+       "p_upside": 27.0,
+       "p_downside": 15.0
+      }
+     }
+    }
+   },
+   "nota": "Report final: central do P2 (caminhos dos principais, com a moderação), sem ajuste. Subordinado de icbr_agr_usd e icbr_met_usd, sem caminho de referência; principal de nenhuma exógena."
+  },
+  "atividade": {
+   "agente": "atividade",
+   "rodada": "rf",
+   "ciclo": "2026-10-27",
+   "caminhos": {},
+   "tese": {
+    "hiato": {
+     "tipo": "modelo",
+     "nome": "Hiato do produto",
+     "unidade": "% do potencial",
+     "trimestres": {
+      "4T26": {
+       "central": 0.13,
+       "faixa": [
+        -0.17,
+        0.43
+       ],
+       "p_faixa": 51.0,
+       "p_upside": 17.0,
+       "p_downside": 32.0
+      },
+      "1T27": {
+       "central": -0.08,
+       "faixa": [
+        -0.43,
+        0.27
+       ],
+       "p_faixa": 49.0,
+       "p_upside": 20.0,
+       "p_downside": 31.0
+      },
+      "2T27": {
+       "central": -0.24,
+       "faixa": [
+        -0.64,
+        0.16
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 20.0,
+       "p_downside": 30.0
+      },
+      "3T27": {
+       "central": -0.36,
+       "faixa": [
+        -0.81,
+        0.09
+       ],
+       "p_faixa": 51.0,
+       "p_upside": 19.0,
+       "p_downside": 30.0
+      },
+      "4T27": {
+       "central": -0.45,
+       "faixa": [
+        -0.9,
+        0.0
+       ],
+       "p_faixa": 47.0,
+       "p_upside": 19.0,
+       "p_downside": 34.0
+      },
+      "1T28": {
+       "central": -0.52,
+       "faixa": [
+        -1.02,
+        -0.02
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 16.0,
+       "p_downside": 34.0
+      }
+     }
+    },
+    "pib_yoy": {
+     "tipo": "propria",
+     "nome": "PIB, variação contra o mesmo trimestre do ano anterior (IBGE)",
+     "unidade": "%",
+     "trimestres": {
+      "4T26": {
+       "central": 1.89,
+       "faixa": [
+        1.54,
+        2.24
+       ],
+       "p_faixa": 46.0,
+       "p_upside": 12.0,
+       "p_downside": 42.0
+      },
+      "1T27": {
+       "central": 1.82,
+       "faixa": [
+        1.42,
+        2.22
+       ],
+       "p_faixa": 48.0,
+       "p_upside": 16.0,
+       "p_downside": 36.0
+      },
+      "2T27": {
+       "central": 1.75,
+       "faixa": [
+        1.3,
+        2.2
+       ],
+       "p_faixa": 51.0,
+       "p_upside": 20.0,
+       "p_downside": 29.0
+      },
+      "3T27": {
+       "central": 1.73,
+       "faixa": [
+        1.23,
+        2.23
+       ],
+       "p_faixa": 52.0,
+       "p_upside": 25.0,
+       "p_downside": 23.0
+      },
+      "4T27": {
+       "central": 1.92,
+       "faixa": [
+        1.42,
+        2.42
+       ],
+       "p_faixa": 53.0,
+       "p_upside": 21.0,
+       "p_downside": 26.0
+      },
+      "1T28": {
+       "central": 2.07,
+       "faixa": [
+        1.57,
+        2.57
+       ],
+       "p_faixa": 51.0,
+       "p_upside": 19.0,
+       "p_downside": 30.0
+      }
+     }
+    }
+   },
+   "nota": "Report final: nenhum caminho de exógena (atividade não é principal nem subordinado de nenhuma). Central do hiato = P2 (rr_10a do fiscal depois da moderação, meta_12m da política monetária). pib_yoy: central mecânica = 2,50 (potencial implícito no hiato do BC, F) + hiato(q) - hiato(q-4). Distribuição: G at_rf_tese.py."
+  },
+  "fiscal": {
+   "agente": "fiscal",
+   "rodada": "rf",
+   "ciclo": "2026-10-27",
+   "caminhos": {
+    "fiscal": {
+     "4T26": 140.0,
+     "1T27": 142.0,
+     "2T27": 139.0,
+     "3T27": 135.0,
+     "4T27": 130.0,
+     "1T28": 125.0
+    },
+    "rr_10a": {
+     "4T26": 7.75,
+     "1T27": 7.95,
+     "2T27": 7.9,
+     "3T27": 7.8,
+     "4T27": 7.75,
+     "1T28": 7.7
+    }
+   },
+   "tese": {
+    "fiscal": {
+     "tipo": "exogena",
+     "nome": "Risco fiscal (CDS de 5 anos)",
+     "unidade": "pontos-base",
+     "trimestres": {
+      "4T26": {
+       "central": 140.0,
+       "faixa": [
+        125.0,
+        160.0
+       ],
+       "p_faixa": 60.0,
+       "p_upside": 27.0,
+       "p_downside": 13.0
+      },
+      "1T27": {
+       "central": 142.0,
+       "faixa": [
+        125.0,
+        170.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      },
+      "2T27": {
+       "central": 139.0,
+       "faixa": [
+        121.0,
+        174.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      },
+      "3T27": {
+       "central": 135.0,
+       "faixa": [
+        117.0,
+        175.0
+       ],
+       "p_faixa": 54.0,
+       "p_upside": 30.0,
+       "p_downside": 16.0
+      },
+      "4T27": {
+       "central": 130.0,
+       "faixa": [
+        113.0,
+        176.0
+       ],
+       "p_faixa": 54.0,
+       "p_upside": 30.0,
+       "p_downside": 16.0
+      },
+      "1T28": {
+       "central": 125.0,
+       "faixa": [
+        110.0,
+        176.0
+       ],
+       "p_faixa": 54.0,
+       "p_upside": 30.0,
+       "p_downside": 16.0
+      }
+     }
+    },
+    "rr_10a": {
+     "tipo": "exogena",
+     "nome": "Juro real de 10 anos (NTN-B)",
+     "unidade": "% ao ano",
+     "trimestres": {
+      "4T26": {
+       "central": 7.75,
+       "faixa": [
+        7.55,
+        7.89
+       ],
+       "p_faixa": 60.0,
+       "p_upside": 25.0,
+       "p_downside": 15.0
+      },
+      "1T27": {
+       "central": 7.95,
+       "faixa": [
+        7.55,
+        8.45
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 28.0,
+       "p_downside": 17.0
+      },
+      "2T27": {
+       "central": 7.9,
+       "faixa": [
+        7.45,
+        8.55
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 28.0,
+       "p_downside": 17.0
+      },
+      "3T27": {
+       "central": 7.8,
+       "faixa": [
+        7.35,
+        8.6
+       ],
+       "p_faixa": 54.0,
+       "p_upside": 28.0,
+       "p_downside": 18.0
+      },
+      "4T27": {
+       "central": 7.75,
+       "faixa": [
+        7.3,
+        8.6
+       ],
+       "p_faixa": 54.0,
+       "p_upside": 28.0,
+       "p_downside": 18.0
+      },
+      "1T28": {
+       "central": 7.7,
+       "faixa": [
+        7.25,
+        8.6
+       ],
+       "p_faixa": 54.0,
+       "p_upside": 28.0,
+       "p_downside": 18.0
+      }
+     }
+    }
+   },
+   "nota": "Report final. rr_10a: perto de 8,0 em 1T27 (a reeleição, r1-04, nível A, é contra a reversão), 4T26 a 7,75 (43 pregões restantes a ~8,05; o juro real longo subiu de novo em 27/10, r2-07, nível B) e queda de 0,25 p.p. até 1T28 (Treasury; a alta de juros cobrada nos dois primeiros anos da curva devolve se o Copom não subir). CDS: componente global do externo na alta e na queda, doméstico parado. Sem caminho de referência para meta_12m."
+  },
+  "externo": {
+   "agente": "externo",
+   "rodada": "rf",
+   "ciclo": "2026-10-27",
+   "caminhos": {
+    "ffr": {
+     "4T26": 4.13,
+     "1T27": 4.13,
+     "2T27": 4.13,
+     "3T27": 4.13,
+     "4T27": 4.13,
+     "1T28": 3.88
+    },
+    "infl_us": {
+     "4T26": 0.86,
+     "1T27": 0.61,
+     "2T27": 0.61,
+     "3T27": 0.65,
+     "4T27": 0.63,
+     "1T28": 0.65
+    },
+    "dxy_em": {
+     "4T26": 130.5,
+     "1T27": 131.0,
+     "2T27": 130.5,
+     "3T27": 130.0,
+     "4T27": 129.5,
+     "1T28": 129.0
+    },
+    "sp500": {
+     "4T26": 7750.0,
+     "1T27": 7900.0,
+     "2T27": 8050.0,
+     "3T27": 8200.0,
+     "4T27": 8350.0,
+     "1T28": 8500.0
+    },
+    "icbr_usd": {
+     "4T26": 206.2,
+     "1T27": 202.6,
+     "2T27": 201.0,
+     "3T27": 199.9,
+     "4T27": 199.0,
+     "1T28": 198.3
+    },
+    "icbr_agr_usd": {
+     "4T26": 203.9,
+     "1T27": 200.9,
+     "2T27": 199.3,
+     "3T27": 198.4,
+     "4T27": 197.8,
+     "1T28": 197.4
+    },
+    "icbr_met_usd": {
+     "4T26": 331.7,
+     "1T27": 330.0,
+     "2T27": 330.0,
+     "3T27": 328.7,
+     "4T27": 327.3,
+     "1T28": 325.7
+    }
+   },
+   "tese": {
+    "ffr": {
+     "tipo": "exogena",
+     "nome": "Juro dos Fed Funds",
+     "unidade": "% ao ano",
+     "trimestres": {
+      "4T26": {
+       "central": 4.13,
+       "faixa": [
+        4.0,
+        4.25
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      },
+      "1T27": {
+       "central": 4.13,
+       "faixa": [
+        3.88,
+        4.38
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      },
+      "2T27": {
+       "central": 4.13,
+       "faixa": [
+        3.75,
+        4.38
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      },
+      "3T27": {
+       "central": 4.13,
+       "faixa": [
+        3.63,
+        4.38
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      },
+      "4T27": {
+       "central": 4.13,
+       "faixa": [
+        3.63,
+        4.38
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      },
+      "1T28": {
+       "central": 3.88,
+       "faixa": [
+        3.5,
+        4.25
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      }
+     }
+    },
+    "infl_us": {
+     "tipo": "exogena",
+     "nome": "Inflação dos Estados Unidos no trimestre",
+     "unidade": "% no trimestre",
+     "trimestres": {
+      "4T26": {
+       "central": 0.86,
+       "faixa": [
+        0.65,
+        1.1
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      },
+      "1T27": {
+       "central": 0.61,
+       "faixa": [
+        0.46,
+        0.76
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 30.0,
+       "p_downside": 15.0
+      },
+      "2T27": {
+       "central": 0.61,
+       "faixa": [
+        0.46,
+        0.76
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 30.0,
+       "p_downside": 20.0
+      },
+      "3T27": {
+       "central": 0.65,
+       "faixa": [
+        0.5,
+        0.8
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 30.0,
+       "p_downside": 20.0
+      },
+      "4T27": {
+       "central": 0.63,
+       "faixa": [
+        0.48,
+        0.78
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 30.0,
+       "p_downside": 20.0
+      },
+      "1T28": {
+       "central": 0.65,
+       "faixa": [
+        0.5,
+        0.8
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 30.0,
+       "p_downside": 20.0
+      }
+     }
+    },
+    "dxy_em": {
+     "tipo": "exogena",
+     "nome": "Dólar contra emergentes",
+     "unidade": "pontos do índice",
+     "trimestres": {
+      "4T26": {
+       "central": 130.5,
+       "faixa": [
+        129.2,
+        132.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 26.0,
+       "p_downside": 19.0
+      },
+      "1T27": {
+       "central": 131.0,
+       "faixa": [
+        129.0,
+        133.8
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 26.0,
+       "p_downside": 19.0
+      },
+      "2T27": {
+       "central": 130.5,
+       "faixa": [
+        128.2,
+        133.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 26.0,
+       "p_downside": 19.0
+      },
+      "3T27": {
+       "central": 130.0,
+       "faixa": [
+        127.5,
+        132.2
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 26.0,
+       "p_downside": 19.0
+      },
+      "4T27": {
+       "central": 129.5,
+       "faixa": [
+        127.0,
+        131.5
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 26.0,
+       "p_downside": 19.0
+      },
+      "1T28": {
+       "central": 129.0,
+       "faixa": [
+        126.5,
+        130.8
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 26.0,
+       "p_downside": 19.0
+      }
+     }
+    },
+    "sp500": {
+     "tipo": "exogena",
+     "nome": "Bolsa americana (S&P 500)",
+     "unidade": "pontos do índice",
+     "trimestres": {
+      "4T26": {
+       "central": 7750.0,
+       "faixa": [
+        7375.0,
+        7982.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 20.0,
+       "p_downside": 25.0
+      },
+      "1T27": {
+       "central": 7900.0,
+       "faixa": [
+        7200.0,
+        8137.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 20.0,
+       "p_downside": 25.0
+      },
+      "2T27": {
+       "central": 8050.0,
+       "faixa": [
+        7375.0,
+        8350.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 20.0,
+       "p_downside": 25.0
+      },
+      "3T27": {
+       "central": 8200.0,
+       "faixa": [
+        7575.0,
+        8575.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 20.0,
+       "p_downside": 25.0
+      },
+      "4T27": {
+       "central": 8350.0,
+       "faixa": [
+        7775.0,
+        8775.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 20.0,
+       "p_downside": 25.0
+      },
+      "1T28": {
+       "central": 8500.0,
+       "faixa": [
+        7975.0,
+        8975.0
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 20.0,
+       "p_downside": 25.0
+      }
+     }
+    },
+    "icbr_usd": {
+     "tipo": "exogena",
+     "nome": "Commodities em dólar (IC-Br)",
+     "unidade": "pontos do índice",
+     "trimestres": {
+      "4T26": {
+       "central": 206.2,
+       "faixa": [
+        201.0,
+        211.4
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 25.0,
+       "p_downside": 20.0
+      },
+      "1T27": {
+       "central": 202.6,
+       "faixa": [
+        195.4,
+        209.8
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 25.0,
+       "p_downside": 20.0
+      },
+      "2T27": {
+       "central": 201.0,
+       "faixa": [
+        192.7,
+        209.1
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 25.0,
+       "p_downside": 20.0
+      },
+      "3T27": {
+       "central": 199.9,
+       "faixa": [
+        191.6,
+        208.4
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 25.0,
+       "p_downside": 20.0
+      },
+      "4T27": {
+       "central": 199.0,
+       "faixa": [
+        191.2,
+        207.3
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 25.0,
+       "p_downside": 20.0
+      },
+      "1T28": {
+       "central": 198.3,
+       "faixa": [
+        191.1,
+        206.8
+       ],
+       "p_faixa": 55.0,
+       "p_upside": 25.0,
+       "p_downside": 20.0
+      }
+     }
+    },
+    "icbr_agr_usd": {
+     "tipo": "exogena",
+     "nome": "Commodities agrícolas em dólar (IC-Br agropecuária)",
+     "unidade": "pontos do índice",
+     "trimestres": {
+      "4T26": {
+       "central": 203.9,
+       "faixa": [
+        199.8,
+        208.0
+       ],
+       "p_faixa": 70.0,
+       "p_upside": 15.0,
+       "p_downside": 15.0
+      },
+      "1T27": {
+       "central": 200.9,
+       "faixa": [
+        196.4,
+        206.0
+       ],
+       "p_faixa": 60.0,
+       "p_upside": 20.0,
+       "p_downside": 20.0
+      },
+      "2T27": {
+       "central": 199.3,
+       "faixa": [
+        193.9,
+        205.6
+       ],
+       "p_faixa": 60.0,
+       "p_upside": 20.0,
+       "p_downside": 20.0
+      },
+      "3T27": {
+       "central": 198.4,
+       "faixa": [
+        192.5,
+        205.6
+       ],
+       "p_faixa": 60.0,
+       "p_upside": 20.0,
+       "p_downside": 20.0
+      },
+      "4T27": {
+       "central": 197.8,
+       "faixa": [
+        192.1,
+        205.1
+       ],
+       "p_faixa": 60.0,
+       "p_upside": 20.0,
+       "p_downside": 20.0
+      },
+      "1T28": {
+       "central": 197.4,
+       "faixa": [
+        192.1,
+        204.6
+       ],
+       "p_faixa": 60.0,
+       "p_upside": 20.0,
+       "p_downside": 20.0
+      }
+     }
+    },
+    "icbr_met_usd": {
+     "tipo": "exogena",
+     "nome": "Metais em dólar (IC-Br metal)",
+     "unidade": "pontos do índice",
+     "trimestres": {
+      "4T26": {
+       "central": 331.7,
+       "faixa": [
+        321.7,
+        341.7
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 20.0,
+       "p_downside": 30.0
+      },
+      "1T27": {
+       "central": 330.0,
+       "faixa": [
+        314.1,
+        344.0
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 20.0,
+       "p_downside": 30.0
+      },
+      "2T27": {
+       "central": 330.0,
+       "faixa": [
+        306.6,
+        346.0
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 20.0,
+       "p_downside": 30.0
+      },
+      "3T27": {
+       "central": 328.7,
+       "faixa": [
+        302.9,
+        345.4
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 20.0,
+       "p_downside": 30.0
+      },
+      "4T27": {
+       "central": 327.3,
+       "faixa": [
+        301.1,
+        344.6
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 20.0,
+       "p_downside": 30.0
+      },
+      "1T28": {
+       "central": 325.7,
+       "faixa": [
+        300.4,
+        343.9
+       ],
+       "p_faixa": 50.0,
+       "p_upside": 20.0,
+       "p_downside": 30.0
+      }
+     }
+    }
+   },
+   "nota": "Report final. Caminhos iguais aos da r2; probabilidades do dólar EM (55/26/19) e do agro de 1T27 em diante (60/20/20) revistas. Da r2: Três blocos (Política dos EUA; Risco e dólar; Commodities). Muda contra a r1: o agro sai do Brent e do dólar EM pela ligação mensal medida (ex_r2_agro_brent.py), o que move o agro e o IC-Br total; probabilidades revistas com as notícias da rodada 1 (FOMC, Hormuz, minério) e o salto mecânico do real no dólar EM. O dólar EM é escrito sem o salto mecânico do real de 26/10."
+  },
+  "expectativas": {
+   "agente": "expectativas",
+   "rodada": "rf",
+   "ciclo": "2026-10-27",
+   "caminhos": {},
+   "tese": {
+    "focus_12m": {
+     "tipo": "modelo",
+     "nome": "Focus IPCA 12 meses à frente, média do trimestre",
+     "unidade": "% a.a.",
+     "trimestres": {
+      "4T26": {
+       "central": 4.17,
+       "faixa": [
+        4.05,
+        4.45
+       ],
+       "p_faixa": 14.0,
+       "p_upside": 85.0,
+       "p_downside": 1.0
+      },
+      "1T27": {
+       "central": 4.0,
+       "faixa": [
+        3.8,
+        4.15
+       ],
+       "p_faixa": 26.0,
+       "p_upside": 70.0,
+       "p_downside": 4.0
+      },
+      "2T27": {
+       "central": 3.82,
+       "faixa": [
+        3.6,
+        3.95
+       ],
+       "p_faixa": 35.0,
+       "p_upside": 58.0,
+       "p_downside": 7.0
+      },
+      "3T27": {
+       "central": 3.71,
+       "faixa": [
+        3.5,
+        3.9
+       ],
+       "p_faixa": 39.0,
+       "p_upside": 52.0,
+       "p_downside": 9.0
+      },
+      "4T27": {
+       "central": 3.63,
+       "faixa": [
+        3.4,
+        3.9
+       ],
+       "p_faixa": 41.0,
+       "p_upside": 48.0,
+       "p_downside": 11.0
+      },
+      "1T28": {
+       "central": 3.55,
+       "faixa": [
+        3.3,
+        3.75
+       ],
+       "p_faixa": 41.0,
+       "p_upside": 47.0,
+       "p_downside": 12.0
+      }
+     }
+    }
+   },
+   "nota": "Central = P2 (report final; expectativas não é principal nem subordinado de exógena). Limite superior da faixa = trajetória da própria Focus de 23/10 sem revisão; limite inferior = onde chega o downside com tempero (caudas r2 de fiscal e câmbio, E.e1 x 0,8)."
+  }
+ },
+ "modelo": {
+  "ciclo": "2026-10-27",
+  "trimestres": [
+   "4T26",
+   "1T27",
+   "2T27",
+   "3T27",
+   "4T27",
+   "1T28",
+   "2T28",
+   "3T28",
+   "4T28",
+   "1T29",
+   "2T29",
+   "3T29"
+  ],
+  "fechados": [],
+  "ultimo_dado": "3T26",
+  "partida": {
+   "ptax": 5.1809,
+   "selic": 14.059783,
+   "ipca_12m": 4.57612,
+   "ipca_tri": 0.5677244818268701,
+   "focus_12m": 4.367486,
+   "hiato": 0.41,
+   "ipca_12m_servicos": 2.140135931504147,
+   "ipca_12m_alimentacao": 0.655913600822635,
+   "ipca_12m_industriais": 0.6924877802824465,
+   "ipca_12m_monitorados": 1.0855440642251266,
+   "ipca_12m_residuo": 0.0020384872634218437,
+   "selic_fim": 13.75
+  },
+  "selic_fim_partida": {
+   "rot": "2026T3",
+   "valor": 13.75,
+   "data": "2026-09-30",
+   "fonte": "A/br_interest_rate.csv.gz"
+  },
+  "segurados": [
+   {
+    "chave": "vol",
+    "nome": "Volatilidade implícita do dólar",
+    "valor": 12.188,
+    "de": "2T26",
+    "em": "3T26"
+   }
+  ],
+  "endogenas": {
+   "ptax": {
+    "nome": "PTAX de venda, fechamento do trimestre",
+    "unidade": "R$/US$",
+    "casas": 3,
+    "central": [
+     5.425820732139331,
+     5.514712456103786,
+     5.516506087220798,
+     5.50136088792925,
+     5.510668667323442,
+     5.528327285968658,
+     5.5354266502551335,
+     5.524167007435566,
+     5.546262455386627,
+     5.578402507397207,
+     5.578050377820476,
+     5.5602112417344784
+    ],
+    "lo": [
+     5.337705996184453,
+     5.416376970349611,
+     5.388486852416473,
+     5.3410601077294935,
+     5.3171847324806,
+     5.300822432118018,
+     5.271853853078377,
+     5.227906158665242,
+     5.2139689981319775,
+     5.209621945630373,
+     5.172783217134491,
+     5.1156756008623425
+    ],
+    "hi": [
+     5.515666167658622,
+     5.6188209898424555,
+     5.65041473322793,
+     5.672054245645507,
+     5.721846878381645,
+     5.779308507793761,
+     5.825120106515011,
+     5.854102054815244,
+     5.915996193772301,
+     5.993218084366986,
+     6.041506885529815,
+     6.070206142078871
+    ]
+   },
+   "selic": {
+    "nome": "Selic, média do trimestre",
+    "unidade": "% a.a.",
+    "casas": 2,
+    "central": [
+     13.512141821961205,
+     13.37375224871779,
+     13.03882671645719,
+     12.69230958470205,
+     12.425906681433306,
+     12.183154425896728,
+     12.009688161914461,
+     11.852917044888345,
+     11.711685518788151,
+     11.585251850354453,
+     11.472486642730193,
+     11.3717969848165
+    ],
+    "lo": [
+     13.309104445021452,
+     12.926326446515551,
+     12.387611252627796,
+     11.92952487535434,
+     11.610536643773356,
+     11.378799968737267,
+     11.256465769965923,
+     11.181641770333894,
+     11.140808366964169,
+     11.086654424600006,
+     11.02897280630066,
+     10.978613322777441
+    ],
+    "hi": [
+     13.711889907226753,
+     13.792558893816954,
+     13.647287465163185,
+     13.443171494197609,
+     13.27902097866485,
+     13.102243798038785,
+     12.927968203719384,
+     12.786064779519833,
+     12.599644054927888,
+     12.439978865351812,
+     12.297902472571757,
+     12.140974387012102
+    ]
+   },
+   "selic_fim": {
+    "nome": "Selic, fechamento do trimestre (derivada)",
+    "unidade": "% a.a.",
+    "casas": 2,
+    "central": [
+     13.442947035339497,
+     13.20628948258749,
+     12.86556815057962,
+     12.559108133067678,
+     12.304530553665018,
+     12.096421293905594,
+     11.931302603401402,
+     11.782301281838247,
+     11.648468684571302,
+     11.528869246542323,
+     11.422141813773347,
+     null
+    ],
+    "lo": [
+     13.118446460114683,
+     12.650250126253802,
+     12.164310363055932,
+     11.771396477459612,
+     11.492721870021184,
+     11.316054429232562,
+     11.220315320528673,
+     11.16091400204008,
+     11.1190789197287,
+     11.051934481480007,
+     11.008459634953372,
+     null
+    ],
+    "hi": [
+     13.751945043088103,
+     13.719626264437018,
+     13.538490121472694,
+     13.350600302260908,
+     13.1876522948635,
+     13.015446295610806,
+     12.860968580307349,
+     12.692237934511217,
+     12.53042238693949,
+     12.365803871904971,
+     12.228124203904667,
+     null
+    ]
+   },
+   "ipca_12m": {
+    "nome": "IPCA acumulado em 12 meses, no fim do trimestre",
+    "unidade": "%",
+    "casas": 2,
+    "central": [
+     5.337323910246172,
+     4.948497704024923,
+     4.4580821435354245,
+     4.481933587769538,
+     4.317803246199015,
+     4.138347441981494,
+     3.9822456075431445,
+     3.84873487800248,
+     3.7405713802822316,
+     3.645680641208715,
+     3.5547432656497735,
+     3.4669555137815777
+    ],
+    "lo": [
+     5.1501111343714046,
+     4.6798584854672365,
+     4.167230139078981,
+     4.233393603430469,
+     4.0408317493006995,
+     3.8193390941941185,
+     3.6282100572705422,
+     3.4577311744007133,
+     3.313386161350662,
+     3.1939964607340166,
+     3.070403692188184,
+     2.9373013452005603
+    ],
+    "hi": [
+     5.52523265622713,
+     5.196871740410192,
+     4.748509530337519,
+     4.736414019906343,
+     4.629289146324278,
+     4.498763209066814,
+     4.387426866620481,
+     4.305377450579839,
+     4.236237679393606,
+     4.181456121153704,
+     4.1251333279584745,
+     4.072102719208792
+    ]
+   },
+   "ipca_12m_servicos": {
+    "nome": "IPCA 12m: contribuição de serviços",
+    "unidade": "p.p.",
+    "casas": 2,
+    "central": [
+     2.0557804177960284,
+     1.9603441676412126,
+     1.9647047583713104,
+     1.8611119102111011,
+     1.7685433740245837,
+     1.690450519983013,
+     1.615813238115884,
+     1.5397932934191305,
+     1.4688778993474456,
+     1.4087665957163158,
+     1.348713225934339,
+     1.298548726478441
+    ],
+    "lo": [
+     1.9964033117263975,
+     1.8721715222233968,
+     1.8507442998494978,
+     1.7200180546309571,
+     1.5981310572015728,
+     1.497474871409937,
+     1.3973291987195808,
+     1.299639360587958,
+     1.2123507963359783,
+     1.139600088205865,
+     1.0640498413824533,
+     0.997418458942382
+    ],
+    "hi": [
+     2.1109591869088202,
+     2.045329539826657,
+     2.0825802634692145,
+     2.0143536687545986,
+     1.9574393902259226,
+     1.9179926091378294,
+     1.8805487031158639,
+     1.8361260534911534,
+     1.7925665613914683,
+     1.7562265308587506,
+     1.7198091152659916,
+     1.6831284983195516
+    ]
+   },
+   "ipca_12m_alimentacao": {
+    "nome": "IPCA 12m: contribuição de alimentação",
+    "unidade": "p.p.",
+    "casas": 2,
+    "central": [
+     1.0160403249813945,
+     0.955613727997527,
+     0.6664757557164251,
+     0.7014139020317364,
+     0.6273452398765231,
+     0.580682980311233,
+     0.5639981380095569,
+     0.5528339432680616,
+     0.553424724702165,
+     0.5535150642675128,
+     0.5481515422697205,
+     0.5331755263365687
+    ],
+    "lo": [
+     0.9146413766047575,
+     0.8175432292582652,
+     0.5058397857681414,
+     0.6024118245973219,
+     0.5385891885688826,
+     0.4761719714872463,
+     0.45015012529979403,
+     0.4252273656627363,
+     0.4152702961810487,
+     0.4105706087316223,
+     0.39996147255739883,
+     0.38231255326102276
+    ],
+    "hi": [
+     1.118740000499201,
+     1.090074035193737,
+     0.8175490038302842,
+     0.8102353282922501,
+     0.7334308601770128,
+     0.6931938397104777,
+     0.6877850252179406,
+     0.6871697318889628,
+     0.6974913296550523,
+     0.7026376905856829,
+     0.6983558166679694,
+     0.684349840948589
+    ]
+   },
+   "ipca_12m_industriais": {
+    "nome": "IPCA 12m: contribuição de bens industriais",
+    "unidade": "p.p.",
+    "casas": 2,
+    "central": [
+     0.9010827627285904,
+     0.8311230858183534,
+     0.8249447330409827,
+     0.8768885459739029,
+     0.9128122485753346,
+     0.8916527700538994,
+     0.8532385103275792,
+     0.8254203503067534,
+     0.8075206224140232,
+     0.7885140255874623,
+     0.7756511511282356,
+     0.7627851580101906
+    ],
+    "lo": [
+     0.8492740598256117,
+     0.746563074556775,
+     0.7254625277156643,
+     0.7837979862297,
+     0.8076391764296795,
+     0.7672400343978732,
+     0.7093525332375441,
+     0.6578514873897835,
+     0.612926369253852,
+     0.574315757817777,
+     0.5447834795544084,
+     0.5112598287606799
+    ],
+    "hi": [
+     0.9510731288258596,
+     0.9112200550364276,
+     0.9208757204403438,
+     0.9655204774904952,
+     1.0158011212869722,
+     1.0107766143777903,
+     0.9829686731182278,
+     0.9699109985493187,
+     0.9717484329594298,
+     0.9726055991433926,
+     0.9765114758164379,
+     0.9747177910890034
+    ]
+   },
+   "ipca_12m_monitorados": {
+    "nome": "IPCA 12m: contribuição de monitorados",
+    "unidade": "p.p.",
+    "casas": 2,
+    "central": [
+     1.3674008588343902,
+     1.2126242932272255,
+     1.005699886927844,
+     1.0425192295527916,
+     1.0091023837225792,
+     0.975561171633348,
+     0.9491957210901247,
+     0.9306872910085409,
+     0.9107481338185913,
+     0.8948849556374221,
+     0.8822273463175154,
+     0.8724461029564817
+    ],
+    "lo": [
+     1.2238413597418003,
+     1.0313807962697321,
+     0.8297808962178491,
+     0.9371484971748938,
+     0.8933356427978216,
+     0.8510774222402171,
+     0.826552121978034,
+     0.8158756155080749,
+     0.8027249273497553,
+     0.797737329255459,
+     0.7888864352895891,
+     0.7829543189978787
+    ],
+    "hi": [
+     1.5027567285897387,
+     1.3851178344455093,
+     1.1803232156830343,
+     1.1368396391073565,
+     1.11524743336608,
+     1.0852869929379658,
+     1.0594739602424426,
+     1.0331259303262703,
+     1.0091094626679797,
+     0.9901780867921867,
+     0.9782845584276834,
+     0.9679046351891228
+    ]
+   },
+   "ipca_12m_residuo": {
+    "nome": "IPCA 12m: resíduo de agregação dos trimestres observados",
+    "unidade": "p.p.",
+    "casas": 2,
+    "central": [
+     -0.002980454094208037,
+     -0.011207570659393781,
+     -0.0037429905211299186,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "lo": [
+     -0.002980454094208037,
+     -0.011207570659393781,
+     -0.0037429905211299186,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "hi": [
+     -0.002980454094208037,
+     -0.011207570659393781,
+     -0.0037429905211299186,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "ipca_tri": {
+    "nome": "IPCA no trimestre",
+    "unidade": "%",
+    "casas": 2,
+    "central": [
+     1.333322864275055,
+     1.5451775358565678,
+     0.9419841392827699,
+     0.5906876209445633,
+     1.1741386654085861,
+     1.3704914234956567,
+     0.7906736059101638,
+     0.46153157117085897,
+     1.068760889456466,
+     1.277768579159666,
+     0.7022411764848968,
+     0.37636606616597845
+    ],
+    "lo": [
+     1.153226275926178,
+     1.356306110175609,
+     0.7700385032210155,
+     0.4219018487643833,
+     0.9794621078508925,
+     1.1745846470172072,
+     0.6164728848871093,
+     0.273833201078566,
+     0.860456089834738,
+     1.067462863463331,
+     0.5098867480102909,
+     0.17692355193219544
+    ],
+    "hi": [
+     1.5140889680516745,
+     1.7229729214908174,
+     1.1163603169837888,
+     0.7596718736946118,
+     1.3801849120658627,
+     1.5771328551284158,
+     0.9904777386865016,
+     0.6583719688735945,
+     1.3005527691018592,
+     1.4958302178956773,
+     0.9266239462202952,
+     0.5974252197173069
+    ]
+   },
+   "focus_12m": {
+    "nome": "Focus IPCA 12 meses à frente, média do trimestre",
+    "unidade": "% a.a.",
+    "casas": 2,
+    "central": [
+     4.172813553707974,
+     3.9967820205292752,
+     3.8151526836473093,
+     3.713450347612978,
+     3.6277951623664517,
+     3.5489875121192496,
+     3.4779369435709517,
+     3.4150486814449703,
+     3.361004027214729,
+     3.3142459515490215,
+     3.272362162803333,
+     3.233820672606536
+    ],
+    "lo": [
+     4.066668961862495,
+     3.8474094413525357,
+     3.6490556087811075,
+     3.550684607266308,
+     3.4663352636018003,
+     3.3892256952125686,
+     3.315084894073811,
+     3.2490790797967373,
+     3.1912211379654423,
+     3.13866301534827,
+     3.092902997214427,
+     3.045113515116464
+    ],
+    "hi": [
+     4.276866203896285,
+     4.159867773445756,
+     4.014918853667667,
+     3.9159832977805644,
+     3.8431570653500895,
+     3.7730404217084503,
+     3.7055827333571045,
+     3.6463645000400495,
+     3.6017207277866747,
+     3.5583997377333407,
+     3.5210035027414666,
+     3.489757368685517
+    ]
+   },
+   "hiato": {
+    "nome": "Hiato do produto",
+    "unidade": "% do potencial",
+    "casas": 2,
+    "central": [
+     0.1305054730934225,
+     -0.08173267151630258,
+     -0.24337730826934956,
+     -0.364559892265661,
+     -0.4530745879536989,
+     -0.5151506639223565,
+     -0.5557784124084367,
+     -0.5790132571033286,
+     -0.5882186967296877,
+     -0.586254797923571,
+     -0.5755706280396877,
+     -0.5582282656560583
+    ],
+    "lo": [
+     -0.03232347765799998,
+     -0.3636777791130999,
+     -0.6162252594464699,
+     -0.812958798966922,
+     -0.9688008657046445,
+     -1.1065744116952936,
+     -1.1808867651834802,
+     -1.2458340170991242,
+     -1.2911900125804214,
+     -1.3191319385448546,
+     -1.3321676841959285,
+     -1.3113303099136888
+    ],
+    "hi": [
+     0.296299488856,
+     0.20535278135426727,
+     0.1328625958494777,
+     0.07937534314698574,
+     0.031692101018450894,
+     0.001475855216773951,
+     -0.02343346676475383,
+     -0.03956840824411132,
+     -0.04846309390857011,
+     -0.06118131205218055,
+     -0.06672174334251191,
+     -0.07021168103860499
+    ]
+   }
+  },
+  "entradas": {
+   "meta_12m": {
+    "nome": "Meta de inflação (12 meses)",
+    "unidade": "% ao ano",
+    "caminho": [
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0,
+     3.0
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "rr_10a": {
+    "nome": "Juro real de 10 anos (NTN-B)",
+    "unidade": "% ao ano",
+    "caminho": [
+     7.75,
+     7.95,
+     7.9,
+     7.8,
+     7.75,
+     7.7,
+     7.7,
+     7.7,
+     7.7,
+     7.7,
+     7.7,
+     7.7
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "fiscal": {
+    "nome": "Risco fiscal (CDS de 5 anos)",
+    "unidade": "pontos-base",
+    "caminho": [
+     140.0,
+     142.0,
+     139.0,
+     135.0,
+     130.0,
+     125.0,
+     125.0,
+     125.0,
+     125.0,
+     125.0,
+     125.0,
+     125.0
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "vol": {
+    "nome": "Volatilidade implícita do dólar",
+    "unidade": "% ao ano",
+    "caminho": [
+     17.0,
+     15.5,
+     14.5,
+     14.0,
+     13.5,
+     13.5,
+     13.5,
+     13.5,
+     13.5,
+     13.5,
+     13.5,
+     13.5
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "infl_us": {
+    "nome": "Inflação dos Estados Unidos no trimestre",
+    "unidade": "% no trimestre",
+    "caminho": [
+     0.86,
+     0.61,
+     0.61,
+     0.65,
+     0.63,
+     0.65,
+     0.65,
+     0.65,
+     0.65,
+     0.65,
+     0.65,
+     0.65
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "ffr": {
+    "nome": "Juro dos Fed Funds",
+    "unidade": "% ao ano",
+    "caminho": [
+     4.13,
+     4.13,
+     4.13,
+     4.13,
+     4.13,
+     3.88,
+     3.88,
+     3.88,
+     3.88,
+     3.88,
+     3.88,
+     3.88
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "dxy_em": {
+    "nome": "Dólar contra emergentes",
+    "unidade": "pontos do índice",
+    "caminho": [
+     130.5,
+     131.0,
+     130.5,
+     130.0,
+     129.5,
+     129.0,
+     129.0,
+     129.0,
+     129.0,
+     129.0,
+     129.0,
+     129.0
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "sp500": {
+    "nome": "Bolsa americana (S&P 500)",
+    "unidade": "pontos do índice",
+    "caminho": [
+     7750.0,
+     7900.0,
+     8050.0,
+     8200.0,
+     8350.0,
+     8500.0,
+     8500.0,
+     8500.0,
+     8500.0,
+     8500.0,
+     8500.0,
+     8500.0
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "icbr_usd": {
+    "nome": "Commodities em dólar (IC-Br)",
+    "unidade": "pontos do índice",
+    "caminho": [
+     206.2,
+     202.6,
+     201.0,
+     199.9,
+     199.0,
+     198.3,
+     198.3,
+     198.3,
+     198.3,
+     198.3,
+     198.3,
+     198.3
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "icbr_agr_usd": {
+    "nome": "Commodities agrícolas em dólar (IC-Br agropecuária)",
+    "unidade": "pontos do índice",
+    "caminho": [
+     203.9,
+     200.9,
+     199.3,
+     198.4,
+     197.8,
+     197.4,
+     197.4,
+     197.4,
+     197.4,
+     197.4,
+     197.4,
+     197.4
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   },
+   "icbr_met_usd": {
+    "nome": "Metais em dólar (IC-Br metal)",
+    "unidade": "pontos do índice",
+    "caminho": [
+     331.7,
+     330.0,
+     330.0,
+     328.7,
+     327.3,
+     325.7,
+     325.7,
+     325.7,
+     325.7,
+     325.7,
+     325.7,
+     325.7
+    ],
+    "fonte": [
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário",
+     "cenário"
+    ]
+   }
+  },
+  "mult": [],
+  "caminhos": {
+   "meta_12m": {
+    "4T26": 3.0,
+    "1T27": 3.0,
+    "2T27": 3.0,
+    "3T27": 3.0,
+    "4T27": 3.0,
+    "1T28": 3.0,
+    "2T28": 3.0,
+    "3T28": 3.0,
+    "4T28": 3.0,
+    "1T29": 3.0,
+    "2T29": 3.0,
+    "3T29": 3.0
+   },
+   "rr_10a": {
+    "4T26": 7.75,
+    "1T27": 7.95,
+    "2T27": 7.9,
+    "3T27": 7.8,
+    "4T27": 7.75,
+    "1T28": 7.7,
+    "2T28": 7.7,
+    "3T28": 7.7,
+    "4T28": 7.7,
+    "1T29": 7.7,
+    "2T29": 7.7,
+    "3T29": 7.7
+   },
+   "fiscal": {
+    "4T26": 140.0,
+    "1T27": 142.0,
+    "2T27": 139.0,
+    "3T27": 135.0,
+    "4T27": 130.0,
+    "1T28": 125.0,
+    "2T28": 125.0,
+    "3T28": 125.0,
+    "4T28": 125.0,
+    "1T29": 125.0,
+    "2T29": 125.0,
+    "3T29": 125.0
+   },
+   "vol": {
+    "4T26": 17.0,
+    "1T27": 15.5,
+    "2T27": 14.5,
+    "3T27": 14.0,
+    "4T27": 13.5,
+    "1T28": 13.5,
+    "2T28": 13.5,
+    "3T28": 13.5,
+    "4T28": 13.5,
+    "1T29": 13.5,
+    "2T29": 13.5,
+    "3T29": 13.5
+   },
+   "infl_us": {
+    "4T26": 0.86,
+    "1T27": 0.61,
+    "2T27": 0.61,
+    "3T27": 0.65,
+    "4T27": 0.63,
+    "1T28": 0.65,
+    "2T28": 0.65,
+    "3T28": 0.65,
+    "4T28": 0.65,
+    "1T29": 0.65,
+    "2T29": 0.65,
+    "3T29": 0.65
+   },
+   "ffr": {
+    "4T26": 4.13,
+    "1T27": 4.13,
+    "2T27": 4.13,
+    "3T27": 4.13,
+    "4T27": 4.13,
+    "1T28": 3.88,
+    "2T28": 3.88,
+    "3T28": 3.88,
+    "4T28": 3.88,
+    "1T29": 3.88,
+    "2T29": 3.88,
+    "3T29": 3.88
+   },
+   "dxy_em": {
+    "4T26": 130.5,
+    "1T27": 131.0,
+    "2T27": 130.5,
+    "3T27": 130.0,
+    "4T27": 129.5,
+    "1T28": 129.0,
+    "2T28": 129.0,
+    "3T28": 129.0,
+    "4T28": 129.0,
+    "1T29": 129.0,
+    "2T29": 129.0,
+    "3T29": 129.0
+   },
+   "sp500": {
+    "4T26": 7750.0,
+    "1T27": 7900.0,
+    "2T27": 8050.0,
+    "3T27": 8200.0,
+    "4T27": 8350.0,
+    "1T28": 8500.0,
+    "2T28": 8500.0,
+    "3T28": 8500.0,
+    "4T28": 8500.0,
+    "1T29": 8500.0,
+    "2T29": 8500.0,
+    "3T29": 8500.0
+   },
+   "icbr_usd": {
+    "4T26": 206.2,
+    "1T27": 202.6,
+    "2T27": 201.0,
+    "3T27": 199.9,
+    "4T27": 199.0,
+    "1T28": 198.3,
+    "2T28": 198.3,
+    "3T28": 198.3,
+    "4T28": 198.3,
+    "1T29": 198.3,
+    "2T29": 198.3,
+    "3T29": 198.3
+   },
+   "icbr_agr_usd": {
+    "4T26": 203.9,
+    "1T27": 200.9,
+    "2T27": 199.3,
+    "3T27": 198.4,
+    "4T27": 197.8,
+    "1T28": 197.4,
+    "2T28": 197.4,
+    "3T28": 197.4,
+    "4T28": 197.4,
+    "1T29": 197.4,
+    "2T29": 197.4,
+    "3T29": 197.4
+   },
+   "icbr_met_usd": {
+    "4T26": 331.7,
+    "1T27": 330.0,
+    "2T27": 330.0,
+    "3T27": 328.7,
+    "4T27": 327.3,
+    "1T28": 325.7,
+    "2T28": 325.7,
+    "3T28": 325.7,
+    "4T28": 325.7,
+    "1T29": 325.7,
+    "2T29": 325.7,
+    "3T29": 325.7
+   }
+  },
+  "voltas": 11,
+  "faixa": {
+   "prob": 0.9,
+   "desenhos": 1000,
+   "nao_convergiu": 0
+  }
+ }
+}

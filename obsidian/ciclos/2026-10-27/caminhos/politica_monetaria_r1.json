@@ -1,0 +1,22 @@
+{
+  "agente": "politica_monetaria",
+  "rodada": "r1",
+  "ciclo": "2026-10-27",
+  "caminhos": {
+    "meta_12m": {"4T26": 3.00, "1T27": 3.00, "2T27": 3.00, "3T27": 3.00, "4T27": 3.00, "1T28": 3.00},
+    "rr_10a": {"4T26": 7.76, "1T27": 8.05, "2T27": 8.05, "3T27": 8.05, "4T27": 8.05, "1T28": 8.05}
+  },
+  "tese": {
+    "selic_fim": {
+      "trimestres": {
+        "4T26": {"central": 13.49, "faixa": [13.45, 13.80], "p_faixa": 59, "p_upside": 34, "p_downside": 7},
+        "1T27": {"central": 13.32, "faixa": [13.25, 14.05], "p_faixa": 56, "p_upside": 31, "p_downside": 13},
+        "2T27": {"central": 13.04, "faixa": [12.75, 14.05], "p_faixa": 58, "p_upside": 33, "p_downside": 9},
+        "3T27": {"central": 12.80, "faixa": [12.50, 14.05], "p_faixa": 57, "p_upside": 30, "p_downside": 13},
+        "4T27": {"central": 12.58, "faixa": [12.25, 14.05], "p_faixa": 59, "p_upside": 25, "p_downside": 16},
+        "1T28": {"central": 12.39, "faixa": [12.00, 14.05], "p_faixa": 66, "p_upside": 18, "p_downside": 16}
+      }
+    }
+  },
+  "nota": "meta_12m: caminho de principal (3,00, meta contínua do CMN). rr_10a: caminho de REFERÊNCIA como subordinado (principal: fiscal); não entra no P e vira divergência a responder. A central da rodada 1 sai do G pm_cenarios.py (base), rodado com rr_10a de referência e CDS 137,43 segurado (aguarda fiscal); as demais exógenas no padrão do simulador. Faixas de 4T26 e seguintes: os níveis discretos de 25 p.b. (13,45-13,80 = 13,50 ou 13,75)."
+}

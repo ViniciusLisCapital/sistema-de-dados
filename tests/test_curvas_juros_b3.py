@@ -44,6 +44,7 @@ import pytest
 from connectors.b3_curvas import DIAS_POR_MES, VERTICES  # noqa: F401
 from domain.db.brasil.b3.br_interest_rate import (
     _BANDA_BREAKEVEN,
+    _LIMITES,
     _PISO_NOMINAL,
     _PISO_REAL,
     _PISO_VERTICES,
@@ -62,7 +63,27 @@ def test_a_spec_e_a_que_foi_acordada():
     assert SPEC["DIPRE"] == [1, 3, 6, 9, 12, 24, 60, 120, 240]
     assert SPEC["PREJS"] == [6, 9, 12, 24, 60, 120]
     assert SPEC["NTNBJS"] == [3, 6, 9, 12, 24, 60, 120, 240]
+    # As cinco de 2026-10-27. Os cupons e o juro em dolar NAO tem 1M: medido, o
+    # 1M do cupom sujo vai de -88% a +119% (a PTAX de D-1 dividida por poucos dias).
+    assert SPEC["LTN"] == [3, 6, 9, 12, 24, 60]
+    assert SPEC["DIIPCA"] == [3, 6, 9, 12, 24, 60, 120, 240]
+    for c in ["CUPOM_SUJO", "CUPOM_LIMPO", "JUROS_USD"]:
+        assert SPEC[c] == [3, 6, 9, 12, 24, 60, 120], c
     assert DIAS_POR_MES == 30.44
+
+
+def test_toda_curva_tem_os_tres_limiares():
+    """Uma curva nova sem entrada aqui levanta KeyError no guarda na primeira
+    carga -- ou, pior, cai num default que nao foi medido para ela."""
+    assert set(_LIMITES) == set(SPEC) == set(_SALTO_MAX) == set(_PISO_VERTICES)
+
+
+def test_o_cupom_sujo_tem_limites_proprios():
+    """Outubro/2008: o 3M foi de -25,4 a +43,2 em duas semanas, com dado bom.
+    Os limites nominais reprovariam a crise inteira."""
+    lo, hi = _LIMITES["CUPOM_SUJO"]
+    assert lo <= -25.442 and hi >= 43.185
+    assert _LIMITES["DIIPCA"][0] <= -7.274          # DI x IPCA curto, jan/2021
 
 
 def test_a_curva_real_tem_piso_proprio():
@@ -264,8 +285,8 @@ def test_a_serie_gravada_cobre_o_que_a_spec_promete(curvas_b3):
         assert tem == {f"{m}M" for m in meses}, (curva, sorted(tem))
 
 
-def test_a_tabela_hospeda_exatamente_quatro_curvas(serie):
-    """As 3 da B3 mais a POLICY. Se uma quinta aparecer, este teste diz -- e o
+def test_a_tabela_hospeda_exatamente_as_curvas_da_spec_e_a_policy(serie):
+    """As 8 da B3 mais a POLICY. Se uma decima aparecer, este teste diz -- e o
     resto do arquivo passa a nao cobri-la, que e o motivo de afirmar aqui."""
     assert set(serie.curve) == set(SPEC) | {"POLICY"}, sorted(set(serie.curve))
 
@@ -289,9 +310,8 @@ def test_a_policy_e_a_meta_do_bc_no_vertice_de_um_dia(serie):
 
 
 def test_nenhum_valor_fora_do_piso_e_teto(curvas_b3):
-    piso = {"NTNBJS": _PISO_REAL}
-    fora = curvas_b3[curvas_b3.apply(lambda r: not (piso.get(r.curve, _PISO_NOMINAL)
-                                            <= r.value <= _TETO), axis=1)]
+    fora = curvas_b3[curvas_b3.apply(lambda r: not (_LIMITES[r.curve][0]
+                                            <= r.value <= _LIMITES[r.curve][1]), axis=1)]
     assert fora.empty, fora.head(10).to_string()
 
 
@@ -308,16 +328,31 @@ def test_breakeven_dentro_da_banda_em_toda_a_serie(curvas_b3):
     assert testados >= 7, testados
 
 
+# Degraus da FONTE que o guarda marca de proposito (ver o comentario de
+# `_SALTO_MAX`): o DI x IPCA da B3 sai do lugar por um dia ou fica parado e
+# volta, sem a NTN-B se mexer. Declarados pelo nome para que um quarto apareca.
+_DEGRAUS_CONHECIDOS = {
+    ("DIIPCA", "240M", "2022-03-10"),
+    ("DIIPCA", "24M", "2024-05-31"),
+    ("DIIPCA", "24M", "2026-02-26"),
+}
+
+
 def test_nenhum_salto_acima_do_limite_em_toda_a_serie(curvas_b3):
     """So vertices de 24M+, e so entre pregoes a <= 4 dias -- feriado longo nao
     e distorcao. E a mesma regra que o guarda aplica no dia."""
+    import pandas as pd
+
+    achados = set()
     for curva, lim in _SALTO_MAX.items():
         p = curvas_b3[curvas_b3.curve == curva].pivot(index="date", columns="tenor", values="value")
         for tenor in [t for t in ["24M", "60M", "120M", "240M"] if t in p]:
             s = p[tenor].dropna()
             gap = s.index.to_series().diff().dt.days
             d = s.diff().abs()[gap <= 4].dropna()
-            assert d.max() <= lim, f"{curva}@{tenor}: salto de {d.max():.3f} > {lim}"
+            for data in d[d > lim].index:
+                achados.add((curva, tenor, pd.Timestamp(data).strftime("%Y-%m-%d")))
+    assert achados == _DEGRAUS_CONHECIDOS, sorted(achados ^ _DEGRAUS_CONHECIDOS)
 
 
 def test_nenhuma_grade_degenerada_em_toda_a_serie(curvas_b3):
@@ -454,4 +489,4 @@ def test_vazio_de_pregao_passado_CONTINUA_indo_para_o_cache(tmp_path, monkeypatc
     out, arquivos = _grades_com_cache_falso(
         tmp_path, pd.Timestamp("2026-09-07"), monkeypatch)
     assert out is None
-    assert arquivos == ["260907.csv"]
+    assert arquivos == ["260907.csv.gz"]

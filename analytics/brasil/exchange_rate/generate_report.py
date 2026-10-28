@@ -695,6 +695,279 @@ def _load_ptax() -> dict:
         return {}
 
 
+def _load_mercado_b3() -> dict:
+    """Aba Mercado B3: cupom cambial, curva futura do dólar e vol implícita.
+
+    As três vêm do arquivo de pregão da B3 e dividem uma grade de datas (pregões).
+    Histórico diário só nos prazos que algum gráfico desenha; a curva futura
+    inteira vai só nas datas que o gráfico de curva compara, porque é a única
+    leitura dela que não depende do nível do câmbio.
+    """
+    try:
+        juros = _fetch("macro_brasil", "br_interest_rate")
+        futuro = _fetch("macro_brasil", "cmb_dol_futuro")
+        vol = _fetch("macro_brasil", "cmb_vol_implicita")
+        if juros is None or futuro is None:
+            return {}
+        juros = juros[juros["curve"].isin(["CUPOM_LIMPO", "CUPOM_SUJO", "JUROS_USD"])].copy()
+        juros["value"] = juros["value"].astype(float)
+        futuro["value"] = futuro["value"].astype(float)
+        futuro["premio"] = futuro["premio"].astype(float)
+
+        datas = sorted(set(juros["date"]) | set(futuro["date"])
+                       | (set(vol["date"]) if vol is not None else set()))
+        idx = pd.DatetimeIndex(datas)
+
+        def serie(df, filtro, col="value", casas=4):
+            s = df[filtro].set_index("date")[col].reindex(idx)
+            return [None if pd.isna(v) else round(float(v), casas) for v in s]
+
+        cupom = {c: {t: serie(juros, (juros.curve == c) & (juros.tenor == t))
+                     for t in ["3M", "6M", "12M", "24M", "60M", "120M"]}
+                 for c in ["CUPOM_LIMPO", "CUPOM_SUJO", "JUROS_USD"]}
+        premio = {t: serie(futuro, futuro.prazo == t, "premio") for t in ["3M", "12M", "60M"]}
+        vols = ({t: serie(vol, vol.prazo == t, casas=3) for t in ["1M", "3M", "6M", "1Y"]}
+                if vol is not None else {})
+
+        # Curva futura nas datas de comparação: o último pregão e o pregão mais
+        # próximo (para trás) de 1 semana, 1 mês, 3 meses e 1 ano antes.
+        ult = futuro["date"].max()
+        pregoes = pd.DatetimeIndex(sorted(futuro["date"].unique()))
+        curvas = []
+        for rot, delta in [("último pregão", None), ("1 semana antes", pd.Timedelta(days=7)),
+                           ("1 mês antes", pd.DateOffset(months=1)),
+                           ("3 meses antes", pd.DateOffset(months=3)),
+                           ("1 ano antes", pd.DateOffset(years=1))]:
+            alvo = ult if delta is None else ult - delta
+            d = pregoes[pregoes <= alvo].max()
+            g = futuro[futuro["date"] == d].sort_values("dc")
+            curvas.append({"rotulo": rot, "date": d.strftime("%Y-%m-%d"),
+                           "prazo": g["prazo"].tolist(),
+                           "meses": [int(p[:-1]) for p in g["prazo"]],
+                           "value": [round(v, 4) for v in g["value"]]})
+
+        # Tabela do último pregão comum: tudo o que a aba mede, por prazo.
+        def ultimo(df, filtro, col="value"):
+            g = df[filtro & (df["date"] == df["date"].max())]
+            return None if g.empty else float(g[col].iloc[0])
+
+        prazos = ["1M", "2M", "3M", "6M", "9M", "12M", "18M", "24M", "36M", "60M", "120M"]
+        tabela = []
+        for p in prazos:
+            rot_vol = "1Y" if p == "12M" else p
+            linha = {
+                "prazo": p,
+                "futuro": ultimo(futuro, futuro.prazo == p),
+                "premio": ultimo(futuro, futuro.prazo == p, "premio"),
+                "limpo": ultimo(juros, (juros.curve == "CUPOM_LIMPO") & (juros.tenor == p)),
+                "sujo": ultimo(juros, (juros.curve == "CUPOM_SUJO") & (juros.tenor == p)),
+                "usd": ultimo(juros, (juros.curve == "JUROS_USD") & (juros.tenor == p)),
+                "vol": ultimo(vol, vol.prazo == rot_vol) if vol is not None else None,
+            }
+            linha["premio_cupom"] = (None if linha["limpo"] is None or linha["usd"] is None
+                                     else linha["limpo"] - linha["usd"])
+            tabela.append(linha)
+
+        return {
+            "dates": _dates(idx),
+            "cupom": cupom,
+            "premio": premio,
+            "vol": vols,
+            "curvas": curvas,
+            "tabela": tabela,
+            "datas_tabela": {
+                "juros": juros["date"].max().strftime("%Y-%m-%d"),
+                "futuro": ult.strftime("%Y-%m-%d"),
+                "vol": vol["date"].max().strftime("%Y-%m-%d") if vol is not None else None,
+            },
+        }
+    except Exception as exc:
+        print(f"  Aviso: erro na aba Mercado B3 — {exc}")
+        return {}
+
+
+def _query(database: str, sql: str) -> pd.DataFrame | None:
+    """SELECT agregado direto no banco: as tabelas do boletim de preços têm até
+    ~1 milhão de linhas (as opções), e o relatório só precisa de somas por dia."""
+    req = MySQLDataRequester(database, "")
+    req.connect()
+    if req.connection is None:
+        print(f"  Aviso: sem conexão para {database}")
+        return None
+    try:
+        cur = req.connection.cursor()
+        cur.execute(sql)
+        df = pd.DataFrame(cur.fetchall(), columns=list(cur.column_names))
+        cur.close()
+    finally:
+        req.close_connection()
+    if df.empty:
+        return None
+    if "date" in df.columns:
+        df["date"] = pd.to_datetime(df["date"])
+    return df
+
+
+# Tamanho de um contrato, em dólares de exposição (especificação da B3). O DDI e o
+# FRC têm o mesmo valor de face do dólar cheio; o mini é um quinto.
+_US_POR_CONTRATO = {"DOL": 50_000, "WDO": 10_000, "DDI": 50_000}
+
+
+def _load_derivativos_b3() -> dict:
+    """Volume e posição em aberto do boletim de preços da B3 (desde 2018), para três
+    lugares do relatório: a seção de dólar e cupom da aba Posicionamento, a aba
+    Opções de Dólar e a aba Juros e Bolsa.
+
+    Volume vai diário e a média de 21 pregões é feita no navegador. A posição em
+    aberto do último pregão só chega com o arquivo do seguinte (NULL no banco), e
+    sai nula aqui também em vez de virar zero.
+    """
+    try:
+        c = _query("macro_brasil", """
+            SELECT date, ativo, SUM(contratos) AS contratos, SUM(vol_usd) AS vol_usd,
+                   SUM(vol_brl) AS vol_brl, SUM(posicao_aberto) AS oi, COUNT(posicao_aberto) AS n_oi
+            FROM cmb_contratos_b3 WHERE tipo <> 'opcao' GROUP BY date, ativo""")
+        if c is None:
+            return {}
+        o = _query("macro_brasil", """
+            SELECT date, ativo, opcao, SUM(contratos) AS contratos,
+                   SUM(posicao_aberto) AS oi, COUNT(posicao_aberto) AS n_oi
+            FROM cmb_opcoes_dolar GROUP BY date, ativo, opcao""")
+        j = _query("macro_brasil", """
+            SELECT date, ativo, SUM(contratos) AS contratos, SUM(vol_brl) AS vol_brl,
+                   SUM(posicao_aberto) AS oi, COUNT(posicao_aberto) AS n_oi
+            FROM br_juros_contratos GROUP BY date, ativo""")
+        b = _query("macro_brasil", """
+            SELECT date, ticker, ativo, contratos, vol_brl, posicao_aberto, ajuste
+            FROM bolsa_ibov_futuro""")
+        for df in (c, o, j, b):
+            if df is None:
+                continue
+            for col in df.columns:
+                if col not in ("date", "ativo", "opcao", "ticker"):
+                    df[col] = df[col].astype(float)
+            if "n_oi" in df.columns:
+                df.loc[df["n_oi"] == 0, "oi"] = float("nan")
+
+        datas = sorted(set(c["date"]) | (set(j["date"]) if j is not None else set()))
+        idx = pd.DatetimeIndex(datas)
+
+        def serie(df, filtro, col, escala=1.0, casas=4, zero=False):
+            s = df[filtro].groupby("date")[col].sum(min_count=1)
+            if zero:
+                # volume: pregão que a tabela tem e o contrato não negociou vale zero
+                # (sem isso a média de 21 pregões apaga um mês a cada dia parado);
+                # pregão que a tabela ainda não tem continua nulo
+                s = s.reindex(pd.DatetimeIndex(sorted(df["date"].unique()))).fillna(0)
+            s = s.reindex(idx) * escala
+            return [None if pd.isna(v) else round(float(v), casas) for v in s]
+
+        # Dólar e cupom: posição em US$ bi (contratos x tamanho), volume em US$ bi
+        oi_usd = {a: serie(c, c.ativo == a, "oi", _US_POR_CONTRATO[a] / 1e9)
+                  for a in ("DOL", "WDO", "DDI")}
+        vol_usd = {a: serie(c, c.ativo == a, "vol_usd", 1 / 1e9, zero=True)
+                   for a in ("DOL", "WDO", "FRC", "DR1", "FRP")}
+
+        out = {"dates": _dates(idx), "oi_usd": oi_usd, "vol_usd": vol_usd}
+
+        if o is not None:
+            o["mult"] = o["ativo"].map(_US_POR_CONTRATO)
+            o["oi_usd"] = o["oi"] * o["mult"] / 1e9
+            o["vol_usd"] = o["contratos"] * o["mult"] / 1e9
+            out["opcoes"] = {
+                "oi_call": serie(o, o.opcao == "C", "oi_usd"),
+                "oi_put": serie(o, o.opcao == "P", "oi_usd"),
+                "vol_call": serie(o, o.opcao == "C", "vol_usd", zero=True),
+                "vol_put": serie(o, o.opcao == "P", "vol_usd", zero=True),
+            }
+            out["strikes"] = _strikes_opcoes()
+
+        if j is not None:
+            jb = {
+                "vol_brl": {a: serie(j, j.ativo == a, "vol_brl", 1 / 1e9, zero=True) for a in ("DI1", "DAP")},
+                "oi": {a: serie(j, j.ativo == a, "oi", 1 / 1e6) for a in ("DI1", "DAP")},
+                "di_venc": _di_por_vencimento(),
+            }
+            if b is not None:
+                jb["vol_brl"]["IBOV"] = serie(b, b.ativo.isin(["IND", "WIN"]), "vol_brl", 1 / 1e9, zero=True)
+                # o mini vale um quinto do cheio: posição em contratos-equivalentes de IND
+                b["oi_eq"] = b["posicao_aberto"] * b["ativo"].map({"IND": 1.0, "WIN": 0.2})
+                jb["ibov_oi"] = serie(b, b.ativo.isin(["IND", "WIN"]), "oi_eq", 1 / 1e3, 2)
+                # preço: o IND mais negociado do dia (o vencimento corrente, salvo na rolagem).
+                # Série sem negócio no dia vem com contratos NULL, e o sort põe NaN no fim:
+                # sem o fillna o "mais negociado" seria um vencimento que nem negociou.
+                ind = (b[b.ativo == "IND"].assign(n=lambda x: x["contratos"].fillna(0))
+                       .sort_values("n").groupby("date").tail(1))
+                s = ind.set_index("date")["ajuste"].reindex(idx)
+                jb["ibov_preco"] = [None if pd.isna(v) else round(float(v), 0) for v in s]
+            out["juros_bolsa"] = jb
+        return out
+    except Exception as exc:
+        print(f"  Aviso: erro nos derivativos da B3 — {exc}")
+        return {}
+
+
+def _strikes_opcoes() -> dict:
+    """Posição em aberto por strike, calls e puts, nos três próximos vencimentos,
+    no último pregão com posição conhecida -- mais o dólar futuro do vencimento,
+    que é onde o strike está no dinheiro."""
+    ult = _query("macro_brasil", """
+        SELECT MAX(date) AS date FROM cmb_opcoes_dolar WHERE posicao_aberto IS NOT NULL""")
+    if ult is None or pd.isna(ult["date"].iloc[0]):
+        return {}
+    d = ult["date"].iloc[0].strftime("%Y-%m-%d")
+    S = _query("macro_brasil", f"""
+        SELECT ativo, vencimento, opcao, strike, posicao_aberto
+        FROM cmb_opcoes_dolar WHERE date = '{d}' AND posicao_aberto > 0""")
+    F = _query("macro_brasil", f"""
+        SELECT vencimento, ajuste FROM cmb_contratos_b3
+        WHERE date = '{d}' AND ativo = 'DOL' AND tipo = 'futuro'""")
+    if S is None:
+        return {}
+    S["usd_mi"] = S["posicao_aberto"].astype(float) * S["ativo"].map(_US_POR_CONTRATO) / 1e6
+    S["vencimento"] = pd.to_datetime(S["vencimento"])
+    fut = ({} if F is None else
+           {pd.Timestamp(v): float(a) / 1000 for v, a in zip(F["vencimento"], F["ajuste"]) if a is not None})
+    meses = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+    vencs = []
+    for v in sorted(S["vencimento"].unique())[:3]:
+        g = S[S["vencimento"] == v].groupby(["strike", "opcao"])["usd_mi"].sum().unstack(fill_value=0)
+        v = pd.Timestamp(v)
+        vencs.append({
+            "venc": v.strftime("%Y-%m"),
+            "rotulo": f"{meses[v.month - 1]}/{v.strftime('%y')}",
+            "strike": [round(k / 1000, 3) for k in g.index],
+            "call": [round(float(x), 2) for x in g.get("C", pd.Series(0, index=g.index))],
+            "put": [round(float(x), 2) for x in g.get("P", pd.Series(0, index=g.index))],
+            "futuro": round(fut[v], 4) if v in fut else None,
+        })
+    return {"date": d, "vencimentos": vencs}
+
+
+def _di_por_vencimento() -> dict:
+    """Posição em aberto do DI futuro por vencimento, no último pregão com posição:
+    onde na curva o mercado carrega risco."""
+    ult = _query("macro_brasil", """
+        SELECT MAX(date) AS date FROM br_juros_contratos
+        WHERE ativo = 'DI1' AND posicao_aberto IS NOT NULL""")
+    if ult is None or pd.isna(ult["date"].iloc[0]):
+        return {}
+    d = ult["date"].iloc[0].strftime("%Y-%m-%d")
+    D = _query("macro_brasil", f"""
+        SELECT vencimento, posicao_aberto, taxa_ajuste FROM br_juros_contratos
+        WHERE date = '{d}' AND ativo = 'DI1' AND posicao_aberto > 0 ORDER BY vencimento""")
+    if D is None:
+        return {}
+    meses = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+    v = pd.to_datetime(D["vencimento"])
+    return {
+        "date": d,
+        "rotulo": [f"{meses[x.month - 1]}/{x.strftime('%y')}" for x in v],
+        "oi": [round(float(x) / 1e6, 3) for x in D["posicao_aberto"]],
+        "taxa": [None if x is None else round(float(x), 3) for x in D["taxa_ajuste"]],
+    }
+
+
 def _load_termos() -> dict:
     try:
         wide = _pivot("macro_brasil", "cmb_termos_troca")
@@ -863,6 +1136,8 @@ def run(output: str = "reports/brasil/FX Report.html", include_models: bool = Tr
         "comex_fator_agregado": _load_comex_fator_agregado(),
         "comex_produto":   _load_comex_produto(),
         "termos":          _load_termos(),
+        "mercado":         _load_mercado_b3(),
+        "derivativos":     _load_derivativos_b3(),
     }
 
     models = _load_models() if include_models else _empty_models()

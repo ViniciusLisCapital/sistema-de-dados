@@ -2,8 +2,18 @@
 ETL da estrutura a termo de juros do Brasil -> macro_brasil.br_interest_rate.
 
 Fonte: TaxaSwap.txt do arquivo de pregao da B3, via connectors/b3_curvas.py --
-que e onde vivem o formato, a URL e o racional da troca de fonte. Tres curvas:
-DIPRE (DI x pre), PREJS (NTN-F) e NTNBJS (NTN-B).
+que e onde vivem o formato, a URL e o racional da troca de fonte. Oito curvas:
+DIPRE (DI x pre), PREJS (NTN-F), NTNBJS (NTN-B), LTN, DIIPCA (DI x IPCA),
+CUPOM_SUJO (DI x dolar), CUPOM_LIMPO (DI x dolar sem a PTAX de D-1) e JUROS_USD.
+As cinco ultimas entraram em 2026-10-27; o spread titulo x swap (LTN - DIPRE,
+NTNBJS - DIIPCA) e o premio do cupom (CUPOM_LIMPO - JUROS_USD) sao calculados
+na leitura, no mesmo vertice -- nao sao gravados.
+
+**DIIPCA tem trechos em que a B3 nao acompanha a NTN-B**: de 2023-05 a 2026-02
+o 24M ficou 1 a 5 p.p. abaixo dela (mediana do spread na serie inteira: 0,11),
+e o 60M de 2023-10 a 2026-01, 1 a 2 p.p. Nao ha arbitragem que sustente isso,
+entao o spread NTN-B x swap nessa janela le a fonte, nao o mercado. Gravado como
+veio -- o guarda marca os degraus, ver `_SALTO_MAX`.
 
 Historia curta: ate 2026-09-03 esta serie era escrita pelo projeto
 CentralManagement em base_mercado.interest_rates, interpolando sobre os titulos
@@ -15,7 +25,8 @@ antigo e recuperavel de la, se alguem precisar comparar.
 ## O guarda roda na carga, nao depois
 
 `problemas_do_pregao()` afirma seis coisas sobre cada pregao antes de gravar.
-Todos os limiares foram medidos nos 5.115 pregoes reconstruidos, com o extremo
+Todos os limiares foram medidos nos 5.430 pregoes reconstruidos (2006-01-02 a
+2026-10-26), com o extremo
 observado ao lado de cada constante -- nenhum e escolhido a olho. A ordem das
 checagens e proposital: a de grade vem primeiro porque e a unica que e
 invariante em vez de limiar, e e a que pega a causa raiz dos dois defeitos
@@ -77,7 +88,8 @@ _DIAS_ROTINA = 10
 
 
 # ---------------------------------------------------------------------------
-# Limiares do guarda -- todos medidos nos 5.115 pregoes reconstruidos
+# Limiares do guarda -- todos medidos nos 5.430 pregoes reconstruidos
+# (2006-01-02 a 2026-10-26)
 # ---------------------------------------------------------------------------
 
 # Piso/teto do valor. As curvas nominais nunca chegaram perto de 1% (minimos
@@ -88,6 +100,19 @@ _DIAS_ROTINA = 10
 _PISO_NOMINAL = 1.0      # obs. 1,866
 _PISO_REAL = -9.0        # obs. -5,423
 _TETO = 30.0             # obs. 21,079
+
+# Por curva. O cupom sujo e referenciado a PTAX de D-1, entao o curto carrega
+# o movimento do dolar do dia: foi de -25 a +43 em outubro/2008 com dado bom.
+_LIMITES = {             # curva: (piso, teto)     # (min, max) observados
+    "DIPRE": (_PISO_NOMINAL, _TETO),               # (1,866 / 18,150)
+    "PREJS": (_PISO_NOMINAL, _TETO),               # (1,950 / 18,515)
+    "LTN": (_PISO_NOMINAL, _TETO),                 # (1,913 / 18,515)
+    "NTNBJS": (_PISO_REAL, _TETO),                 # (-5,423 / 21,079)
+    "DIIPCA": (-11.0, 25.0),                       # (-7,274 / 16,157)
+    "CUPOM_SUJO": (-40.0, 60.0),                   # (-25,442 / 43,185)
+    "CUPOM_LIMPO": (-4.0, 25.0),                   # (-0,543 / 16,017)
+    "JUROS_USD": (-1.0, 12.0),                     # (0,116 / 6,152)
+}
 
 # Banda do breakeven implicito, (1+DIPRE)/(1+NTNBJS)-1 no mesmo vertice. Folga
 # de ~3 p.p. sobre o extremo observado em 20 anos. A ponta curta e larga porque
@@ -108,16 +133,40 @@ _BANDA_BREAKEVEN = {         # tenor: (piso, teto)   # (min, max) observados
 # feriado longo), so nos vertices de 24M ou mais -- o curto e volatil por
 # natureza: o 3M da NTN-B carrega a defasagem do IPCA e tem p999 de 2,7 p.p.
 # com dado bom, entao um limiar la acusaria movimento legitimo.
-_SALTO_MAX = {"DIPRE": 2.5, "PREJS": 2.5, "NTNBJS": 2.0}   # obs. 1,822/1,770/1,208
+#
+# DIPRE/PREJS/LTN eram 2,5 ate 2026-10-26, quando o pregao seguinte ao 2o turno
+# abriu 2,61 no 60M do DI (2,54 no PREJS, 2,55 na LTN) -- dado bom, as tres
+# curvas e a NTN-B andando juntas. Antes disso o maximo era 1,822.
+#
+# DIIPCA a 3,0 marca, de proposito, tres degraus da FONTE: 2022-03-10 (o 240M
+# volta de 2,36 para 5,74), 2024-05-31 (o 24M cai de 4,40 para 0,87 por um dia)
+# e 2026-02-26 (o 24M sai de 4,50 parado ha dias para 7,83). Em nenhum dos tres
+# a NTN-B se mexeu mais que 0,1. O teste do historico os declara pelo nome.
+_SALTO_MAX = {               # obs. (maximo em 20 anos)
+    "DIPRE": 3.0,            # 2,609 (2026-10-26)
+    "PREJS": 3.0,            # 2,535 (2026-10-26)
+    "LTN": 3.0,              # 2,545 (2026-10-26)
+    "NTNBJS": 2.0,           # 1,354
+    "DIIPCA": 3.0,           # 3,532 -- os tres degraus acima; sem eles, 2,8
+    "CUPOM_SUJO": 9.0,       # 8,047 (2008-10-10, a PTAX de D-1 em plena crise)
+    "CUPOM_LIMPO": 2.5,      # 2,140 (2008-09-18)
+    "JUROS_USD": 1.0,        # 0,887 (2014-08-04)
+}
 
 # Piso de vertices no arquivo da fonte. Pega quebra de formato ou resposta
-# throttled que parseia parcialmente. Minimos observados: DIPRE 65, NTNBJS 101,
-# PREJS 11 -- os pisos abaixo tem folga grande de proposito, porque a fonte
-# genuinamente afina em 2009 (a NTN-B saiu com 43 vertices em 2009-05-27).
-_PISO_VERTICES = {"DIPRE": 40, "PREJS": 6, "NTNBJS": 40}
+# throttled que parseia parcialmente. Minimos observados: DIPRE/DIIPCA/cupons
+# 65, NTNBJS 43 (2009-05-27), JUROS_USD 100, PREJS 11, LTN 9 -- os pisos tem
+# folga grande de proposito, porque a fonte genuinamente afina.
+_PISO_VERTICES = {"DIPRE": 40, "PREJS": 6, "NTNBJS": 40, "LTN": 4, "DIIPCA": 40,
+                  "CUPOM_SUJO": 40, "CUPOM_LIMPO": 40, "JUROS_USD": 40}
+
+# Curva que a fonte so passou a publicar depois de _INICIO: antes disso a grade
+# vazia e ausencia legitima, nao parse parcial.
+_INICIO_CURVA = {"JUROS_USD": pd.Timestamp("2008-02-21")}
 
 
-def problemas_do_pregao(grade, publicado, anterior=None, dias_desde_anterior=1):
+def problemas_do_pregao(grade, publicado, anterior=None, dias_desde_anterior=1,
+                        data=None):
     """Lista os problemas de um pregao. Vazio = passou.
 
     Args:
@@ -128,6 +177,8 @@ def problemas_do_pregao(grade, publicado, anterior=None, dias_desde_anterior=1):
         anterior: {(curva, tenor): valor} do pregao anterior, ou None.
         dias_desde_anterior: dias corridos ate o pregao anterior. Acima de 4 a
             checagem de salto e omitida -- feriado longo nao e distorcao.
+        data: o pregao, so para nao acusar grade vazia de curva que a fonte
+            ainda nao publicava (`_INICIO_CURVA`).
     """
     p = []
     meses = {f"{m}M": m for v in VERTICES.values() for m in v}
@@ -149,15 +200,18 @@ def problemas_do_pregao(grade, publicado, anterior=None, dias_desde_anterior=1):
     # (2) Numero de vertices na fonte, contra quebra de formato / parse parcial.
     for curva, g in grade.items():
         piso = _PISO_VERTICES.get(curva)
+        inicio = _INICIO_CURVA.get(curva)
+        if not g and inicio is not None and data is not None and pd.Timestamp(data) < inicio:
+            continue
         if piso is not None and len(g) < piso:
             p.append(f"{curva}: {len(g)} vertices na fonte, piso {piso}")
 
     # (3) Valor implausivel. Pega cotacao placeholder da fonte -- o caso de 2010
     #     entrou como Taxa Compra 0,00 / Venda 0,06, media 0,03.
     for (curva, tenor), v in sorted(publicado.items()):
-        piso = _PISO_REAL if curva == "NTNBJS" else _PISO_NOMINAL
-        if v < piso or v > _TETO:
-            p.append(f"{curva}@{tenor}: valor {v:.3f} fora de [{piso}, {_TETO}]")
+        piso, teto = _LIMITES[curva]
+        if v < piso or v > teto:
+            p.append(f"{curva}@{tenor}: valor {v:.3f} fora de [{piso}, {teto}]")
 
     # (4) Grade degenerada: os vertices curtos nao podem sair todos iguais.
     #     Em 17/08/2026 a NTN-B saiu com 8,200 em 3M, 6M, 9M, 12M, 24M e 60M.
@@ -228,7 +282,7 @@ def coletar(full: bool = False, dias: int = _DIAS_ROTINA):
                  for cod, curva in CODIGOS.items()}
         publicado = {(r[1], r[2]): r[4] for r in rows}
         dd = (d - data_anterior).days if data_anterior is not None else 99
-        probs = problemas_do_pregao(grade, publicado, anterior, dd)
+        probs = problemas_do_pregao(grade, publicado, anterior, dd, data=d)
         if probs:
             avisos[d.date()] = probs
 
@@ -355,9 +409,9 @@ def run(full: bool = False, dias: int = _DIAS_ROTINA) -> None:
     """Atualiza macro_brasil.br_interest_rate.
 
     Args:
-        full: True recarrega de 2006-01-02 (~5.100 pregoes). O cache local em
-              domain/db/brasil/b3/cache/ evita rebaixar; num cache vazio isto
-              leva ~1h com os 2 workers que a B3 tolera.
+        full: True recarrega de 2006-01-02 (~5.400 pregoes). O cache local em
+              domain/db/brasil/b3/cache_v2/ evita rebaixar; num cache vazio isto
+              leva ~2h40 com os 2 workers que a B3 tolera (medido 2026-10-27).
         dias: dias uteis para tras no passe de rotina. Default 10.
     """
     df, avisos = coletar(full=full, dias=dias)

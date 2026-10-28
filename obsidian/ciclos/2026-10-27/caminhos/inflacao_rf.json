@@ -1,0 +1,19 @@
+{
+  "agente": "inflacao",
+  "rodada": "rf",
+  "ciclo": "2026-10-27",
+  "caminhos": {},
+  "tese": {
+    "ipca_12m": {
+      "trimestres": {
+        "4T26": {"central": 5.34, "faixa": [5.15, 5.50], "p_faixa": 65, "p_upside": 22, "p_downside": 13},
+        "1T27": {"central": 4.95, "faixa": [4.70, 5.25], "p_faixa": 58, "p_upside": 29, "p_downside": 13},
+        "2T27": {"central": 4.46, "faixa": [4.15, 4.85], "p_faixa": 57, "p_upside": 30, "p_downside": 13},
+        "3T27": {"central": 4.48, "faixa": [4.20, 4.90], "p_faixa": 57, "p_upside": 30, "p_downside": 13},
+        "4T27": {"central": 4.32, "faixa": [4.05, 4.75], "p_faixa": 57, "p_upside": 29, "p_downside": 14},
+        "1T28": {"central": 4.14, "faixa": [3.85, 4.55], "p_faixa": 58, "p_upside": 27, "p_downside": 15}
+      }
+    }
+  },
+  "nota": "Report final: central do P2 (caminhos dos principais, com a moderação), sem ajuste. Subordinado de icbr_agr_usd e icbr_met_usd, sem caminho de referência; principal de nenhuma exógena."
+}

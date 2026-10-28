@@ -295,7 +295,7 @@ const EXPORTS = ['fmtBR', 'fmtTrunc', 'fmtDate', 'lastValid', 'growthN', 'dlText
                  'renderCnSelicTextos',
                  'renderExpectativas', 'renderEjHoje', 'renderEjHojeTextos', 'renderEjReuniao',
                  'renderEjReuniaoTextos', 'renderEjHz', 'renderEjHzTextos', 'EJ',
-                 'ejSemanaAtras', 'ejSegunda', 'ejGap'];
+                 'ejSemanaAtras', 'ejSegunda', 'ejGap', 'ejTabelaLinhas', 'renderEjTabela', 'ejNumero'];
 let MP;
 try {
   new Function(SRC + ';global.__MP = {' + EXPORTS.join(',') + '};')();
@@ -1438,10 +1438,12 @@ console.log('\n33. Aba Projecoes do Copom: projecao do HR x passo de Selic');
      'o summary do backtest anuncia a contagem de reunioes',
      doc._els['pj-bt-sum'].textContent);
   // Tres desde 2026-09-25: a das ultimas edicoes do RPM (secao 37) entrou fechada tambem.
-  ok(RAW.indexOf('<details class="tbl-fold"') >= 0 &&
-     RAW.split('class="tbl-fold"').length - 1 === 3,
+  // Contadas so na fatia da aba: a de Expectativas de Juros tem a sua desde 2026-10-27.
+  const _pjAba = RAW.slice(RAW.indexOf('id="tab-projecoes"'), RAW.indexOf('id="tab-condicionais"'));
+  ok(_pjAba.indexOf('<details class="tbl-fold"') >= 0 &&
+     _pjAba.split('class="tbl-fold"').length - 1 === 3,
      'as tres tabelas da aba estao dentro de um details.tbl-fold',
-     String(RAW.split('class="tbl-fold"').length - 1));
+     String(_pjAba.split('class="tbl-fold"').length - 1));
 
   const _tab = doc.getElementById('pj-tabela');
   ok(_tab.querySelectorAll('tr').length === E.length + 1,
@@ -2072,6 +2074,56 @@ console.log('\n36. Aba Expectativas de Juros: a pesquisa e a curva, reuniao a re
   ok(ult('chart-ej-hoje').traces.length === 2, '"Nenhuma" deixa so as duas de hoje');
   pill('4 semanas').fire('click');
 
+  // 1b. A tabela abaixo do grafico (2026-10-27): a decisao que cada reuniao embute, na curva e
+  // na pesquisa, com o acumulado desde a Selic de hoje e o spread entre os acumulados. Pedido
+  // do usuario com uma condicao: as datas da pesquisa e do pregao sempre na tela.
+  {
+    const cFt = cam('focus', X.focus.datas.length - 1), cDt = cam('di', X.di.datas.length - 1);
+    const recDi = X.di.datas[X.di.datas.length - 1] >= X.focus.datas[X.focus.datas.length - 1];
+    const base = recDi ? cDt.y[0] : cFt.y[0];
+    const dHoje = recDi ? cDt.x[0] : cFt.x[0];
+    const passos = (c) => {
+      const o = {};
+      for (let k = 1; k < c.x.length; k++) {
+        if (c.x[k] < dHoje) continue;
+        o[c.x[k]] = {v: c.y[k], dec: Math.round((c.y[k] - c.y[k - 1]) * 100), acum: Math.round((c.y[k] - base) * 100)};
+      }
+      return o;
+    };
+    const pD = passos(cDt), pF = passos(cFt);
+    const datasT = Array.from(new Set(Object.keys(pD).concat(Object.keys(pF)))).sort();
+    const T = MP.ejTabelaLinhas();
+    ok(T && T.linhas.length === datasT.length && T.linhas.every((l, k) => l.d === datasT[k]),
+       'tabela: uma linha por reuniao ainda a frente, as mesmas do grafico', T && T.linhas.length + ' vs ' + datasT.length);
+    ok(T && T.base === base, 'tabela: os acumulados partem da Selic de hoje', T && String(T.base));
+    const igual = (a, b) => (a == null && b == null) || (a && b && a.v === b.v && a.dec === b.dec && a.acum === b.acum);
+    ok(T && T.linhas.every((l) => igual(l.di, pD[l.d] || null) && igual(l.focus, pF[l.d] || null)),
+       'tabela: decisao, Selic e acumulado das duas fontes, refeitos do caminho');
+    ok(T && T.linhas.every((l) => l.spread === (l.di && l.focus ? l.di.acum - l.focus.acum : null)),
+       'tabela: o spread e o acumulado da curva menos o da pesquisa');
+    ok(T && T.linhas.every((l, k) => k === 0 || l.nro === T.linhas[k - 1].nro + 1),
+       'tabela: a numeracao das reunioes segue em sequencia, inclusive onde o calendario nao numera');
+    ok(T && T.linhas.filter((l) => R[l.j].nro).every((l) => l.nro === R[l.j].nro),
+       'tabela: e bate com o numero do calendario onde ele existe');
+    const html = doc._els['ej-tabela'].innerHTML;
+    const br = (iso) => iso.split('-').reverse().join('/');
+    const dDi = br(X.di.datas[X.di.datas.length - 1]), dFo = br(X.focus.datas[X.focus.datas.length - 1]);
+    ok(html.indexOf('Curva DI · pregão de ' + dDi) >= 0 && html.indexOf('Pesquisa Focus · ' + dFo) >= 0,
+       'tabela: o cabecalho traz a data do pregao e a da pesquisa');
+    const soma = doc._els['ej-tab-sum'].innerHTML, nota = doc._els['ej-tab-nota'].innerHTML;
+    ok(soma.indexOf('curva de ' + dDi) >= 0 && soma.indexOf('Focus de ' + dFo) >= 0,
+       'tabela: e o resumo da tabela fechada tambem', soma);
+    ok(nota.indexOf(dDi) >= 0 && nota.indexOf(dFo) >= 0, 'tabela: e a nota tambem');
+    const nLin = (html.match(/<tr>/g) || []).length - 2;
+    ok(nLin === T.linhas.length, 'tabela: uma <tr> por linha, alem das duas de cabecalho', String(nLin));
+    const est = T.linhas.filter((l) => l.est);
+    ok(est.every((l) => html.indexOf(br(l.d) + '*') >= 0) && (!est.length || nota.indexOf('asterisco') >= 0),
+       'tabela: data estimada com asterisco, e a nota diz o que ele quer dizer');
+    const alta = T.linhas.find((l) => l.di && l.di.dec > 0), corte = T.linhas.find((l) => l.focus && l.focus.dec < 0);
+    if (alta) ok(html.indexOf('ej-alta">+' + alta.di.dec + ' pb') >= 0, 'tabela: alta em laranja');
+    if (corte) ok(html.indexOf('ej-corte">−' + Math.abs(corte.focus.dec) + ' pb') >= 0, 'tabela: corte em azul');
+  }
+
   // 2. Uma reuniao: a proxima por default, e uma decidida pelo seletor.
   const rR = ult('chart-ej-reuniao');
   const jProx = X.focus.j0[X.focus.j0.length - 1];
@@ -2174,7 +2226,7 @@ console.log('\n36. Aba Expectativas de Juros: a pesquisa e a curva, reuniao a re
   // escreve nem no que a markup da aba traz pronto.
   const ini = RAW.indexOf('id="tab-expectativas"'), fim = RAW.indexOf('</main>', ini);
   const estatico = RAW.slice(ini, fim).replace(/<!--[\s\S]*?-->/g, ' ').replace(/<[^>]*>/g, ' ');
-  const escrito = ['ej-lead', 'ej-cap-hoje', 'ej-lead-reu', 'ej-cap-reu', 'ej-lead-hz', 'ej-cap-hz']
+  const escrito = ['ej-lead', 'ej-cap-hoje', 'ej-tab-nota', 'ej-tab-sum', 'ej-lead-reu', 'ej-cap-reu', 'ej-lead-hz', 'ej-cap-hz']
     .map((id) => doc._els[id].innerHTML).join(' ').replace(/<[^>]*>/g, ' ');
   const tudo = estatico + ' ' + escrito;
   ['RMSE', 'erro médio', 'acerto', 'acertou', 'acurácia', 'previsão', 'prevê', 'backtest',
@@ -2200,6 +2252,17 @@ console.log('\n36. Aba Expectativas de Juros: a pesquisa e a curva, reuniao a re
   const Gs = MP.ejGap(1);
   ok(Gs.dates.length === 1 && Gs.dates[0] === '2027-01-12',
      'sintetico: a semana em que as duas ja olham reunioes diferentes fica fora da distancia', JSON.stringify(Gs.dates));
+  // Na tabela, a mesma semana: a curva ja viu a decisao de 20/01 (13,75) e a pesquisa nao. A
+  // reuniao decidida sai, a base e a Selic de hoje, e a decisao da pesquisa na seguinte e contra
+  // o que ELA esperava para 20/01 -- 13,50 contra 13,75, -25 --, nao contra a Selic da curva.
+  const Ts = MP.ejTabelaLinhas();
+  ok(Ts && Ts.base === 13.75 && Ts.linhas.length === 1 && Ts.linhas[0].j === 1,
+     'sintetico: pesquisa de antes de uma decisao que a curva ja viu -- a decidida sai da tabela', JSON.stringify(Ts));
+  ok(Ts && Ts.linhas[0].di.dec === -23 && Ts.linhas[0].di.acum === -23 &&
+     Ts.linhas[0].focus.dec === -25 && Ts.linhas[0].focus.acum === -25 && Ts.linhas[0].spread === 2,
+     'sintetico: cada fonte mede a decisao contra o proprio caminho, e o acumulado contra a Selic de hoje',
+     Ts && JSON.stringify(Ts.linhas[0]));
+  ok(MP.ejNumero(1) === 2, 'sintetico: o numero da reuniao vem do calendario');
   MP.D.expectativas = {reunioes: [], di: null,
     focus: {datas: ['2027-01-01', '2027-01-08', '2027-01-22', '2027-01-29'], vig: [14, 14, 14, 14], j0: [0, 0, 0, 0], por_reuniao: {}}};
   ok(MP.ejSemanaAtras('focus', 3) === 1, 'sintetico: com uma semana faltando, "3 semanas antes" cai na data certa, nao 3 posicoes atras',

@@ -197,6 +197,14 @@
     .hier-table td.col-value.pj-cm-dn { color: var(--lis-azul-cl); }
     .hier-table td.pj-cm-hr { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
     .hier-table tr.pj-cm-real td { color: var(--lis-dourado); border-top: 2px solid var(--border); }
+    /* Tabela da aba Expectativas de Juros: decisao precificada por reuniao, curva e pesquisa
+       lado a lado. Mesma razao do col-value na regra que as de cima. */
+    .hier-table td.col-value.ej-alta { color: var(--lis-laranja); }
+    .hier-table td.col-value.ej-corte { color: var(--lis-azul-cl); }
+    .hier-table td.col-value.ej-acima { color: var(--lis-dourado); font-weight: 600; }
+    .hier-table td.col-value.ej-abaixo { color: var(--lis-azul); font-weight: 600; }
+    .hier-table th.ej-grp { text-align: center; color: var(--text); }
+    .hier-table .ej-sep { border-left: 1px solid var(--border); }
 
     /* -- Tabela em click-drop: <details>/<summary> nativo, mesma mecanica do apendice --
        As duas tabelas da aba Projecoes tem 17 e 107 linhas; abertas por default elas empurram
@@ -966,6 +974,11 @@
       </div>
       <div class="chart-card"><div id="chart-ej-hoje"></div></div>
       <p class="chart-caption" id="ej-cap-hoje">—</p>
+      <details class="tbl-fold" open style="margin-top:14px">
+        <summary>Reunião a reunião: a decisão que a curva e a pesquisa embutem<span class="tbl-fold-n" id="ej-tab-sum">—</span></summary>
+        <div class="hier-table-wrap"><table class="hier-table" id="ej-tabela"></table></div>
+        <p class="chart-caption" id="ej-tab-nota">—</p>
+      </details>
     </section>
 
     <section>
@@ -3699,6 +3712,90 @@ function renderEjHojeTextos() {
     '. O hover põe as duas lado a lado em cada reunião.');
 }
 
+// ── 1b. A tabela: a decisão que cada reunião embute ─────────────────────────────
+// O número da reunião: o do calendário quando há; senão, em sequência a partir da última
+// numerada -- o Copom numera as reuniões em ordem.
+function ejNumero(j) {
+  for (var k = j; k >= 0; k--) { var r = ejReu(k); if (r && r.nro) return r.nro + (j - k); }
+  return null;
+}
+// As linhas são as reuniões ainda à frente na data mais recente das duas fontes, e a base dos
+// acumulados é a Selic vigente nessa data -- a de hoje --, a mesma para as duas. Quando a
+// pesquisa é de antes de uma decisão que a curva já viu, a reunião decidida sai da tabela, mas
+// a decisão da pesquisa na seguinte continua medida contra o que ela esperava para a decidida:
+// é o passo que ela embute, não o salto entre o decidido e o esperado.
+function ejTabelaLinhas() {
+  var H = ejHoje(), fs = ['di', 'focus'].filter(function(f) { return H[f]; });
+  if (!fs.length) return null;
+  var rec = fs.slice().sort(function(a, b) { return H[a].data < H[b].data ? 1 : -1; })[0];
+  var base = H[rec].vig, j0 = ejD()[rec].j0[H[rec].i];
+  if (base == null) return null;
+  var por = {};
+  fs.forEach(function(f) {
+    H[f].pts.forEach(function(p, k) {
+      if (p.j < j0) return;
+      var ant = k ? H[f].pts[k - 1].v : H[f].vig;
+      (por[p.j] = por[p.j] || {})[f] = {v: p.v, dec: Math.round((p.v - ant) * 100),
+                                         acum: Math.round((p.v - base) * 100)};
+    });
+  });
+  var linhas = Object.keys(por).map(Number).sort(function(a, b) { return a - b; }).map(function(j) {
+    var o = por[j], r = ejReu(j);
+    return {j: j, nro: ejNumero(j), d: r.d, est: r.est, di: o.di || null, focus: o.focus || null,
+            spread: o.di && o.focus ? o.di.acum - o.focus.acum : null};
+  });
+  return {base: base, fontes: fs, datas: {di: H.di ? H.di.data : null, focus: H.focus ? H.focus.data : null},
+          linhas: linhas};
+}
+function renderEjTabela() {
+  var tab = document.getElementById('ej-tabela');
+  if (!tab) return;
+  var T = ejTabelaLinhas();
+  if (!T || !T.linhas.length) { tab.innerHTML = ''; ejPut('ej-tab-sum', '—'); ejPut('ej-tab-nota', ''); return; }
+  var fs = T.fontes, ambas = fs.length === 2;
+  var GRP = {di: 'Curva DI · pregão de ', focus: 'Pesquisa Focus · '};
+  var pb = function(x, cls) {
+    return '<td class="col-value' + (cls ? ' ' + cls : '') + '">' + ejPbSinal(x) + ' pb</td>';
+  };
+  var h = '<thead><tr><th class="col-label" rowspan="2">Reunião</th><th class="col-label" rowspan="2">Data</th>' +
+    fs.map(function(f) { return '<th class="ej-grp ej-sep" colspan="3">' + GRP[f] + cnDataBR(T.datas[f]) + '</th>'; }).join('') +
+    (ambas ? '<th class="ej-sep" rowspan="2">Spread<br>curva − pesquisa</th>' : '') + '</tr><tr>' +
+    fs.map(function() { return '<th class="ej-sep">Decisão</th><th>Selic</th><th>Acum.</th>'; }).join('') +
+    '</tr></thead><tbody>';
+  T.linhas.forEach(function(l) {
+    h += '<tr><td class="col-label">' + (l.nro ? l.nro + 'ª' : cnPosicao(ejReu(l.j).rot)) + '</td>' +
+      '<td class="col-label">' + cnDataBR(l.d) + (l.est ? '*' : '') + '</td>';
+    fs.forEach(function(f) {
+      var c = l[f];
+      if (!c) { h += '<td class="col-value ej-sep">—</td><td class="col-value">—</td><td class="col-value">—</td>'; return; }
+      h += pb(c.dec, 'ej-sep' + (c.dec > 0 ? ' ej-alta' : c.dec < 0 ? ' ej-corte' : '')) +
+        '<td class="col-value">' + ejFmt(f, c.v) + '%</td>' + pb(c.acum);
+    });
+    if (ambas) h += l.spread == null ? '<td class="col-value ej-sep">—</td>'
+      : pb(l.spread, 'ej-sep' + (l.spread > 0 ? ' ej-acima' : l.spread < 0 ? ' ej-abaixo' : ''));
+    h += '</tr>';
+  });
+  tab.innerHTML = h + '</tbody>';
+  var quando = fs.map(function(f) { return (f === 'di' ? 'curva de ' : 'Focus de ') + cnDataBR(T.datas[f]); }).join(' · ');
+  ejPut('ej-tab-sum', T.linhas.length + ' reuniões · ' + quando);
+  var est = T.linhas.some(function(l) { return l.est; });
+  ejPut('ej-tab-nota',
+    '<b>Decisão</b>: a diferença entre a Selic esperada para a reunião e a esperada para a anterior — ' +
+    '<span style="color:var(--lis-laranja)">laranja</span> quando sobe, ' +
+    '<span style="color:var(--lis-azul-cl)">azul</span> quando cai. <b>Acum.</b>: a diferença para a ' +
+    'Selic de hoje, ' + cnSel(T.base) + '%.' +
+    (ambas ? ' <b>Spread</b>: o acumulado da curva menos o da pesquisa, que é a distância entre as ' +
+      'duas Selic daquela reunião — dourado quando a curva está acima, azul quando está abaixo.' : '') +
+    (T.datas.di ? ' Na curva a decisão não sai em múltiplos de 25 pb: um número pequeno quer dizer que ' +
+      'ela põe pouco peso numa mudança, não que espera um passo daquele tamanho. Mais de cerca de um ano ' +
+      'e meio à frente a curva só informa trimestre e o caminho dela passa de um trimestre ao outro em ' +
+      'rampa: ali os passos pequenos são a passagem entre trimestres, não decisão precificada.' : '') +
+    ' ' + fs.map(function(f) {
+      return f === 'di' ? 'A curva é a do pregão de ' + cnDataBR(T.datas.di) : 'a pesquisa Focus, a de ' + cnDataBR(T.datas.focus);
+    }).join(' e ').replace(/^a /, 'A ') + '.' +
+    (est ? ' Com asterisco, as reuniões que o Banco Central ainda não marcou, em data estimada.' : ''));
+}
+
 // ── 2. Uma reunião ────────────────────────────────────────────────────────────────
 function ejReunioesComDado() {
   var X = ejD(), js = {};
@@ -4005,7 +4102,7 @@ function renderExpectativas() {
     });
   }
   primeiro = false;
-  renderEjHoje(); renderEjHojeTextos();
+  renderEjHoje(); renderEjHojeTextos(); renderEjTabela();
   renderEjReuniao(); renderEjReuniaoTextos();
   renderEjHz(); renderEjHzTextos();
   renderEjNotas();

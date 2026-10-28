@@ -1,0 +1,21 @@
+{
+  "agente": "cambio",
+  "rodada": "r1",
+  "ciclo": "2026-10-27",
+  "caminhos": {
+    "vol": {"4T26": 17.0, "1T27": 15.5, "2T27": 14.5, "3T27": 14.0, "4T27": 13.5, "1T28": 13.5}
+  },
+  "tese": {
+    "ptax": {
+      "trimestres": {
+        "4T26": {"central": 5.38, "faixa": [5.25, 5.60], "p_faixa": 45, "p_upside": 33, "p_downside": 22},
+        "1T27": {"central": 5.39, "faixa": [5.20, 5.65], "p_faixa": 45, "p_upside": 32, "p_downside": 23},
+        "2T27": {"central": 5.37, "faixa": [5.15, 5.65], "p_faixa": 46, "p_upside": 29, "p_downside": 25},
+        "3T27": {"central": 5.35, "faixa": [5.10, 5.65], "p_faixa": 46, "p_upside": 28, "p_downside": 26},
+        "4T27": {"central": 5.35, "faixa": [5.10, 5.65], "p_faixa": 45, "p_upside": 30, "p_downside": 25},
+        "1T28": {"central": 5.38, "faixa": [5.10, 5.70], "p_faixa": 46, "p_upside": 27, "p_downside": 27}
+      }
+    }
+  },
+  "nota": "Rodada 1. Caminho base da vol (principal); sem caminho de referência para dxy_em e icbr_usd (subordinado). Central do G cambio_cenarios.py com CDS, dxy_em e S&P 500 no nível do último dado do F (aguarda fiscal/externo), fora deste JSON."
+}

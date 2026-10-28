@@ -23,15 +23,21 @@ variações diárias é máxima em lag 0.
 
 Detalhe completo no docstring do loader novo.
 
-## Exceção provisória: 09/09 a 14/10/2026 (carregado em 2026-10-15)
+## Exceção provisória: 09/09 a 26/10/2026
 
-Com a cota da API da Bloomberg estourada, os **26 pregões de 09/09 a 14/10/2026**
-entraram na `cmb_risco_pais` a partir de `raw/cds_5y_brasil_2026_outubro.csv`
-(investing.com), acrescentados por insert direto depois do último dia do export
-Bloomberg (08/09) — o histórico Bloomberg não foi tocado. Nos 27 dias em que os
-dois se sobrepõem (03/08 a 08/09) a diferença média é 1,5 bps e a máxima 5,3; na
-emenda, 112,95 contra 112,395.
+Com a cota da API da Bloomberg estourada, os **34 pregões de 09/09 a 26/10/2026**
+entraram na `cmb_risco_pais` por insert direto depois do último dia do export
+Bloomberg (08/09) — o histórico Bloomberg não foi tocado. Duas cargas:
+
+- 2026-10-15: 09/09 a 14/10 (26 pregões), de `raw/cds_5y_brasil_2026_outubro.csv`.
+  Nos 27 dias em que investing e Bloomberg se sobrepõem (03/08 a 08/09) a diferença
+  média é 1,5 bps e a máxima 5,3; na emenda, 112,95 contra 112,395.
+- 2026-10-27: 15/10 a 26/10 (8 pregões), de `raw/cds_5y_brasil_2026_outubro_26.csv`.
+  Os 26 dias que este arquivo repete da carga anterior batem com o banco ao centavo.
+  O 26/10 (137,43, +15,2% no dia, logo depois do 2º turno de 25/10) é uma cotação
+  única — abertura = máxima = mínima = fechamento — e merece conferência no export
+  Bloomberg.
 
 **Some sozinho no próximo export da Bloomberg**: o loader trunca a tabela antes de
 carregar, então rodar `cmb_risco_pais.run()` com um xlsx novo em `bloomberg/raw/`
-substitui esses 26 dias sem passo extra. Previsto para novembro/2026.
+substitui esses 34 dias sem passo extra. Previsto para novembro/2026.

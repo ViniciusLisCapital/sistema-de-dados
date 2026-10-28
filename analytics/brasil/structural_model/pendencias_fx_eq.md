@@ -169,7 +169,7 @@ política mais volatilidade, cujos *loaders* já existem. **Ele saiu fraco, não
 com t −1,35, o único dos cinco que não é distinguível de zero, e contribuição acumulada de −0,5 p.p.
 Ver F9.
 
-### F4 — Volatilidade implícita de opções · *na equação desde 2026-09-25; a TABELA continua faltando*
+### F4 — Volatilidade implícita de opções · *na equação desde 2026-09-25; tabela da B3 desde 2026-10-28, o modelo ainda lê o CSV*
 
 A série entrou: `USDBRLV3M Curncy`, fechamento diário, 2003-10 em diante — e como o modelo roda
 desde 2006T2 ela **não custa observação nenhuma**, o que era a única objeção levantada contra a
@@ -188,6 +188,19 @@ banco é dívida, não recurso*.
 Quando existir: um loader novo em `vol_trimestral`, a dependência declarada no
 `manifest.yaml`, e o CSV sai. Os sete prazos (1W a 1Y) estão no arquivo de origem e valem ser
 carregados juntos — a escolha do 3M é do modelo, não da tabela.
+
+**A tabela existe desde 2026-10-28 — por outra fonte, e o modelo ainda lê o CSV.**
+`macro_brasil.cmb_vol_implicita` saiu da **B3**, não da Bloomberg: o prêmio de referência das
+opções de dólar (arquivo `RE` do pregão), com a vol recuperada invertendo Black, em 1M, 2M, 3M, 6M,
+9M e 1Y, diária desde 2006-01-02, atualizada pelo passe diário. Contra o CSV no 3M, nos 5.098
+pregões comuns (2006-01-02 → 2026-08-04): diferença média **−0,19 p.p.** (a B3 um pouco abaixo),
+|diferença| média 0,28 e p95 0,73; correlação de nível 0,996, de variação diária 0,697 e de
+variação de **fim de mês 0,978**; no fim de mês, |diferença| média 0,31 e máxima 2,84. Os desvios
+grandes estão em estresse agudo (out/2008: até 9,5 p.p.; mai/2006; mai/2010) e em evento com data
+dentro do prazo fixo — no fim de jul/2026 o 3M da B3 ficou ~1,7 p.p. abaixo, com as duas voltas da
+eleição dentro dele, porque as opções vencem no 1º dia útil do mês e a interpolação dilui o evento.
+**Trocar a fonte do `carry_vol` é decisão do usuário, ainda não tomada**: exige reestimar a equação
+e a do FX Report, e a diferença em evento é exatamente onde o canal pesa.
 
 ### F5 — Ridge não tem erro-padrão, e os `t` da tabela são de MQ · *limitação declarada, hoje inofensiva*
 

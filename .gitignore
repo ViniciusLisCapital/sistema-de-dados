@@ -62,7 +62,8 @@ analytics/brasil/structural_model/experimentos/teste_lstm/data/*.pth
 analytics/brasil/structural_model/experimentos/teste_lstm/data/checkpoints/
 
 # Cache do TaxaSwap da B3 (~5.100 CSV por pregao, reproduzivel da fonte)
-domain/db/brasil/b3/cache/
+domain/db/brasil/b3/cache_v2/
+domain/db/brasil/b3/cache_premio/
 
 # Logs da tarefa agendada (jobs/atualizar_diario.bat, um por dia, poda em 30 dias)
 logs/
@@ -72,3 +73,4 @@ obsidian/ciclos/*/dados/A/
 
 # Open mental-model run (snapshot), removed by mental.py done/abort
 repository/mental_model/ledger/.*.json
+domain/db/brasil/b3/cache_precos/

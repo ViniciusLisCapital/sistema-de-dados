@@ -158,6 +158,12 @@ idsNoHtml.forEach(id => el(id));
 // precisa existir de verdade no stub.
 const chartDivIds = [...htmlBruto.matchAll(/<div class="chart-card"[^>]*><div id="([\w-]+)"><\/div><\/div>/g)].map(m => m[1]);
 const cardOf = {};
+// Graficos cujo X e PRAZO e nao data (a curva futura do dolar, 2026-10-28): nao tem
+// regua de periodo nem janela de datas, e o periodo do cabecalho e o pregao. As
+// checagens de serie temporal os pulam; a secao 17 afirma o que vale para eles.
+// A posicao por strike das opcoes e a do DI por vencimento (2026-10-28) entram pelo
+// mesmo motivo: X e preco de exercicio / vencimento, e o periodo e um pregao.
+const NAO_TEMPORAIS = ['chart-dol-curva', 'chart-opc-strike', 'chart-jb-di-venc'];
 chartDivIds.forEach(divId => {
   const section = makeEl('div');
   const card = makeEl('div'); card.classList.add('chart-card');
@@ -333,6 +339,7 @@ console.log('\n=== 2b. a VISTA INICIAL tambem nao abre com faixa vazia ======');
 
   const semJanela = [], comBanda = [];
   Object.keys(tracesIniciais).forEach(div => {
+    if (NAO_TEMPORAIS.indexOf(div) >= 0) return;
     const e = extentTraces(tracesIniciais[div]);
     if (!e) return;
     const j = janelaInicial[div];
@@ -366,7 +373,7 @@ console.log('\n=== 2b. a VISTA INICIAL tambem nao abre com faixa vazia ======');
 }
 
 console.log('\n=== 3. todos os graficos das abas de dados ganharam regua ====');
-const semRegua = Object.keys(cardOf).filter(divId => {
+const semRegua = Object.keys(cardOf).filter(divId => NAO_TEMPORAIS.indexOf(divId) < 0).filter(divId => {
   const w = cardOf[divId].parentNode;
   return !(w && w.classList.contains('chart-with-range') && w.querySelector('.range-bar'));
 });
@@ -702,7 +709,8 @@ function cabecalho(divId) {
   // O periodo tem de vir das datas PLOTADAS, nao de um intervalo escrito a mao que
   // envelheceria a cada divulgacao. Confere o texto contra o payload.
   const rePeriodo = /(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)\/\d{4} a (jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)\/\d{4}/;
-  const semPeriodo = Object.keys(cardOf).filter(d => !rePeriodo.test(cabecalho(d) || ''));
+  const semPeriodo = Object.keys(cardOf).filter(d => NAO_TEMPORAIS.indexOf(d) < 0)
+    .filter(d => !rePeriodo.test(cabecalho(d) || ''));
   ok(semPeriodo.length === 0, 'todo cabecalho declara o periodo coberto', semPeriodo.join(', '));
 
   const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -1318,7 +1326,7 @@ console.log('\n=== 14. reorganizacao das abas (2026-09-01) =================');
   ok(semPainel.length === 0 && semBotao.length === 0,
      'nenhum botao sem painel e nenhum painel sem botao',
      'sem painel: ' + semPainel.join(', ') + ' / sem botao: ' + semBotao.join(', '));
-  ok(abas14.length === 7, 'sobraram 7 abas', abas14.join(', '));
+  ok(abas14.length === 10, 'sao 10 abas (Mercado B3, Opcoes de Dolar e Juros e Bolsa entraram em 2026-10-28)', abas14.join(', '));
 
   // 14c. o rotulo da aba anuncia as duas pontas
   ok(htmlBruto.indexOf('data-tab="tab-bcb">Posicionamento: BCB e mercado<') > 0,
@@ -1637,6 +1645,238 @@ console.log('\n=== 16. posicionamento no futuro de real (CFTC) =============');
   const iArv = htmlBruto.indexOf('id="sec-bcb-reserves-tree"');
   const secArv = htmlBruto.slice(iArv, htmlBruto.indexOf('</section>', iArv));
   ok(secArv.indexOf('gráfico acima') < 0, 'a nota da arvore nao aponta mais para um grafico que nao existe');
+}
+
+// ===========================================================================
+// 17. Aba Mercado B3: curva futura, cupom cambial e vol implicita (2026-10-28)
+// ===========================================================================
+console.log('\n=== 17. aba Mercado B3 ==================================');
+{
+  const M = REPORT_DATA.mercado;
+  ok(!!(M && M.dates && M.dates.length > 4000), 'o payload da aba existe e e diario desde 2006',
+     M && M.dates && M.dates.length);
+  const limites17 = [...htmlBruto.matchAll(/<div class="tab-panel[^"]*" id="([\w-]+)">/g)]
+    .map(m => ({ id: m[1], i: m.index }));
+  function aba17(id) {
+    const k = htmlBruto.indexOf('id="' + id + '"');
+    let atual = null;
+    limites17.forEach(l => { if (l.i < k) atual = l.id; });
+    return atual;
+  }
+  const ids17 = ['mercado-tabela', 'chart-dol-curva', 'chart-dol-premio', 'chart-cupom',
+                 'chart-cupom-premio', 'chart-vol', 'chart-carry-vol'];
+  const fora = ids17.filter(id => aba17(id) !== 'tab-mercado');
+  ok(fora.length === 0, 'tabela e os 6 graficos moram na aba Mercado B3', fora.join(', '));
+
+  // 17a. a tabela-resumo: um prazo por linha, e o premio do cupom e a diferenca das
+  // duas colunas que o leitor ve ao lado -- recalculado aqui, nao lido do payload
+  const linhas = registry['mercado-tabela-body'].innerHTML.split('<tr>').length - 1;
+  ok(linhas === M.tabela.length && linhas >= 10, 'a tabela tem uma linha por prazo', linhas);
+  const ruim = M.tabela.filter(r => r.limpo != null && r.usd != null &&
+                               Math.abs(r.premio_cupom - (r.limpo - r.usd)) > 1e-9);
+  ok(ruim.length === 0, 'limpo - juro em dolar = premio do cupom em toda linha',
+     ruim.map(r => r.prazo).join(','));
+  // a coluna carry/vol e a razao das duas colunas vizinhas, e vazia onde falta a vol
+  const ruimCv = M.tabela.filter(r => (r.premio != null && r.vol)
+    ? Math.abs(r.carry_vol - r.premio / r.vol) > 1e-12 : r.carry_vol !== null);
+  ok(ruimCv.length === 0 && M.tabela.some(r => r.carry_vol !== null) && M.tabela.some(r => r.carry_vol === null),
+     'premio a termo / vol = coluna carry/vol, e vazia nos prazos sem vol', ruimCv.map(r => r.prazo).join(','));
+  ok(registry['mercado-tabela-head'].innerHTML.indexOf('Prêmio a termo ÷ vol') > 0, 'a coluna esta no cabecalho');
+  ok(registry['mercado-tabela-datas'].textContent.indexOf('Pregão de cada coluna') === 0,
+     'a nota diz de que pregao e cada coluna');
+
+  // 17b. a curva futura e por PRAZO: eixo linear declarado (a "oitava face"), e o
+  // futuro sobe com o prazo enquanto o juro em reais passar o juro em dolar
+  const cur = newPlotCalls.find(c => c.div === 'chart-dol-curva');
+  ok(!!cur && cur.layout.xaxis.type === 'linear', 'o eixo da curva futura e linear, nao data',
+     cur && cur.layout.xaxis.type);
+  ok(!!cur && cur.traces.length === M.curvas.length && M.curvas.length === 5,
+     'cinco curvas: o ultimo pregao e quatro datas anteriores', cur && cur.traces.length);
+  const c0 = M.curvas[0];
+  ok(c0.value.every((v, i) => !i || v > c0.value[i - 1]),
+     'no ultimo pregao o dolar futuro cresce com o prazo', c0.value.join(' '));
+  const datas = M.curvas.map(c => c.date);
+  ok(datas.every((d, i) => !i || d < datas[i - 1]), 'as datas de comparacao andam para tras',
+     datas.join(' '));
+  ok(/pregão de \d{2}\/\d{2}\/\d{4}/.test(cabecalho('chart-dol-curva') || ''),
+     'o cabecalho da curva diz de que pregao ela e');
+  const cardCur = cardOf['chart-dol-curva'];
+  ok(!(cardCur.parentNode && cardCur.parentNode.classList.contains('chart-with-range')),
+     'e ela nao ganhou regua de periodo, que nao teria o que escolher');
+
+  // 17c. o seletor de prazo do cupom redesenha com a serie daquele prazo
+  const sel = registry['sel-cupom-prazo'];
+  const nCupom = () => reactCalls.filter(c => c.div === 'chart-cupom').length;
+  const antes = nCupom();
+  sel.value = '60M'; sel.change();
+  const ult = reactCalls.filter(c => c.div === 'chart-cupom').slice(-1)[0];
+  ok(nCupom() === antes + 1, 'trocar o prazo redesenha');
+  ok(ult && ult.traces[0].y === M.cupom.CUPOM_LIMPO['60M'], 'e desenha o cupom limpo do prazo escolhido');
+  ok(ult && ult.traces[2].visible === 'legendonly', 'o cupom sujo vem desligado (o curto e variacao cambial)');
+  ok((cabecalho('chart-cupom') || '').indexOf('5 anos') > 0, 'e o titulo diz o prazo');
+  sel.value = '12M'; sel.change();
+
+  // 17d. o premio do dolar onshore e a diferenca no MESMO prazo, ponto a ponto
+  const pr = newPlotCalls.find(c => c.div === 'chart-cupom-premio');
+  const t12 = pr && pr.traces.find(t => t.name === '1 ano');
+  let maxErr = 0, n = 0;
+  M.dates.forEach((_, i) => {
+    const a = M.cupom.CUPOM_LIMPO['12M'][i], b = M.cupom.JUROS_USD['12M'][i];
+    if (a == null || b == null) { if (t12.y[i] != null) maxErr = Infinity; return; }
+    maxErr = Math.max(maxErr, Math.abs(t12.y[i] - (a - b))); n++;
+  });
+  ok(n > 4000 && maxErr < 1e-9, 'premio do cupom = limpo - juro em dolar, e nulo onde falta uma perna',
+     n + ' pontos, erro ' + maxErr);
+
+  // 17d'. faixas de estresse: uma por episodio, atras das linhas, de altura cheia,
+  // dentro da serie e com o rotulo no lugar -- e fora do hover/legenda/autofit (shape,
+  // nao traco)
+  const sh = (pr && pr.layout.shapes) || [], an = (pr && pr.layout.annotations) || [];
+  ok(sh.length >= 7 && sh.length === an.length, 'uma faixa e um rotulo por episodio de estresse',
+     sh.length + ' faixas, ' + an.length + ' rotulos');
+  ok(sh.every(s => s.type === 'rect' && s.yref === 'paper' && s.y0 === 0 && s.y1 === 1 && s.layer === 'below'),
+     'as faixas ocupam a altura toda e ficam atras das linhas');
+  ok(sh.every(s => s.x0 < s.x1 && s.x0 >= M.dates[0] && s.x1 <= M.dates[M.dates.length - 1]),
+     'cada faixa comeca antes de terminar e cai dentro da serie');
+  ok(sh.every((s, i) => an[i].x === s.x0 && an[i].yref === 'paper'), 'cada rotulo fica no inicio da sua faixa');
+  const rot = an.map(a => a.text);
+  ok(['Crise de 2008', 'Crise Dilma', 'Covid'].every(r => rot.includes(r)), 'os episodios nomeados estao la', rot.join(' | '));
+  ok(an.every((a, i) => !i || a.y !== an[i - 1].y), 'rotulos vizinhos alternam de altura');
+  ok(pr.traces.length === 3, 'as faixas nao viram traco (hover, legenda e autofit ficam limpos)');
+
+  // 17f. carry sobre vol: premio e vol do MESMO prazo (12M com a vol de 1 ano), ponto a ponto
+  const cv = newPlotCalls.find(c => c.div === 'chart-carry-vol');
+  ok(!!cv && cv.traces.map(t => t.name).join('|') === '3 meses|1 ano', 'carry/vol desenha 3 meses e 1 ano',
+     cv && cv.traces.map(t => t.name).join('|'));
+  let errCv = 0, nCv = 0;
+  [['3M', '3M', 0], ['12M', '1Y', 1]].forEach(([p, v, k]) => {
+    M.dates.forEach((_, i) => {
+      const a = M.premio[p][i], b = M.vol[v][i], y = cv.traces[k].y[i];
+      if (a == null || !b) { if (y != null) errCv = Infinity; return; }
+      errCv = Math.max(errCv, Math.abs(y - a / b)); nCv++;
+    });
+  });
+  ok(nCv > 8000 && errCv < 1e-12, 'carry/vol = premio a termo / vol implicita do mesmo prazo, nulo sem uma perna',
+     nCv + ' pontos, erro ' + errCv);
+  ok((cabecalho('chart-carry-vol') || '').indexOf('Carry sobre Volatilidade') >= 0, 'o grafico tem cabecalho');
+
+  // 17e. o premio a termo nao inclui o 1M (ruidoso no vencimento do contrato)
+  const pt = newPlotCalls.find(c => c.div === 'chart-dol-premio');
+  ok(pt && pt.traces.map(t => t.name).join('|') === '3 meses|1 ano|5 anos',
+     'o premio a termo desenha 3M, 1 ano e 5 anos', pt && pt.traces.map(t => t.name).join('|'));
+}
+
+console.log('\n=== 18. derivativos da B3: posicao em aberto e volume ========');
+// Tres lugares, um payload (REPORT_DATA.derivativos). O que se afirma aqui e o que o
+// navegador calcula -- a media de 21 pregoes, a razao put/call, a fatia de janeiro --
+// refeito no teste, nunca lido de volta da propria funcao.
+{
+  const D = REPORT_DATA.derivativos;
+  ok(!!(D && D.dates && D.dates.length > 20), 'o payload dos derivativos existe', D && D.dates && D.dates.length);
+  const lim18 = [...htmlBruto.matchAll(/<div class="tab-panel[^"]*" id="([\w-]+)">/g)].map(m => ({ id: m[1], i: m.index }));
+  const aba18 = id => { const k = htmlBruto.indexOf('id="' + id + '"'); let a = null; lim18.forEach(l => { if (l.i < k) a = l.id; }); return a; };
+  const onde = { 'tab-bcb': ['chart-b3-oi', 'chart-b3-vol'],
+                 'tab-opcoes': ['chart-opc-strike', 'chart-opc-oi', 'chart-opc-pc', 'sel-opc-venc'],
+                 'tab-jurosbolsa': ['chart-jb-vol', 'chart-jb-oi', 'chart-jb-di-venc', 'chart-jb-ibov', 'chart-jb-ibov-oi'] };
+  const errados = [];
+  Object.keys(onde).forEach(t => onde[t].forEach(id => { if (aba18(id) !== t) errados.push(id + '@' + aba18(id)); }));
+  ok(errados.length === 0, 'cada grafico mora na aba decidida (dolar/cupom no Posicionamento, opcoes e juros/bolsa em abas proprias)', errados.join(', '));
+  ok(htmlBruto.indexOf('id="sec-bcb-b3"') > htmlBruto.indexOf('id="chart-cot-brl"'),
+     'a secao da B3 vem depois da CFTC, que a anuncia');
+
+  // MM21 refeita: nula se faltar qualquer dia da janela, senao a soma / 21
+  const mm = v => v.map((_, i) => {
+    if (i < 20) return null;
+    const w = v.slice(i - 20, i + 1);
+    return w.some(x => x === null || x === undefined) ? null : w.reduce((a, b) => a + b, 0) / 21;
+  });
+  const mesmo = (a, b) => a.length === b.length &&
+    a.every((x, i) => (x === null) === (b[i] === null) && (x === null || Math.abs(x - b[i]) < 1e-9));
+  // sintetico: um nulo no meio anula as 21 janelas que o contem (e so elas) -- no
+  // payload real nao ha nulo dentro da janela, entao so este caso separa as regras
+  const sint = Array.from({ length: 30 }, (_, i) => i === 25 ? null : 1);
+  ok(JSON.stringify(_mm21(sint).slice(19)) === JSON.stringify([null, 1, 1, 1, 1, 1, null, null, null, null, null]),
+     '_mm21: nula ate fechar 21 pregoes e em toda janela que contem um nulo', JSON.stringify(_mm21(sint).slice(19)));
+  const vol = newPlotCalls.find(c => c.div === 'chart-b3-vol');
+  const ordemVol = ['DOL', 'WDO', 'FRC', 'DR1', 'FRP'];
+  ok(!!vol && vol.traces.length === 5 && ordemVol.every((k, i) => mesmo(vol.traces[i].y, mm(D.vol_usd[k]))),
+     'volume do dolar e do cupom = media de 21 pregoes do volume diario, serie a serie');
+  ok(D.vol_usd.DR1.some(x => x === 0),
+     'dia sem negocio chega como zero (nao nulo), senao a media apaga um mes a cada dia parado');
+  const oi = newPlotCalls.find(c => c.div === 'chart-b3-oi');
+  ok(!!oi && ['DOL', 'WDO', 'DDI'].every((k, i) => oi.traces[i].y === D.oi_usd[k]),
+     'posicao em aberto: dolar cheio, mini e cupom, direto do payload');
+  ok(D.oi_usd.DOL[D.oi_usd.DOL.length - 1] === null,
+     'a posicao do ultimo pregao e nula (so chega com o arquivo do seguinte), nao zero');
+
+  // put/call: puts / calls ponto a ponto; nulo onde falta uma perna ou calls = 0
+  const pc = newPlotCalls.find(c => c.div === 'chart-opc-pc');
+  const O = D.opcoes;
+  const raz = (a, b) => a.map((x, i) => (x === null || !b[i]) ? null : x / b[i]);
+  ok(!!pc && mesmo(pc.traces[0].y, raz(O.oi_put, O.oi_call)), 'put/call na posicao = puts / calls');
+  ok(!!pc && mesmo(pc.traces[1].y, raz(mm(O.vol_put), mm(O.vol_call))),
+     'put/call no volume = razao das MEDIAS de 21 pregoes (nao media das razoes)');
+  ok(!!pc && pc.layout.shapes.some(sh => sh.y0 === 1 && sh.y1 === 1), 'linha de referencia em 1');
+  ok(htmlBruto.indexOf('o normal num mercado em que quem tem dívida em dólar compra call') < 0,
+     'a nota nao afirma que put/call abaixo de 1 e o normal (passou o ano de 2019 entre 1,4 e 2,2)');
+
+  // posicao por strike: eixo linear, seletor redesenha, linha do futuro vazia quando nao ha
+  const st = D.strikes;
+  const strikeCalls = () => reactCalls.filter(c => c.div === 'chart-opc-strike');
+  const s0 = strikeCalls().slice(-1)[0];
+  ok(!!s0 && s0.layout.xaxis.type === 'linear', 'o eixo do strike e linear, nao data', s0 && s0.layout.xaxis.type);
+  ok(!!st && st.vencimentos.length >= 2, 'ha pelo menos dois vencimentos para escolher', st && st.vencimentos.length);
+  const sel = registry['sel-opc-venc'];
+  ok(sel.innerHTML.split('<option').length - 1 === st.vencimentos.length, 'uma opcao por vencimento');
+  ok(s0.traces[0].x === st.vencimentos[0].strike && s0.traces[1].y === st.vencimentos[0].put,
+     'abre no primeiro vencimento');
+  const nAntes = strikeCalls().length;
+  sel.value = '1'; sel.change();
+  const s1 = strikeCalls().slice(-1)[0];
+  ok(strikeCalls().length === nAntes + 1 && s1.traces[0].y === st.vencimentos[1].call,
+     'trocar o vencimento redesenha com as barras dele');
+  const fut1 = st.vencimentos[1].futuro;
+  ok(fut1 === null ? s1.layout.shapes.length === 0 : (s1.layout.shapes.length === 1 && s1.layout.shapes[0].x0 === fut1),
+     'a linha tracejada fica no dolar futuro do vencimento escolhido', fut1);
+  ok(/pregão de \d{2}\/\d{2}\/\d{4}/.test(cabecalho('chart-opc-strike') || '') &&
+     (cabecalho('chart-opc-strike') || '').indexOf(st.vencimentos[1].rotulo) > 0,
+     'o cabecalho diz o pregao e o vencimento mostrado');
+  // sintetico: vencimento sem futuro -> shapes VAZIO (com Plotly.react, omitir herdaria a linha)
+  const guardado = st.vencimentos[1].futuro;
+  st.vencimentos[1].futuro = null; sel.change();
+  const s2 = strikeCalls().slice(-1)[0];
+  ok(Array.isArray(s2.layout.shapes) && s2.layout.shapes.length === 0 &&
+     Array.isArray(s2.layout.annotations) && s2.layout.annotations.length === 0,
+     'sem dolar futuro, shapes e annotations vao vazios (nao omitidos)');
+  st.vencimentos[1].futuro = guardado;
+  sel.value = '0'; sel.change();
+
+  // DI por vencimento: eixo de categoria; a frase da fatia de janeiro e refeita aqui
+  const J = D.juros_bolsa;
+  const dv = newPlotCalls.find(c => c.div === 'chart-jb-di-venc');
+  ok(!!dv && dv.layout.xaxis.type === 'category', 'o eixo do DI por vencimento e de categoria', dv && dv.layout.xaxis.type);
+  let tot = 0, jan = 0;
+  J.di_venc.rotulo.forEach((r, i) => { tot += J.di_venc.oi[i] || 0; if (/^jan\//.test(r)) jan += J.di_venc.oi[i] || 0; });
+  const pct = Math.round(100 * jan / tot);
+  const frase = registry['jb-di-jan'].textContent || '';
+  ok(frase.indexOf(pct + '%') > 0 && /\d{2}\/\d{2}\/\d{4}/.test(frase),
+     'a fatia de janeiro impressa na nota bate com a soma das barras', frase + ' / esperado ' + pct + '%');
+  ok(J.di_venc.taxa.length === J.di_venc.oi.length, 'uma taxa por vencimento no hover');
+
+  // juros e bolsa: volume e preco
+  const jv = newPlotCalls.find(c => c.div === 'chart-jb-vol');
+  ok(!!jv && ['DI1', 'DAP', 'IBOV'].every((k, i) => mesmo(jv.traces[i].y, mm(J.vol_brl[k]))),
+     'volume de DI, DAP e Ibovespa futuro = media de 21 pregoes');
+  const ib = newPlotCalls.find(c => c.div === 'chart-jb-ibov');
+  ok(!!ib && ib.traces[0].y === J.ibov_preco, 'o preco do Ibovespa futuro vem direto do payload');
+  const pr = J.ibov_preco.filter(x => x !== null);
+  ok(pr.length > 20, 'ha preco do Ibovespa futuro', pr.length);
+
+  // cabecalho em todos os dez
+  const semCab = ['chart-b3-oi', 'chart-b3-vol', 'chart-opc-strike', 'chart-opc-oi', 'chart-opc-pc',
+                  'chart-jb-vol', 'chart-jb-oi', 'chart-jb-di-venc', 'chart-jb-ibov', 'chart-jb-ibov-oi']
+    .filter(id => (cabecalho(id) || '').indexOf('B3 — boletim de preços') < 0);
+  ok(semCab.length === 0, 'os dez graficos novos tem cabecalho com a fonte', semCab.join(', '));
 }
 
 console.log(`\n${oks} ok, ${falhas} falhou`);

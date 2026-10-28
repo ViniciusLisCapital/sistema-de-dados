@@ -62,7 +62,7 @@ Fixed template (`report.html`) with a `/*REPORT_DATA*/` marker inside a `<script
 
 **Since 2026-08**, `_bindYAutofit()`/`_toComparableX()` are no longer inline in this `report.html` — a `/*Y_AUTOFIT_JS*/` marker is filled in at generation time from `analytics/report_structure/y_autofit.js` (edit that file, not this one — see [`analytics/report_structure/CLAUDE.md`](../../report_structure/CLAUDE.md)). **The theme CSS is *not* migrated** — this report's `:root` palette/typography predates the 2026-07 LIS-dashboard reskin `inflation/` got (navy header, `system-ui` font, no Barlow/JetBrains Mono import, different `--bg`/`--border`/`--text` values than `report_structure/theme.css`), so swapping in the shared `/*THEME_CSS*/` marker as-is would silently change this report's look without an actual design pass. That reskin is a separate follow-up (see root `CLAUDE.md`'s `analytics/` Pendências / `report_structure/CLAUDE.md`'s Migration status) — do it first, then point at the shared theme file.
 
-Seven tabs, real switching via JS `display` toggling (not scroll anchors) — four data tabs, in nav order: Balanço de Pagamentos (`tab-bop`), Fluxo Cambial (`tab-flow`), **Posicionamento: BCB e mercado** (`tab-bcb`), Valuation (`tab-valuation`); then three model tabs: Equilíbrio PPP (`tab-data`), FX Attribution (`tab-fxattr`), FX Model (`tab-ridge`, chamada "Ridge" até 2026-09-01). Duas abas de dados saíram a pedido do usuário: **Mapa de Calor — BP** em 2026-08-27 e **Cotação** em 2026-09-01 (as duas, abaixo).
+Ten tabs, real switching via JS `display` toggling (not scroll anchors) — seven data tabs, in nav order: Balanço de Pagamentos (`tab-bop`), Fluxo Cambial (`tab-flow`), **Posicionamento: BCB e mercado** (`tab-bcb`), Valuation (`tab-valuation`), **Mercado B3** (`tab-mercado`, 2026-10-28), **Opções de Dólar** (`tab-opcoes`) e **Juros e Bolsa na B3** (`tab-jurosbolsa`), as duas de 2026-10-28; then three model tabs: Equilíbrio PPP (`tab-data`), FX Attribution (`tab-fxattr`), FX Model (`tab-ridge`, chamada "Ridge" até 2026-09-01). Duas abas de dados saíram a pedido do usuário: **Mapa de Calor — BP** em 2026-08-27 e **Cotação** em 2026-09-01 (as duas, abaixo).
 
 **How the two halves coexist** (they were written years apart against different design systems, so the merge scoped rather than reconciled them):
 - `activateTab()` is the single owner of tab state. The model tabs kept their own lazy-render listeners (they key off `btn.dataset.tab`, so they still fire), but the ex-dashboard's own class-toggling loop was dropped — re-adding one would double-toggle. `activateTab()` also resizes `.chart-wrap`/`.mini-chart-wrap` divs, not just `.chart-card > div`: the model tabs' Plotly divs live in the former, and a chart first drawn inside a `display:none` panel renders at zero width until resized.
@@ -1284,6 +1284,40 @@ fiscal de volta a +49, o cliente subtraindo `stat.mean`, a prosa da aba perdendo
 `contribuição acumulada == β·(x_fim − x_início)/σ`, canal a canal, com os níveis lidos do
 `channel_history` — sob a convenção antiga ela falha no fiscal por 52 pp.
 
+## A aba Mercado B3 (2026-10-28)
+
+Pedido do usuário: *"uma nova aba … com os dados de cupom cambial, e curva futura do Dólar,
+basicamente todas essas métricas de mercado que pegamos"*. Tudo vem do arquivo de pregão da B3,
+diário desde 2006: uma tabela-resumo do último pregão (prazo × dólar futuro, prêmio a termo, cupom
+limpo e sujo, juro em dólar, prêmio do cupom, vol implícita, prêmio a termo ÷ vol) e seis gráficos —
+a curva futura por prazo em cinco datas, o prêmio a termo (3M/1A/5A), o cupom limpo contra o juro em
+dólar com seletor de prazo (o sujo vem `legendonly`), o prêmio do dólar onshore (limpo − juro em
+dólar), a vol implícita em quatro prazos e, desde o mesmo dia, o **carry sobre vol** (prêmio a termo
+÷ vol implícita do mesmo prazo, 3M e 1 ano — o 12M divide pela vol de 1Y), calculado na leitura.
+
+Três decisões que valem além desta aba:
+
+- **A curva futura é por PRAZO, não por data**: `xaxis.type: 'linear'` declarado (a oitava face de
+  `.claude/rules/lis-dashboards.md`), sem régua de período, e o cabecalho recebe `meta.periodo`
+  pronto ("pregão de dd/mm/aaaa") — `renderChartHead()` ganhou esse campo, porque derivado das
+  abscissas ele leria "1 a 60" como datas. O harness tem `NAO_TEMPORAIS` para tirá-lo das
+  checagens de série temporal e afirmar o que vale para ele (§17).
+- **O prêmio do cupom é calculado na leitura**, ponto a ponto, nulo onde falta uma perna
+  (`JUROS_USD` começa em 2008-02); nada é gravado em dobro.
+- **Faixas de estresse no prêmio onshore** (2026-10-28, pedido do usuário): `EPISODIOS_ESTRESSE`
+  no `report.html`, lista editorial de 7 episódios (2008, IOF/compulsório 2011, taper, Crise
+  Dilma, caminhoneiros/eleição 2018, Covid, pacote fiscal 2024). São `shapes` com `yref:'paper'`
+  e não traços, para ficar fora do hover, da legenda e do autofit. Sombreado e não hachurado: o
+  Plotly 2.35 não tem padrão de preenchimento em `shapes`. Conferido em Chrome headless; §17d'.
+  Não há linha de "nível de intervenção": medido, o nível em que o BC vende linha caiu de
+  1,7–2,8 p.p. (6M, 2015-16) para 1,0–1,7 (2022-26), e em 2017-21 as linhas nem responderam ao prêmio.
+- **A história inteira da curva futura não vai no payload**, só as cinco datas que o gráfico
+  compara: o nível dela ao longo do tempo é o dólar à vista, que a aba Valuation já desenha. O que
+  muda com o tempo e não está em outro lugar é o prêmio a termo, e esse vai inteiro.
+
+O arquivo passou de ~2,1 para ~3,0 MB. A vol implícita entra pela tabela nova
+(`cmb_vol_implicita`); o `carry_vol` do FX Model continua no CSV da Bloomberg (Pending).
+
 ## Section → schema → table mapping
 
 | Report tab | Loader (`generate_report.py`) | Schema | Table(s) |
@@ -1292,6 +1326,7 @@ fiscal de volta a +49, o cliente subtraindo `stat.mean`, a prosa da aba perdendo
 | ~~Valuation~~ | `_load_diferenciais` | `macro_international` | `diferenciais_juros` — **fora do relatório desde 2026-09-01** (a seção Diferenciais de Juros saiu); a função fica porque o FX Outlook (`generate_fx_outlook_pdf.py`) a chama, e a tabela segue alimentando o canal de carry da aba Ridge via `ppp_equilibrium` |
 | Valuation | `_load_reer` | `macro_international` | `cmb_reer` |
 | Valuation | `_load_termos` | `macro_brasil` | `cmb_termos_troca` |
+| Mercado B3 | `_load_mercado_b3` | `macro_brasil` | `cmb_dol_futuro`, `cmb_vol_implicita` e as curvas `CUPOM_LIMPO`/`CUPOM_SUJO`/`JUROS_USD` de `br_interest_rate` |
 | Posicionamento: BCB e mercado | `_load_cot_fx` | `macro_international` | `cmb_cot_fx` (20 séries por moeda desde 2026-09-01: as 5 categorias do TFF × long/short/spread/net, + `open_interest`) |
 | Posicionamento: BCB e mercado | `_load_bcb_positioning` | `macro_brasil` | `cmb_reservas_bc` (4 recortes: `reserves`/`swap` diretos, `reservas_arvore` mensal 2001+, `intervencoes` diária→mensal) |
 | Fluxo Cambial | `_load_cambio_contratado` | `macro_brasil` | `cmb_cambio_contratado` (diária→mensal) |
@@ -1666,6 +1701,53 @@ Três mudanças no FX Model, pedidas pelo usuário depois do guia técnico
 E um rótulo corrigido: o termo AR(1) aparecia como "momentum", mas φ é negativo em todas as
 janelas (reversão parcial); virou "last-month term".
 
+## Volume e posição em aberto da B3: uma seção e duas abas (2026-10-28)
+
+Pedido do usuário: *"organize os novos dados e crie mais abas … veja o que dá para alocar na mesma
+aba e o que não der organize em outras abas"*. Os dados são as quatro tabelas do boletim de preços
+da B3 (`cmb_contratos_b3`, `cmb_opcoes_dolar`, `br_juros_contratos`, `bolsa_ibov_futuro`, diárias
+desde 2018), num payload só, `derivativos` (`_load_derivativos_b3()`). Onde cada coisa foi:
+
+- **Dólar e cupom → seção nova na aba Posicionamento** (`sec-bcb-b3`), logo depois da CFTC: é o
+  mesmo assunto da aba (o tamanho do mercado de cada lado), e a nota da CFTC já dizia que ela não
+  cobre a B3, *"que é o mercado maior"*. Posição em aberto em US$ (contratos × tamanho: US$ 50 mil
+  no cheio e no cupom, US$ 10 mil no mini) e volume em US$ — dólar cheio, mini, FRA de cupom,
+  rolagem e casado.
+- **Opções de dólar → aba própria** (`tab-opcoes`): três gráficos que não cabem em aba nenhuma —
+  posição por strike num vencimento escolhido (eixo `linear` declarado, linha do futuro do
+  vencimento como shape passada vazia quando falta), calls e puts em aberto e a razão put/call. A
+  vol implícita ficou na Mercado B3, que é a aba dos preços.
+- **DI, DAP e Ibovespa futuro → aba própria** (`tab-jurosbolsa`): não são câmbio, e entram como o
+  contexto que o investidor de fora negocia junto. Volume em R$ dos três, posição do DI e do DAP,
+  posição do DI por vencimento (eixo de categoria declarado), preço e posição do Ibovespa futuro.
+
+Três decisões que valem além destas abas:
+
+- **Volume vai diário e a média de 21 pregões é feita no navegador** (`_mm21`), nula se faltar
+  qualquer dia da janela. Por isso o gerador grava **zero** no pregão em que o contrato não negociou
+  (a tabela tem o dia e o contrato não) e **nulo** no pregão que a tabela ainda não tem — sem a
+  distinção, um dia parado do casado apagaria um mês da média.
+- **A posição do último pregão é nula** (só chega com o arquivo do dia seguinte) e continua nula no
+  gráfico, em vez de virar zero.
+- **Agregação no banco** (`_query`, `GROUP BY date, ativo`): as opções têm ~1 milhão de linhas e o
+  relatório só precisa das somas.
+
+Três achados da primeira geração, com os dados de ago–out/2026:
+
+- **A razão put/call não tem nível normal.** A nota dizia que abaixo de 1 era o normal; medido no
+  cache do boletim, ela passou 2019 inteiro entre 1,4 e 2,2 e está perto de 0,6 hoje. A nota passou
+  a mandar ler a variação, e o teste proíbe a frase antiga.
+- **A fatia de janeiro no DI é derivada** (`#jb-di-jan`, preenchido do mesmo payload do gráfico),
+  não escrita: 60% da posição no pregão de 26/10/2026.
+- **"O IND mais negociado" pegava um vencimento sem negócio**: série sem negócio tem `contratos`
+  NULL, e o `sort_values` põe NaN no fim, então o `tail(1)` o escolhia (o preço saltava ~4%). O
+  gerador usa `fillna(0)` antes do sort. A queda de ~15% do Ibovespa futuro em 26/10/2026 não é
+  esse defeito: aparece em todos os vencimentos de IND e WIN.
+
+Cor: o mini (`#1565C0`) e a rolagem (`#8E44AD`) vêm da paleta de séries da skill, porque `azulCl`
+× `verde` da marca ficam a ΔE 13,0 e os dois dividem o gráfico de volume. Coberto por
+`tests/test_fx_report_js.js` §18 (31 asserções), verificado contra 7 mutantes.
+
 ## Pending / next steps
 
 - **Cenários base dos outros 4 canais exógenos** (`dxy_em`, `carry_vol`, `sp500`, `icbr_usd`) — o
@@ -1696,4 +1778,5 @@ janelas (reversão parcial); virou "last-month term".
 - **Interest differentials are ex-post only** — ex-ante (Focus Selic/IPCA 12m for Brazil; Fed funds futures/OIS and Michigan survey or breakevens for the US) is not implemented. Add as new `_ex_ante`-suffixed series in `diferenciais_juros`, not a replacement of the existing ones. Note que **desde 2026-09-01 nenhuma aba de dados desenha essa tabela** — o consumidor vivo é o canal de carry da aba Ridge e o `agent_data.py`, então um diferencial ex-ante entraria hoje por ali, não por uma seção de Valuation.
 - **The PTAX section shows only BRL/USD** — explicit user ask for EM peer currencies (MXN, CLP, COP) side by side; no spot series for those pairs exists in the DB yet (FRED has candidates like `DEXMXUS`) — blocked on authorization for new data collection, not on a technical blocker.
 - **Fluxo cambial — CEP/CBE sub-items** (candidate SGS codes 24372–24376) returned data in an initial search but descriptions are unconfirmed — cross-check against the BCB's weekly Nota Cambial before using them.
-- **Cupom cambial + B3 FX futures (DOL/WDO)** — deferred indefinitely; requires Bloomberg (`blpapi`/`xbbg`) on the running machine.
+- ~~**Cupom cambial + B3 FX futures (DOL/WDO)** — deferred; requires Bloomberg~~ — **feito em 2026-10-28 sem Bloomberg**, da própria B3 (aba Mercado B3, abaixo).
+- **O `carry_vol` do FX Model ainda lê a vol implícita do CSV da Bloomberg**, não `cmb_vol_implicita`. Trocar é decisão do usuário: fora de evento as duas batem na casa decimal, mas no fim de jul/2026 o 3M da B3 ficou ~1,7 p.p. abaixo (eleição diluída no prazo fixo).

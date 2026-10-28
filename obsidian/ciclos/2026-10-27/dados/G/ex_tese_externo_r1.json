@@ -1,0 +1,514 @@
+{
+ "agente": "externo",
+ "rodada": "r1",
+ "ciclo": "2026-10-27",
+ "caminhos": {
+  "ffr": {
+   "4T26": 4.13,
+   "1T27": 4.13,
+   "2T27": 4.13,
+   "3T27": 4.13,
+   "4T27": 4.13,
+   "1T28": 3.88
+  },
+  "infl_us": {
+   "4T26": 0.86,
+   "1T27": 0.61,
+   "2T27": 0.61,
+   "3T27": 0.65,
+   "4T27": 0.63,
+   "1T28": 0.65
+  },
+  "dxy_em": {
+   "4T26": 130.5,
+   "1T27": 131.0,
+   "2T27": 130.5,
+   "3T27": 130.0,
+   "4T27": 129.5,
+   "1T28": 129.0
+  },
+  "sp500": {
+   "4T26": 7750,
+   "1T27": 7900,
+   "2T27": 8050,
+   "3T27": 8200,
+   "4T27": 8350,
+   "1T28": 8500
+  },
+  "icbr_usd": {
+   "4T26": 204.8,
+   "1T27": 203.7,
+   "2T27": 202.9,
+   "3T27": 202.3,
+   "4T27": 201.8,
+   "1T28": 201.4
+  },
+  "icbr_agr_usd": {
+   "4T26": 202.0,
+   "1T27": 202.0,
+   "2T27": 202.0,
+   "3T27": 202.0,
+   "4T27": 202.0,
+   "1T28": 202.0
+  },
+  "icbr_met_usd": {
+   "4T26": 331.7,
+   "1T27": 330.0,
+   "2T27": 330.0,
+   "3T27": 328.7,
+   "4T27": 327.3,
+   "1T28": 325.7
+  }
+ },
+ "tese": {
+  "ffr": {
+   "trimestres": {
+    "4T26": {
+     "central": 4.13,
+     "faixa": [
+      4.0,
+      4.25
+     ],
+     "p_faixa": 50,
+     "p_upside": 30,
+     "p_downside": 20
+    },
+    "1T27": {
+     "central": 4.13,
+     "faixa": [
+      3.88,
+      4.38
+     ],
+     "p_faixa": 50,
+     "p_upside": 30,
+     "p_downside": 20
+    },
+    "2T27": {
+     "central": 4.13,
+     "faixa": [
+      3.75,
+      4.38
+     ],
+     "p_faixa": 50,
+     "p_upside": 30,
+     "p_downside": 20
+    },
+    "3T27": {
+     "central": 4.13,
+     "faixa": [
+      3.63,
+      4.38
+     ],
+     "p_faixa": 50,
+     "p_upside": 30,
+     "p_downside": 20
+    },
+    "4T27": {
+     "central": 4.13,
+     "faixa": [
+      3.63,
+      4.38
+     ],
+     "p_faixa": 50,
+     "p_upside": 30,
+     "p_downside": 20
+    },
+    "1T28": {
+     "central": 3.88,
+     "faixa": [
+      3.5,
+      4.25
+     ],
+     "p_faixa": 50,
+     "p_upside": 30,
+     "p_downside": 20
+    }
+   }
+  },
+  "infl_us": {
+   "trimestres": {
+    "4T26": {
+     "central": 0.86,
+     "faixa": [
+      0.65,
+      1.1
+     ],
+     "p_faixa": 50,
+     "p_upside": 30,
+     "p_downside": 20
+    },
+    "1T27": {
+     "central": 0.61,
+     "faixa": [
+      0.46,
+      0.76
+     ],
+     "p_faixa": 50,
+     "p_upside": 30,
+     "p_downside": 20
+    },
+    "2T27": {
+     "central": 0.61,
+     "faixa": [
+      0.46,
+      0.76
+     ],
+     "p_faixa": 45,
+     "p_upside": 30,
+     "p_downside": 25
+    },
+    "3T27": {
+     "central": 0.65,
+     "faixa": [
+      0.5,
+      0.8
+     ],
+     "p_faixa": 45,
+     "p_upside": 30,
+     "p_downside": 25
+    },
+    "4T27": {
+     "central": 0.63,
+     "faixa": [
+      0.48,
+      0.78
+     ],
+     "p_faixa": 45,
+     "p_upside": 30,
+     "p_downside": 25
+    },
+    "1T28": {
+     "central": 0.65,
+     "faixa": [
+      0.5,
+      0.8
+     ],
+     "p_faixa": 45,
+     "p_upside": 30,
+     "p_downside": 25
+    }
+   }
+  },
+  "dxy_em": {
+   "trimestres": {
+    "4T26": {
+     "central": 130.5,
+     "faixa": [
+      129.2,
+      132.0
+     ],
+     "p_faixa": 55,
+     "p_upside": 25,
+     "p_downside": 20
+    },
+    "1T27": {
+     "central": 131.0,
+     "faixa": [
+      129.0,
+      133.8
+     ],
+     "p_faixa": 55,
+     "p_upside": 25,
+     "p_downside": 20
+    },
+    "2T27": {
+     "central": 130.5,
+     "faixa": [
+      128.2,
+      133.0
+     ],
+     "p_faixa": 55,
+     "p_upside": 25,
+     "p_downside": 20
+    },
+    "3T27": {
+     "central": 130.0,
+     "faixa": [
+      127.5,
+      132.2
+     ],
+     "p_faixa": 55,
+     "p_upside": 25,
+     "p_downside": 20
+    },
+    "4T27": {
+     "central": 129.5,
+     "faixa": [
+      127.0,
+      131.5
+     ],
+     "p_faixa": 55,
+     "p_upside": 25,
+     "p_downside": 20
+    },
+    "1T28": {
+     "central": 129.0,
+     "faixa": [
+      126.5,
+      130.8
+     ],
+     "p_faixa": 55,
+     "p_upside": 25,
+     "p_downside": 20
+    }
+   }
+  },
+  "sp500": {
+   "trimestres": {
+    "4T26": {
+     "central": 7750,
+     "faixa": [
+      7375,
+      7982
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "1T27": {
+     "central": 7900,
+     "faixa": [
+      7200,
+      8137
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "2T27": {
+     "central": 8050,
+     "faixa": [
+      7375,
+      8350
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "3T27": {
+     "central": 8200,
+     "faixa": [
+      7575,
+      8575
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "4T27": {
+     "central": 8350,
+     "faixa": [
+      7775,
+      8775
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "1T28": {
+     "central": 8500,
+     "faixa": [
+      7975,
+      8975
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    }
+   }
+  },
+  "icbr_usd": {
+   "trimestres": {
+    "4T26": {
+     "central": 204.8,
+     "faixa": [
+      199.7,
+      209.9
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "1T27": {
+     "central": 203.7,
+     "faixa": [
+      195.8,
+      210.6
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "2T27": {
+     "central": 202.9,
+     "faixa": [
+      193.4,
+      210.9
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "3T27": {
+     "central": 202.3,
+     "faixa": [
+      192.4,
+      210.2
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "4T27": {
+     "central": 201.8,
+     "faixa": [
+      192.2,
+      209.7
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "1T28": {
+     "central": 201.4,
+     "faixa": [
+      192.1,
+      209.4
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    }
+   }
+  },
+  "icbr_agr_usd": {
+   "trimestres": {
+    "4T26": {
+     "central": 202.0,
+     "faixa": [
+      198.0,
+      206.0
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "1T27": {
+     "central": 202.0,
+     "faixa": [
+      197.0,
+      206.3
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "2T27": {
+     "central": 202.0,
+     "faixa": [
+      195.0,
+      208.0
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "3T27": {
+     "central": 202.0,
+     "faixa": [
+      193.8,
+      208.5
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "4T27": {
+     "central": 202.0,
+     "faixa": [
+      193.5,
+      208.5
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "1T28": {
+     "central": 202.0,
+     "faixa": [
+      193.5,
+      208.5
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    }
+   }
+  },
+  "icbr_met_usd": {
+   "trimestres": {
+    "4T26": {
+     "central": 331.7,
+     "faixa": [
+      321.7,
+      341.7
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "1T27": {
+     "central": 330.0,
+     "faixa": [
+      314.1,
+      344.0
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "2T27": {
+     "central": 330.0,
+     "faixa": [
+      306.6,
+      346.0
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "3T27": {
+     "central": 328.7,
+     "faixa": [
+      302.9,
+      345.4
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "4T27": {
+     "central": 327.3,
+     "faixa": [
+      301.1,
+      344.6
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    },
+    "1T28": {
+     "central": 325.7,
+     "faixa": [
+      300.4,
+      343.9
+     ],
+     "p_faixa": 55,
+     "p_upside": 20,
+     "p_downside": 25
+    }
+   }
+  }
+ },
+ "nota": "Rodada 1. Três blocos (Política dos EUA; Risco e dólar; Commodities), cada um com base/upside/downside. Caminhos montados por G (ex_cenarios.py) a partir de caminhos mensais de Brent, núcleo do CPI e grupos do IC-Br."
+}

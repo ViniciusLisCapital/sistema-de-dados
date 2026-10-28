@@ -1,0 +1,19 @@
+{
+  "agente": "expectativas",
+  "rodada": "rf",
+  "ciclo": "2026-10-27",
+  "caminhos": {},
+  "tese": {
+    "focus_12m": {
+      "trimestres": {
+        "4T26": {"central": 4.17, "faixa": [4.05, 4.45], "p_faixa": 14, "p_upside": 85, "p_downside": 1},
+        "1T27": {"central": 4.00, "faixa": [3.80, 4.15], "p_faixa": 26, "p_upside": 70, "p_downside": 4},
+        "2T27": {"central": 3.82, "faixa": [3.60, 3.95], "p_faixa": 35, "p_upside": 58, "p_downside": 7},
+        "3T27": {"central": 3.71, "faixa": [3.50, 3.90], "p_faixa": 39, "p_upside": 52, "p_downside": 9},
+        "4T27": {"central": 3.63, "faixa": [3.40, 3.90], "p_faixa": 41, "p_upside": 48, "p_downside": 11},
+        "1T28": {"central": 3.55, "faixa": [3.30, 3.75], "p_faixa": 41, "p_upside": 47, "p_downside": 12}
+      }
+    }
+  },
+  "nota": "Central = P2 (report final; expectativas não é principal nem subordinado de exógena). Limite superior da faixa = trajetória da própria Focus de 23/10 sem revisão; limite inferior = onde chega o downside com tempero (caudas r2 de fiscal e câmbio, E.e1 x 0,8)."
+}

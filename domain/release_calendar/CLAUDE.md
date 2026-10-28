@@ -450,17 +450,15 @@ converted by hand, is in the release-time section above.
 
 ## Known gaps — not in this file yet
 
-- **BCB's WEEKLY FX-flow release is not modelled** (found 2026-08-19). BCB publishes the *fluxo
-  cambial* weekly (the "Nota Cambial", Wednesdays), and that release appears on **none** of BCB's 29
-  calendar lists — verified live: the only relevant list, `Estatísticas do setor externo`, returns
-  monthly events only (2026-07-28, 2026-08-27) for Jul–Sep 2026. So the calendar, which is built from
-  those feeds for every BCB group, has no way to know the weekly note exists. Two consequences:
-  1. There is no calendar row for the weekly release, and can't be until someone enters the dates by
-     hand or scrapes the note's own page. `update_calendar.py` cannot help — there is no feed.
-  2. The weekly note **is** Tabela 13 ("Movimento de câmbio contratado", SGS 13961–13970), the same
-     product `cmb_cambio_contratado` already loads daily — so the weekly *data* is ingested; only the
-     release *date* has no calendar row. (`cmb_fluxo_cambial`, which this item used to describe, held
-     NUCI/IBC-Br/PNADC under FX-flow names and was dropped 2026-10-07 — see `domain/db/CLAUDE.md`.)
+- ~~**BCB's WEEKLY FX-flow release is not modelled**~~ — **modelled since 2026-10-28** as the group
+  `bcb_fx_flow_weekly` (table `cmb_cambio_contratado`, moved out of the monthly
+  `bcb_external_sector_note`). It is on none of BCB's 29 ICS lists, so the dates come from a rule
+  and are `confirmed: false`: **Wednesday 14:30, covering Monday–Friday of the previous week**,
+  checked against the press coverage of the 07/10, 14/10 and 21/10 releases and against SGS itself
+  (on Wednesday 28/10 before 14:30 the series still ended on Friday 16/10). Freshness anchors on the
+  release date (`release_minus_days: 5`, the Friday), like the Focus. Holiday behaviour is still
+  unverified, and `update_calendar.py` cannot refresh this group — the dates for 2027 have to be
+  written from the rule.
 - **International — still missing.** `cmb_reer` / `cmb_real_rates` (**BIS** — cadence not verified, do not assume the "3rd week of the month" figure that circulated in an earlier draft; it was an unchecked assumption, never confirmed) and `clima_oni` (**NOAA CPC** — monthly, but the "2nd Thursday" rule is likewise unverified). Both were left OUT of the YAML rather than guessed. `cmb_cot_fx` (CFTC) and `diferenciais_juros`' Fed side (FOMC) **are now in** — both read off the issuing body's own published calendar.
 - **Daily market series need no calendar entries**: `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`, `comm_brent` are continuous market/daily data with no discrete release event. Deliberately not modelled as dated entries.
 - **LatAm CPI dates** (INEGI/INE/DANE/INEI — feed `cmb_real_rates`) not researched.
@@ -468,7 +466,7 @@ converted by hand, is in the release-time section above.
 - **All BCB groups are `confirmed: true` as of 2026-08-17**, sourced from the ICS feeds in point 4. That closed every BCB gap previously listed here: `bcb_ibcbr`, `bcb_copom`, `bcb_copom_ata`, `bcb_ptc`, `bcb_fiscal_statistics`, `bcb_external_sector_note`, `bcb_credit_note` (the last BCB note to be found — its list is `Estatísticas monetárias e de crédito`), plus `bcb_focus` upgraded from a bare weekday rule to 19 itemized dates, and a brand-new `bcb_icbr` group. `bcb_rpm` is now double-sourced (RPM API + ICS agreeing exactly).
 - **`comm_icbr` is now covered** by the new `bcb_icbr` group — and this **corrects an assumption previously recorded here**: IC-Br does *not* ride along with `bcb_ibcbr`. It has its own calendar list, releases Wednesdays at 14:30 (vs. IBC-Br's 09:00), and its dates never coincide with IBC-Br's. Its `reference_period` mapping is still inferred from the one-month-lag pattern, not stated by the feed.
 - **`inflc_meta` / `atv_pib_usd` / `cmb_risco_pais`** — still no dedicated release-calendar research. `inflc_meta` rides with CMN decisions (`Reuniões do CMN e COMOC` list exists, not yet pulled).
-- **The remaining `confirmed: false` entries are only `bcb_caged_sgs_mirror`** — derived from MTE's calendar rather than a BCB source, so the ICS feed doesn't help it.
+- **The remaining `confirmed: false` entries are `bcb_caged_sgs_mirror`** — derived from MTE's calendar rather than a BCB source, so the ICS feed doesn't help it — **and `bcb_fx_flow_weekly`** (2026-10-28), derived from the Wednesday rule because BCB publishes no calendar for it.
 
 ### Coverage audit: what the uncovered tables actually are
 

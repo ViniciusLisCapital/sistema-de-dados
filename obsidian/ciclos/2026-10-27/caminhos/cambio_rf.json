@@ -1,0 +1,21 @@
+{
+  "agente": "cambio",
+  "rodada": "rf",
+  "ciclo": "2026-10-27",
+  "caminhos": {
+    "vol": {"4T26": 17.0, "1T27": 15.5, "2T27": 14.5, "3T27": 14.0, "4T27": 13.5, "1T28": 13.5}
+  },
+  "tese": {
+    "ptax": {
+      "trimestres": {
+        "4T26": {"central": 5.427, "faixa": [5.30, 5.60], "p_faixa": 47, "p_upside": 31, "p_downside": 22},
+        "1T27": {"central": 5.515, "faixa": [5.34, 5.78], "p_faixa": 46, "p_upside": 30, "p_downside": 24},
+        "2T27": {"central": 5.517, "faixa": [5.34, 5.82], "p_faixa": 45, "p_upside": 29, "p_downside": 26},
+        "3T27": {"central": 5.501, "faixa": [5.34, 5.82], "p_faixa": 44, "p_upside": 28, "p_downside": 28},
+        "4T27": {"central": 5.511, "faixa": [5.36, 5.82], "p_faixa": 44, "p_upside": 30, "p_downside": 26},
+        "1T28": {"central": 5.528, "faixa": [5.38, 5.83], "p_faixa": 43, "p_upside": 27, "p_downside": 30}
+      }
+    }
+  },
+  "nota": "Report final. Caminho base da vol (principal) mantido desde a rodada 1; sem caminho de referência para dxy_em e icbr_usd. Central = PTAX do P2."
+}

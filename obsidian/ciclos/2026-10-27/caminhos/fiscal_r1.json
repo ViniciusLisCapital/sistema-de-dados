@@ -1,0 +1,32 @@
+{
+  "agente": "fiscal",
+  "rodada": "r1",
+  "ciclo": "2026-10-27",
+  "caminhos": {
+    "fiscal": {"4T26": 140, "1T27": 140, "2T27": 138, "3T27": 135, "4T27": 135, "1T28": 135},
+    "rr_10a": {"4T26": 7.70, "1T27": 7.80, "2T27": 7.70, "3T27": 7.60, "4T27": 7.55, "1T28": 7.50}
+  },
+  "tese": {
+    "fiscal": {
+      "trimestres": {
+        "4T26": {"central": 140, "faixa": [125, 160], "p_faixa": 60, "p_upside": 25, "p_downside": 15},
+        "1T27": {"central": 140, "faixa": [122, 168], "p_faixa": 55, "p_upside": 28, "p_downside": 17},
+        "2T27": {"central": 138, "faixa": [118, 172], "p_faixa": 55, "p_upside": 28, "p_downside": 17},
+        "3T27": {"central": 135, "faixa": [115, 172], "p_faixa": 54, "p_upside": 28, "p_downside": 18},
+        "4T27": {"central": 135, "faixa": [110, 175], "p_faixa": 54, "p_upside": 28, "p_downside": 18},
+        "1T28": {"central": 135, "faixa": [108, 178], "p_faixa": 54, "p_upside": 28, "p_downside": 18}
+      }
+    },
+    "rr_10a": {
+      "trimestres": {
+        "4T26": {"central": 7.70, "faixa": [7.45, 7.95], "p_faixa": 60, "p_upside": 22, "p_downside": 18},
+        "1T27": {"central": 7.80, "faixa": [7.30, 8.30], "p_faixa": 55, "p_upside": 27, "p_downside": 18},
+        "2T27": {"central": 7.70, "faixa": [7.15, 8.30], "p_faixa": 55, "p_upside": 27, "p_downside": 18},
+        "3T27": {"central": 7.60, "faixa": [7.05, 8.30], "p_faixa": 54, "p_upside": 28, "p_downside": 18},
+        "4T27": {"central": 7.55, "faixa": [6.95, 8.30], "p_faixa": 54, "p_upside": 28, "p_downside": 18},
+        "1T28": {"central": 7.50, "faixa": [6.90, 8.30], "p_faixa": 54, "p_upside": 28, "p_downside": 18}
+      }
+    }
+  },
+  "nota": "Rodada 1, sem notícias. Base: o salto de 26/10 (PTAX +9,2%, DI 10a +239 p.b., NTN-B 10a +135 p.b., CDS +18 p.b.) fica em parte, com recuo parcial da NTN-B ao nível médio de 3T26 até 1T27. Sem caminho de referência para meta_12m (subordinado): nada a acrescentar."
+}

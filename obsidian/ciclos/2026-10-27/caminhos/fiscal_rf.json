@@ -1,0 +1,154 @@
+{
+  "agente": "fiscal",
+  "rodada": "rf",
+  "ciclo": "2026-10-27",
+  "caminhos": {
+    "fiscal": {
+      "4T26": 140,
+      "1T27": 142,
+      "2T27": 139,
+      "3T27": 135,
+      "4T27": 130,
+      "1T28": 125
+    },
+    "rr_10a": {
+      "4T26": 7.75,
+      "1T27": 7.95,
+      "2T27": 7.9,
+      "3T27": 7.8,
+      "4T27": 7.75,
+      "1T28": 7.7
+    }
+  },
+  "tese": {
+    "fiscal": {
+      "trimestres": {
+        "4T26": {
+          "central": 140,
+          "faixa": [
+            125,
+            160
+          ],
+          "p_faixa": 60,
+          "p_upside": 27,
+          "p_downside": 13
+        },
+        "1T27": {
+          "central": 142,
+          "faixa": [
+            125,
+            170
+          ],
+          "p_faixa": 55,
+          "p_upside": 30,
+          "p_downside": 15
+        },
+        "2T27": {
+          "central": 139,
+          "faixa": [
+            121,
+            174
+          ],
+          "p_faixa": 55,
+          "p_upside": 30,
+          "p_downside": 15
+        },
+        "3T27": {
+          "central": 135,
+          "faixa": [
+            117,
+            175
+          ],
+          "p_faixa": 54,
+          "p_upside": 30,
+          "p_downside": 16
+        },
+        "4T27": {
+          "central": 130,
+          "faixa": [
+            113,
+            176
+          ],
+          "p_faixa": 54,
+          "p_upside": 30,
+          "p_downside": 16
+        },
+        "1T28": {
+          "central": 125,
+          "faixa": [
+            110,
+            176
+          ],
+          "p_faixa": 54,
+          "p_upside": 30,
+          "p_downside": 16
+        }
+      }
+    },
+    "rr_10a": {
+      "trimestres": {
+        "4T26": {
+          "central": 7.75,
+          "faixa": [
+            7.55,
+            7.89
+          ],
+          "p_faixa": 60,
+          "p_upside": 25,
+          "p_downside": 15
+        },
+        "1T27": {
+          "central": 7.95,
+          "faixa": [
+            7.55,
+            8.45
+          ],
+          "p_faixa": 55,
+          "p_upside": 28,
+          "p_downside": 17
+        },
+        "2T27": {
+          "central": 7.9,
+          "faixa": [
+            7.45,
+            8.55
+          ],
+          "p_faixa": 55,
+          "p_upside": 28,
+          "p_downside": 17
+        },
+        "3T27": {
+          "central": 7.8,
+          "faixa": [
+            7.35,
+            8.6
+          ],
+          "p_faixa": 54,
+          "p_upside": 28,
+          "p_downside": 18
+        },
+        "4T27": {
+          "central": 7.75,
+          "faixa": [
+            7.3,
+            8.6
+          ],
+          "p_faixa": 54,
+          "p_upside": 28,
+          "p_downside": 18
+        },
+        "1T28": {
+          "central": 7.7,
+          "faixa": [
+            7.25,
+            8.6
+          ],
+          "p_faixa": 54,
+          "p_upside": 28,
+          "p_downside": 18
+        }
+      }
+    }
+  },
+  "nota": "Report final. rr_10a: perto de 8,0 em 1T27 (a reeleição, r1-04, nível A, é contra a reversão), 4T26 a 7,75 (43 pregões restantes a ~8,05; o juro real longo subiu de novo em 27/10, r2-07, nível B) e queda de 0,25 p.p. até 1T28 (Treasury; a alta de juros cobrada nos dois primeiros anos da curva devolve se o Copom não subir). CDS: componente global do externo na alta e na queda, doméstico parado. Sem caminho de referência para meta_12m."
+}

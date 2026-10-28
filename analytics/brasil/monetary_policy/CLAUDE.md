@@ -704,6 +704,20 @@ casos sintéticos, vocabulário) e `tests/test_expectativas_juros.py`; verificad
 a reunião, janela sem reset na comparação, degrau no dia da decisão) e em Chrome headless: 4
 gráficos, zero exceções. Geração: ~20 s a mais (o `montar()`).
 
+**A tabela abaixo do caminho de hoje** (2026-10-27, pedido do usuário, formato aprovado num
+exemplo em .md antes): uma linha por reunião ainda à frente, e para a curva e para a pesquisa a
+**decisão** (contra a reunião anterior do próprio caminho), a **Selic** e o **acumulado** desde a
+Selic de hoje, mais o **spread** = acumulado da curva − acumulado da pesquisa. Regra do usuário: **a
+data do pregão e a da pesquisa sempre na tela** — cabeçalho de cada grupo, resumo da tabela fechada
+e nota. `ejTabelaLinhas()` faz a conta, `renderEjTabela()` desenha. Duas decisões: a base dos dois
+acumulados é a Selic vigente na data mais recente das duas fontes, para o spread ser a distância
+entre as duas Selic; e quando a pesquisa é de antes de uma decisão que a curva já viu, a reunião
+decidida sai e a decisão da pesquisa na seguinte é contra o que ela esperava para a decidida. A
+numeração segue em sequência onde o calendário não numera (`ejNumero()`). Coberto por §36 (refeito
+do caminho + um sintético da pesquisa defasada); 3 mutantes pegos, e o de "decisão contra a base"
+é equivalente — a fonte com Selic vigente diferente da base sempre tem a reunião decidida como
+primeiro ponto, que sai da tabela.
+
 A suavização e as datas oficiais (2026-09-25) têm gabarito externo no teste: **a tela de CDI
 implícito da Bloomberg de 22 e 24/09/2026, transcrita no próprio teste** (§5 e §6) — o caminho
 tem de ficar a menos de 2,5 p.b. do dela com os contratos dela, e a menos de 2 p.b. com a curva da

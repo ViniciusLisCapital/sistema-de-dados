@@ -57,6 +57,27 @@ no_release:
     # redondos -- e o que separa uma reuniao do Copom da seguinte. Mesmo arquivo e
     # mesmo cache de br_interest_rate, mesma janela de 10 dias uteis. 2026-09-24.
     - br_di_grade
+    # Vol implicita ATM do dolar, recuperada do premio de referencia das opcoes
+    # de dolar da B3 (arquivo RE do pregao, mesmo endpoint do TaxaSwap). Mesma
+    # janela de 10 dias uteis por upsert. 2026-10-27.
+    - cmb_vol_implicita
+    # Curva futura do dolar em prazos fixos, derivada do mesmo TaxaSwap (DI e cupom
+    # cambial) mais a PTAX de D-1. Mesma janela de 10 dias uteis. 2026-10-28.
+    - cmb_dol_futuro
+    # Boletim de precos da B3 (BVBG.086, arquivo PR do pregao): por contrato,
+    # negocios, contratos, volume, posicao em aberto e precos. Um download por
+    # pregao para as quatro tabelas; mesma janela de 10 dias uteis. 2026-10-28.
+    - cmb_contratos_b3
+    - cmb_opcoes_dolar
+    - br_juros_contratos
+    - bolsa_ibov_futuro
+    # Mercado de titulos publicos, 2026-10-27. Leiloes do Tesouro (planilha anual,
+    # atualizada no dia do leilao -- os tradicionais sao semanais e os
+    # extraordinarios nao tem data) e negociacao no secundario do Selic (BCB/Demab,
+    # D-1). Nenhum dos dois tem divulgacao a apontar; a rotina relê o ano corrente
+    # (leiloes) e os dois ultimos meses (secundario) por upsert.
+    - fisc_leiloes
+    - fisc_mercado_secundario
     # O calendario oficial das reunioes do Copom, do feed "Reunioes do Copom" do BCB.
     # Nao e serie de mercado, mas cumpre o criterio desta lista (run() busca da fonte
     # sozinho) e nao tem divulgacao a apontar: o BC publica o ano seguinte quando quer,
@@ -150,12 +171,25 @@ max_age_days:
   cmb_fx_latam: 12            # lag medido 8d -- BIS republica em lote
   cmb_equity_us: 5            # lag medido 0d
   comm_brent: 8               # lag medido 1d
+  # Arquivo do mes corrente atualizado ate D-1 (medido em 2026-10-27: ultimo dia 26/10).
+  # fisc_leiloes fica FORA de proposito: o Tesouro para de leiloar em fim de ano e em
+  # semana de feriado, e um limite de dias daria atraso falso exatamente ai.
+  fisc_mercado_secundario: 5  # lag medido 1d
+  # Arquivo RE da B3, solto depois do fechamento (medido em 2026-10-27: ultimo 26/10).
+  cmb_vol_implicita: 5        # lag medido 1d
+  cmb_dol_futuro: 5           # lag medido 1d (o arquivo da B3 sai depois do fechamento)
+  # Boletim de precos da B3: sai depois do fechamento, e a posicao em aberto do
+  # ultimo pregao so chega com o arquivo do seguinte (fica NULL ate la).
+  cmb_contratos_b3: 5         # lag medido 1d
+  cmb_opcoes_dolar: 5
+  br_juros_contratos: 5
+  bolsa_ibov_futuro: 5
   # O lag do BIS (8d medido, 12 de folga, o maior de todas as fontes) migrou para
   # as duas tabelas que passaram a busca-lo direto, quando cmb_policy_rates saiu.
   inter_interest_rate: 12     # lag medido 8d -- BIS republica em lote
   # Tem divulgacao mensal E conteudo diario -- checadas pelas duas regras
   cmb_reservas_bc: 5          # lag medido 1d
-  cmb_cambio_contratado: 12   # SGS diario, divulgado na Nota Cambial semanal (ver acima)
+  cmb_cambio_contratado: 12   # SGS diario, divulgado toda quarta (grupo bcb_fx_flow_weekly)
 
 # Correcoes por tabela para a checagem de freshness (sync.py), onde o vinculo
 # grupo->tabela em `tables:` significa "esta divulgacao e RELEVANTE para esta tabela"
@@ -170,6 +204,12 @@ max_age_days:
 # tem dado mais novo -- o atraso era do mapeamento, nao do banco. (No mesmo teste,
 # comm_icbr/comm_icbr_usd SIM avancaram: aqueles eram atraso real.)
 expectation_overrides:
+  cmb_cambio_contratado:
+    release_minus_days: 5
+    why: >
+      O fluxo cambial semanal sai na quarta e cobre a semana util anterior, ate a
+      sexta -- 5 dias antes da divulgacao. O grupo nao tem reference_period (o feed
+      nao existe), entao a expectativa ancora na data, como o Focus.
   cred_credito_familias:
     lag_months: 1
     why: >
@@ -420,6 +460,46 @@ groups:
       - {date: "2026-10-07", time: "14:30", reference_period: "2026-09", confirmed: true}
       - {date: "2026-11-11", time: "14:30", reference_period: "2026-10", confirmed: true}
       - {date: "2026-12-09", time: "14:30", reference_period: "2026-11", confirmed: true}
+
+  - group: bcb_fx_flow_weekly
+    institution: BCB
+    name: "Fluxo Cambial Semanal"
+    tables: [cmb_cambio_contratado]
+    cadence: weekly
+    weekday: Wednesday
+    note: >
+      Released Wednesdays at 14:30 BRT, covering the previous business week (Monday to
+      Friday) -- it is Tabela 13 of BCB's Indicadores Economicos Selecionados (SGS
+      13961-13970), the same daily series cmb_cambio_contratado loads. BCB has NO
+      official calendar for it: the release is on none of the 29 ICS lists, so the dates
+      below come from the weekday rule and are confirmed: false. The rule was checked
+      2026-10-28 against the press coverage of the 07/10, 14/10 and 21/10 releases and
+      against SGS itself (on Wednesday 28/10 before 14:30 the series still ended on
+      Friday 16/10). Holiday behaviour is unverified -- no Wednesday in Sep-Dec 2026 is
+      a national holiday. The year-end weeks (23/12, 30/12) may follow a different rule.
+      Until 2026-10-28 this table sat under the MONTHLY external-sector note, whose
+      expectation any recent day satisfied.
+    source_url: https://www.bcb.gov.br/estatisticas/indicadoreseconomicos
+    release_time: "14:30"
+    entries:
+      - {date: "2026-09-02", time: "14:30", confirmed: false}
+      - {date: "2026-09-09", time: "14:30", confirmed: false}
+      - {date: "2026-09-16", time: "14:30", confirmed: false}
+      - {date: "2026-09-23", time: "14:30", confirmed: false}
+      - {date: "2026-09-30", time: "14:30", confirmed: false}
+      - {date: "2026-10-07", time: "14:30", confirmed: false}
+      - {date: "2026-10-14", time: "14:30", confirmed: false}
+      - {date: "2026-10-21", time: "14:30", confirmed: false}
+      - {date: "2026-10-28", time: "14:30", confirmed: false}
+      - {date: "2026-11-04", time: "14:30", confirmed: false}
+      - {date: "2026-11-11", time: "14:30", confirmed: false}
+      - {date: "2026-11-18", time: "14:30", confirmed: false}
+      - {date: "2026-11-25", time: "14:30", confirmed: false}
+      - {date: "2026-12-02", time: "14:30", confirmed: false}
+      - {date: "2026-12-09", time: "14:30", confirmed: false}
+      - {date: "2026-12-16", time: "14:30", confirmed: false}
+      - {date: "2026-12-23", time: "14:30", confirmed: false}
+      - {date: "2026-12-30", time: "14:30", confirmed: false}
 
   - group: bcb_focus
     institution: BCB
@@ -681,7 +761,7 @@ groups:
   - group: bcb_external_sector_note
     institution: BCB
     name: "Estatísticas do Setor Externo – Nota para a Imprensa"
-    tables: [cmb_reservas_bc, cmb_balanco_pagmt, cmb_termos_troca, cmb_cambio_contratado,
+    tables: [cmb_reservas_bc, cmb_balanco_pagmt, cmb_termos_troca,
              atv_pib_usd, atv_pib_mensal]
     cadence: monthly
     note: >

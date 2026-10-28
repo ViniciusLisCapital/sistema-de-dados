@@ -13,7 +13,7 @@ da pasta dele, na seção "Pending", e é lá que ela é atualizada:
 | Mercado de trabalho (BR) | [`analytics/brasil/labor_market/CLAUDE.md`](analytics/brasil/labor_market/CLAUDE.md) |
 | Política monetária | [`analytics/brasil/monetary_policy/CLAUDE.md`](analytics/brasil/monetary_policy/CLAUDE.md) — inclui o bloco de preços administrados, a eq. (5) dentro do filtro, e **a taxa neutra**, que é a premissa que domina os cenários (r\* em ~7,9% contra ~4,8% do BC) |
 | Expectativas | [`analytics/brasil/expectations/CLAUDE.md`](analytics/brasil/expectations/CLAUDE.md) |
-| Modelo estrutural | Uma lista por equação. [`…/structural_model/pendencias_philips_eq.md`](analytics/brasil/structural_model/pendencias_philips_eq.md) — a curva de Phillips: variáveis a acrescentar (Brent, ONI, parte livre em monitorados), testes que faltam e o passo de parâmetros variando no tempo. [`…/pendencias_expectativas_eq.md`](analytics/brasil/structural_model/pendencias_expectativas_eq.md) — a equação de expectativas: tudo o que foi medido e **não** entrou na forma, com o número de cada coisa. [`…/pendencias_is_eq.md`](analytics/brasil/structural_model/pendencias_is_eq.md) — a curva IS: o hiato em tempo real (deixado de fora por decisão do usuário), as candidatas a taxa de juro de equilíbrio medidas uma a uma, o prêmio de maturidade da NTN-B — que desde 2026-09-25 está dentro do neutro do aperto —, e a fraqueza do aperto na década recente (H10). [`…/pendencias_taylor_eq.md`](analytics/brasil/structural_model/pendencias_taylor_eq.md) — a regra de juros: as janelas testadas para a taxa de equilíbrio, as três leituras do desvio da inflação, e a intenção de estimar a neutra em vez de escolher um proxy (R12, que é a mesma coisa que H9 na curva IS). [`…/pendencias_fx_eq.md`](analytics/brasil/structural_model/pendencias_fx_eq.md) — o câmbio trimestral: a bolsa americana trocando de sinal entre a correlação bruta e o coeficiente (vale para o FX Report publicado também), as duas convenções de trimestralização, que voltam a ser decisão no dia em que a segunda equação entrar no simulador, e a **tabela** de volatilidade implícita que falta — a série entrou na equação em 2026-09-25 e vive num CSV, não no banco (F4) |
+| Modelo estrutural | Uma lista por equação. [`…/structural_model/pendencias_philips_eq.md`](analytics/brasil/structural_model/pendencias_philips_eq.md) — a curva de Phillips: variáveis a acrescentar (Brent, ONI, parte livre em monitorados), testes que faltam e o passo de parâmetros variando no tempo. [`…/pendencias_expectativas_eq.md`](analytics/brasil/structural_model/pendencias_expectativas_eq.md) — a equação de expectativas: tudo o que foi medido e **não** entrou na forma, com o número de cada coisa. [`…/pendencias_is_eq.md`](analytics/brasil/structural_model/pendencias_is_eq.md) — a curva IS: o hiato em tempo real (deixado de fora por decisão do usuário), as candidatas a taxa de juro de equilíbrio medidas uma a uma, o prêmio de maturidade da NTN-B — que desde 2026-09-25 está dentro do neutro do aperto —, e a fraqueza do aperto na década recente (H10). [`…/pendencias_taylor_eq.md`](analytics/brasil/structural_model/pendencias_taylor_eq.md) — a regra de juros: as janelas testadas para a taxa de equilíbrio, as três leituras do desvio da inflação, e a intenção de estimar a neutra em vez de escolher um proxy (R12, que é a mesma coisa que H9 na curva IS). [`…/pendencias_fx_eq.md`](analytics/brasil/structural_model/pendencias_fx_eq.md) — o câmbio trimestral: a bolsa americana trocando de sinal entre a correlação bruta e o coeficiente (vale para o FX Report publicado também), as duas convenções de trimestralização, que voltam a ser decisão no dia em que a segunda equação entrar no simulador, e a **troca** da volatilidade implícita do CSV da Bloomberg para a tabela da B3, que existe desde 2026-10-28 e espera decisão (F4) |
 | Inflação (US) | [`analytics/us/inflation/CLAUDE.md`](analytics/us/inflation/CLAUDE.md) |
 | Mercado de trabalho (US) | [`analytics/us/labor_market/CLAUDE.md`](analytics/us/labor_market/CLAUDE.md) |
 | Curadoria / bibliografia | [`repository/CLAUDE.md`](repository/CLAUDE.md) |
@@ -47,8 +47,23 @@ desenvolvimento não tem.
   `manifest.yaml` não tem o que declarar — é o caso da regra *insumo fora do banco é dívida*.
   Destino combinado com o usuário, e adiado por ele: `macro_brasil.cmb_vol_implicita`, pelo
   caminho do conector Bloomberg que já existe (`domain/db/brasil/bloomberg/cmb_risco_pais.py`),
-  com os sete prazos de 1W a 1Y. Detalhe e o que muda quando existir:
-  [`…/pendencias_fx_eq.md`](analytics/brasil/structural_model/pendencias_fx_eq.md), item **F4**.
+  com os sete prazos de 1W a 1Y. **Desde 2026-10-28 a tabela existe, vinda da B3** (prêmio das
+  opções de dólar, 1M a 1Y, diária desde 2006, no passe diário) — no 3M ela difere do CSV em
+  −0,19 p.p. na média e bate 0,978 na variação de fim de mês, mas fica ~1,7 p.p. abaixo em evento
+  com data (eleição de 2026). **O modelo continua lendo o CSV até o usuário decidir trocar.**
+  Detalhe: [`…/pendencias_fx_eq.md`](analytics/brasil/structural_model/pendencias_fx_eq.md), item **F4**.
+- **Boletim de preços da B3 — quatro tabelas sem consumidor e preços repetidos** (2026-10-28):
+  `cmb_contratos_b3`, `cmb_opcoes_dolar`, `br_juros_contratos` e `bolsa_ibov_futuro` (volume,
+  posição em aberto e preços por contrato, diários desde 2018) foram carregadas a pedido do usuário
+  e **nenhum relatório as lê ainda** — nenhuma está no `manifest.yaml`. E **guardam preços que
+  outras tabelas já têm**, por decisão do usuário de *"guardar por enquanto e rediscutir depois"*:
+  a taxa de ajuste do DI1 é a grade de `br_di_grade` (exata), a do cupom cambial é a grade de cupom
+  sujo do TaxaSwap (exata) e o ajuste do dólar futuro é a conta de `cmb_dol_futuro` (R$ 0,0005 por
+  US$ 1.000); `tests/test_contratos_b3.py` exige que continuem batendo. **Rediscutir**: manter os
+  preços (são o guarda das duas tabelas derivadas) ou guardar só volume e posição. O DAP e o
+  Ibovespa futuro não repetem nada. Falta também a **quebra por tipo de participante**
+  (estrangeiro × banco), que a B3 tirou da consulta pública em abr/2025: o caminho é a Bloomberg,
+  esperando o usuário achar os tickers no Terminal.
 - **Focus Top5 não carregado**: os 6 endpoints Top5 têm a mesma forma de chave das 3 tabelas mais a
   dimensão `tipo_calculo`, que já existe na chave com valor `'geral'` — então é backfill de dados,
   não migração. Só vale se a leitura "consenso vs. Top5" interessar. `base_calculo=1` na

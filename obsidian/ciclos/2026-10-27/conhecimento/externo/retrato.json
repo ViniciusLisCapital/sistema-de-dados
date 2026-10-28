@@ -1,0 +1,18 @@
+{
+ "agente": "externo",
+ "ciclo": "2026-10-27",
+ "gerado_em": "2026-10-27T13:06:02",
+ "sem_literatura": true,
+ "arquivos": [
+  {
+   "arquivo": "external/external_conceptual_map.md",
+   "tipo": "mapa",
+   "dono": "externo",
+   "camada": null,
+   "outro_dono": false,
+   "motivo": "mapa conceitual do agente, inteiro"
+  }
+ ],
+ "camada1_sem_arquivo": [],
+ "avisos": []
+}

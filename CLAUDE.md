@@ -26,17 +26,18 @@ Decisão sobre o sistema vai para lá, em lista simples; não para os `CLAUDE.md
 ## Onde está cada coisa
 
 ```
-connectors/          — Clientes de APIs/fontes externas (23 módulos): IBGE, BCB (SGS + Focus/Olinda,
-                       agenda ICS, tabelas especiais, anexo do RPM, comunicados do Copom, QPC), FRED, BIS,
-                       BLS, BEA, agendas de divulgação BLS/BEA, CFTC, IPEA, B3, Comex Stat/MDIC,
-                       Tesouro (RTN/Séries Temporais/EFGG), PDET/MTE, Yahoo Finance, MySQL
+connectors/          — Clientes de APIs/fontes externas (27 módulos): IBGE, BCB (SGS + Focus/Olinda,
+                       agenda ICS, tabelas especiais, anexo do RPM, comunicados do Copom, QPC, negociação
+                       secundária de títulos), FRED, BIS,
+                       BLS, BEA, agendas de divulgação BLS/BEA, CFTC, IPEA, B3 (curvas, prêmio de opções de dólar e boletim de preços), Comex Stat/MDIC,
+                       Tesouro (RTN/Séries Temporais/EFGG/leilões), PDET/MTE, Yahoo Finance, MySQL
                        ↳ assinatura, gotchas e limites de cada um: connectors/CLAUDE.md
 domain/
   db/                — ETL: fetch → transform → insert. Uma pasta por schema e, dentro, uma por FONTE:
                        brasil/{ibge,bcb,b3,tesouro,mdic,mte,ipea,bloomberg,investing},
                        international/{bis,cftc,fred,noaa,yfinance}, us/{inflation,labor_market,rates}.
                        Um script por tabela, todos com a mesma interface run()
-    registry.py      — tabela → script, derivado da convenção `_TABLE` (90 tabelas; valida em vez de
+    registry.py      — tabela → script, derivado da convenção `_TABLE` (98 tabelas; valida em vez de
                        envelhecer em silêncio). É o que faz --group/--tables/--continuous funcionarem
                        ↳ tabelas ativas, fonte, range, chave primária e gotchas: domain/db/CLAUDE.md
   dashboards/        — O lado do CONSUMO: manifest.yaml declara de que cada dashboard depende, e
@@ -113,9 +114,9 @@ Todas declarativas, cada uma respondendo uma pergunta, e é a combinação delas
 
 | pergunta | onde | como |
 |---|---|---|
-| QUANDO cada dado sai | `domain/release_calendar/calendar_2026.yaml` | 31 grupos de divulgação |
-| QUEM ESCREVE cada tabela | `domain/db/registry.py` | derivado da convenção `_TABLE`, 90 tabelas |
-| QUEM LÊ cada tabela | `domain/dashboards/manifest.yaml` | 12 dashboards, 130 dependências |
+| QUANDO cada dado sai | `domain/release_calendar/calendar_2026.yaml` | 32 grupos de divulgação |
+| QUEM ESCREVE cada tabela | `domain/db/registry.py` | derivado da convenção `_TABLE`, 98 tabelas |
+| QUEM LÊ cada tabela | `domain/dashboards/manifest.yaml` | 12 dashboards, 132 dependências |
 | QUEM RECALCULA cada ARTEFATO | `manifest.yaml`, bloco `procedures:` | 1 dashboard, 1 passo |
 
 A quarta existe porque **um artefato calculado tem duas datas e só uma era observável**: quando foi

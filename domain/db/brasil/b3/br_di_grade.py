@@ -49,7 +49,7 @@ import os
 
 import pandas as pd
 
-from connectors.b3_curvas import CACHE, baixar_muitos, grades
+from connectors.b3_curvas import baixar_muitos, caminho_cache, grades
 from connectors.mysql import MySQLDataRequester, insert_data_into_database
 
 logger = logging.getLogger(__name__)
@@ -102,8 +102,7 @@ def coletar(full: bool = False, dias: int = _DIAS_ROTINA, baixar: bool = True) -
     if baixar:
         baixar_muitos(datas)
     else:
-        datas = [d for d in datas
-                 if os.path.exists(os.path.join(CACHE, d.strftime("%y%m%d") + ".csv"))]
+        datas = [d for d in datas if os.path.exists(caminho_cache(d))]
 
     partes, ruins = [], {}
     for d in datas:
@@ -152,7 +151,7 @@ def run(full: bool = False, dias: int = _DIAS_ROTINA, baixar: bool = True) -> No
 
     Args:
         full: True recarrega de 2006-01-02 (5.131 pregoes, ~1,2 M de linhas). Usa o
-              mesmo cache de domain/db/brasil/b3/cache/ que br_interest_rate; com
+              mesmo cache de domain/db/brasil/b3/cache_v2/ que br_interest_rate; com
               baixar=True ainda tenta os feriados nacionais, que nao tem arquivo.
         dias: dias uteis para tras no passe de rotina. Default 10.
         baixar: False reconstroi so do cache, sem tocar na B3.
