@@ -1748,6 +1748,15 @@ Cor: o mini (`#1565C0`) e a rolagem (`#8E44AD`) vêm da paleta de séries da ski
 × `verde` da marca ficam a ΔE 13,0 e os dois dividem o gráfico de volume. Coberto por
 `tests/test_fx_report_js.js` §18 (31 asserções), verificado contra 7 mutantes.
 
+Com o histórico inteiro (2.192 pregões desde jan/2018) apareceram dois mergulhos de posição que
+o mercado não fez, em 09/05/2018 (a zero) e 10/09/2025 (−28% no cupom, −31% no DI): a B3 zerou a
+abertura de alguns códigos no arquivo seguinte. A regra que os trata mora na carga
+(`domain/db/brasil/b3/_contratos_b3.py`); aqui, **um contrato com posição NULL torna a soma do dia
+NULL** — somar só os outros redesenharia o mesmo mergulho. As notas foram reconferidas no
+histórico inteiro e valem: put/call mediana de 0,75 (2018) a 1,74 (2019); 83% do volume da
+rolagem nos 3 últimos pregões do mês; FRA de cupom 7 a 52 vezes o futuro de cupom em todo ano;
+DI com 13 a 45 vezes a posição do DAP.
+
 ## Pending / next steps
 
 - **Cenários base dos outros 4 canais exógenos** (`dxy_em`, `carry_vol`, `sp500`, `icbr_usd`) — o

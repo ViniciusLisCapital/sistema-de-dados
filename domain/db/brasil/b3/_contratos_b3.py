@@ -19,6 +19,12 @@ chamam de posicao do dia. Tres casos:
 - o pregao seguinte ainda nao saiu, ou o download dele falhou: NULL -- e o
   proximo passe de rotina preenche, porque a janela volta 10 dias.
 
+Zero que volta: um contrato com posicao em D, zero no arquivo seguinte e posicao
+de novo no outro fica NULL em D. Sao arquivos com a abertura zerada pela fonte --
+o de 10/05/2018 em 354 codigos, o de 11/09/2025 em 29 (DI1F27, DDIF26, DAP...) --,
+e uma varredura das 2.301 sessoes acha so esses dois mais tres codigos isolados
+de pouca liquidez, em que um dia nulo nao custa nada.
+
 Feriado (arquivo vazio, cacheado) e pulado; falha de rede (nada no cache) NAO e
 pulada, para nao atribuir a D a posicao de dois pregoes depois.
 
@@ -78,13 +84,13 @@ def painel(datas_, ativos) -> pd.DataFrame:
     for k, (d, D, st) in enumerate(dias):
         if st != "ok":
             continue
-        prox = None                       # posicao de abertura do pregao seguinte
-        for d2, D2, st2 in dias[k + 1:]:
-            if st2 == "feriado":
-                continue
-            if st2 == "ok":
-                prox = D2.set_index("ticker")["oi_abertura"]
-            break
+        # posicao de abertura dos dois pregoes seguintes (o segundo so serve de prova)
+        prox = prox2 = None
+        seguintes = [(s2, D2) for _, D2, s2 in dias[k + 1:] if s2 != "feriado"][:2]
+        if seguintes and seguintes[0][0] == "ok":
+            prox = seguintes[0][1].set_index("ticker")["oi_abertura"]
+            if len(seguintes) == 2 and seguintes[1][0] == "ok":
+                prox2 = seguintes[1][1].set_index("ticker")["oi_abertura"]
         D = D.copy()
         cls = D["ticker"].map(b3_precos.classificar)
         for t in D.loc[cls.isna(), "ticker"]:
@@ -97,6 +103,11 @@ def painel(datas_, ativos) -> pd.DataFrame:
             continue
         D["date"] = d.date()
         D["posicao_aberto"] = (D["ticker"].map(prox).fillna(0) if prox is not None else np.nan)
+        if prox2 is not None:
+            # com posicao hoje, zero amanha e posicao de novo depois de amanha: o zero e
+            # defeito do arquivo, nao fechamento (ver o docstring) -- vira NULL
+            volta = D["ticker"].map(prox2).fillna(0) > 0
+            D.loc[(D["oi_abertura"] > 0) & (D["posicao_aberto"] == 0) & volta, "posicao_aberto"] = np.nan
         D.loc[D["ativo"].isin(_SEM_POSICAO), "posicao_aberto"] = np.nan
         ativo = ((D["contratos"].fillna(0) > 0) | (D["oi_abertura"] > 0)
                  | (D["posicao_aberto"].fillna(0) > 0))

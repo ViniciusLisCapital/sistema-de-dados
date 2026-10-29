@@ -65,15 +65,29 @@ Itens 1, 2, 3 e 6 ao fiscal; item 4 ao externo; item 7 à inflação. As três m
 
 **externo → moderador:**
 
-> ')
->   body = txt[i + len('The report follows:'):]
->   j = body.find('
+> Item 4 (sinal do S&P na equação do câmbio): mantenho o caminho do S&P, de 7.750 no 4T26 a 8.500 no 1T28.
+>
+> No meu base o S&P não sobe por apetite a risco. Ele sobe ~2% por trimestre, que é menos que a mediana histórica de 3,8% por trimestre (por G na rodada 1). Leio isso como a deriva de lucro e de crescimento nominal descontada pelo juro real mais alto desde 2007, e não como reprecificação de risco. Essa leitura é minha, sem dado: o banco não tem lucro nem valuation.
+>
+> O apetite a risco está nos cenários de cauda (risk-off e risk-on), onde o S&P anda junto com o dólar EM. No base o dólar EM só cede ~1,5% até o 1T28.
+>
+> Isso apoia o peso reduzido que o câmbio deu ao canal, e a decisão é dele. Também bate com o que eu disse na rodada 1: um multiplicador abaixo de 1 se defende se o CDS ficar parado, e o caminho do fiscal fica parado em 135 em 2027.
+>
+> Nenhum número muda, nem em `caminhos/externo_r2.json` nem em `externo_r2.md`.
+>
+> Abri: nenhum arquivo novo para este item; respondi do meu `externo_r2.md` e da listagem do modelo já lidos na rodada.
 
 **inflação → moderador:**
 
-> ')
->   body = txt[i + len('The report follows:'):]
->   j = body.find('
+> Item 7, hiato de partida: mantenho.
+>
+> - A leitura é sobre os preços, não sobre o hiato, que é da atividade. Serviços subjacentes subiram de 5,00% para 5,32% enquanto o hiato do BC caía. Isso cabe num hiato medido baixo demais ou em salário além do hiato, e o dado do ciclo não separa os dois.
+> - Por isso ela entra no report só como nota (IN-E5), não como tempero nem como cauda do hiato. No IPCA ela aparece pelo tempero de salários além do hiato: +0,10 p.p. no 4T27 e no 1T28, só no upside.
+> - A divergência fica aberta como diferença de leitura, sem caminho em jogo. Para dar o tamanho, um G curto aplicou o coeficiente de serviços. O desconto de −0,15 no hiato que a atividade propõe tira ~0,005 p.p. por trimestre do IPCA, ~0,02 em 12 meses (0,03 com o `I.IS.is2` × 1,5 do meu downside). Com isso, as duas leituras não mudam nada na tese.
+> - Nenhum número mudou. O r2 e o `inflacao_r2.json` ficam como estão.
+> - Para o log: a divergência com a atividade sobre o hiato fica aberta, e o G novo é `dados/G/in_r2_hiato.py`.
+>
+> Abri: dados/G/in_r2_hiato.py (criado e rodado; os coeficientes e pesos vêm de G desta rodada já rodados).
 
 **fiscal → moderador:**
 

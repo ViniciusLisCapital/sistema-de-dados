@@ -825,17 +825,17 @@ def _load_derivativos_b3() -> dict:
     try:
         c = _query("macro_brasil", """
             SELECT date, ativo, SUM(contratos) AS contratos, SUM(vol_usd) AS vol_usd,
-                   SUM(vol_brl) AS vol_brl, SUM(posicao_aberto) AS oi, COUNT(posicao_aberto) AS n_oi
+                   SUM(vol_brl) AS vol_brl, SUM(posicao_aberto) AS oi, COUNT(posicao_aberto) AS n_oi, COUNT(*) AS n
             FROM cmb_contratos_b3 WHERE tipo <> 'opcao' GROUP BY date, ativo""")
         if c is None:
             return {}
         o = _query("macro_brasil", """
             SELECT date, ativo, opcao, SUM(contratos) AS contratos,
-                   SUM(posicao_aberto) AS oi, COUNT(posicao_aberto) AS n_oi
+                   SUM(posicao_aberto) AS oi, COUNT(posicao_aberto) AS n_oi, COUNT(*) AS n
             FROM cmb_opcoes_dolar GROUP BY date, ativo, opcao""")
         j = _query("macro_brasil", """
             SELECT date, ativo, SUM(contratos) AS contratos, SUM(vol_brl) AS vol_brl,
-                   SUM(posicao_aberto) AS oi, COUNT(posicao_aberto) AS n_oi
+                   SUM(posicao_aberto) AS oi, COUNT(posicao_aberto) AS n_oi, COUNT(*) AS n
             FROM br_juros_contratos GROUP BY date, ativo""")
         b = _query("macro_brasil", """
             SELECT date, ticker, ativo, contratos, vol_brl, posicao_aberto, ajuste
@@ -847,13 +847,19 @@ def _load_derivativos_b3() -> dict:
                 if col not in ("date", "ativo", "opcao", "ticker"):
                     df[col] = df[col].astype(float)
             if "n_oi" in df.columns:
-                df.loc[df["n_oi"] == 0, "oi"] = float("nan")
+                # um contrato com posição desconhecida (último pregão, ou zero que a
+                # fonte gravou por defeito) torna a soma desconhecida: somar só os
+                # outros desenharia um mergulho que o mercado não fez
+                df.loc[df["n_oi"] < df["n"], "oi"] = float("nan")
 
         datas = sorted(set(c["date"]) | (set(j["date"]) if j is not None else set()))
         idx = pd.DatetimeIndex(datas)
 
         def serie(df, filtro, col, escala=1.0, casas=4, zero=False):
-            s = df[filtro].groupby("date")[col].sum(min_count=1)
+            g = df[filtro].groupby("date")[col]
+            s = g.sum(min_count=1)
+            if not zero:
+                s[g.count() < g.size()] = float("nan")   # mesma regra da soma no SQL
             if zero:
                 # volume: pregão que a tabela tem e o contrato não negociou vale zero
                 # (sem isso a média de 21 pregões apaga um mês a cada dia parado);

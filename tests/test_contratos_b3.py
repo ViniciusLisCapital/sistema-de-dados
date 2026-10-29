@@ -141,6 +141,32 @@ def test_fra_nao_carrega_posicao_propria(boletins):
     assert pd.isna(_pos(boletins, "2026-10-26", "FRCF27"))
 
 
+def test_zero_que_volta_no_pregao_seguinte_vira_nulo(monkeypatch, tmp_path):
+    # os casos de 10/05/2018 e 11/09/2025: o arquivo seguinte traz a abertura zerada
+    # e o outro a traz de volta -- o fechamento da vespera fica desconhecido, nao zero
+    dias = {
+        "2026-10-26": _dia([{"ticker": "DOLX26", "oi_abertura": 100, "contratos": 1},
+                            {"ticker": "DOLZ26", "oi_abertura": 80, "contratos": 1},
+                            {"ticker": "DOLF27", "oi_abertura": 60, "contratos": 1}]),
+        "2026-10-27": _dia([{"ticker": "DOLX26", "oi_abertura": 0, "contratos": 1},
+                            {"ticker": "DOLZ26", "oi_abertura": 85, "contratos": 1},
+                            {"ticker": "DOLF27", "oi_abertura": 0, "contratos": 1}]),
+        "2026-10-28": _dia([{"ticker": "DOLX26", "oi_abertura": 105, "contratos": 1},
+                            {"ticker": "DOLZ26", "oi_abertura": 90, "contratos": 1},
+                            {"ticker": "DOLF27", "oi_abertura": 0, "contratos": 1}]),
+    }
+    monkeypatch.setattr(b3_precos, "baixar_muitos", lambda ds: None)
+    monkeypatch.setattr(b3_precos, "precos",
+                        lambda d: dias.get(pd.Timestamp(d).strftime("%Y-%m-%d")))
+    monkeypatch.setattr(b3_precos, "caminho_cache",
+                        lambda d: str(tmp_path / pd.Timestamp(d).strftime("%Y-%m-%d")))
+    P = nucleo.painel(list(pd.bdate_range("2026-10-26", "2026-10-28")), ("DOL",))
+    assert pd.isna(_pos(P, "2026-10-26", "DOLX26"))      # zerou e voltou
+    assert _pos(P, "2026-10-26", "DOLZ26") == 85          # normal
+    assert _pos(P, "2026-10-26", "DOLF27") == 0           # zerou e ficou: fechou de verdade
+    assert _pos(P, "2026-10-27", "DOLX26") == 105         # o dia zerado le o seguinte, normal
+
+
 # ---------------------------------------------------------------------------
 # Contra o cache: o que repete outra tabela tem de bater
 # ---------------------------------------------------------------------------

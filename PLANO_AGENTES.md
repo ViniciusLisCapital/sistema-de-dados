@@ -204,6 +204,7 @@ Quem influencia o modelo, e por qual variável, vai mudar. Um exemplo: o modelo 
     - f. O câmbio sempre testa o cenário com o juro da curva e com o do Focus, e pede o tempero à PM.
     - g. Testar um modelo de juros com a taxa de câmbio embutida.
     - h. Uma métrica de crédito na curva IS.
+- **Conhecimento produzido por nós e notas de divulgação** (usuário, 2026-10-29, retomar com calma): o que já foi decidido e o que falta está no SISTEMA, II.I.viii e ix.
 - **Report 1 mais enxuto** (ideia do usuário, 2026-10-27, a conversar): a rodada 1 parte do ciclo anterior, faz as análises iniciais (o que mudou, como a tese se desenrolou desde então) e termina nos pedidos ao agente web e aos outros agentes; a rodada 2 faz algo mais parecido com o report de hoje.
 
 
