@@ -52,7 +52,7 @@ Once the natural and efficient levels of output can diverge, zero inflation and 
 - [[zero_lower_bound]] — optimal policy after a negative natural-rate shock that makes the bound bind, under discretion and commitment (5.4, Figure 5.3)
 - [[forward_guidance]] — the optimal commitment at the bound keeps the rate at zero after the shock is gone, read by the text as the theory of Fed and ECB forward guidance
 - [[taylor_principle]] — the discretionary outcome is implemented as a unique equilibrium only by adding an inflation response with φπ > 1 to rule (8), giving (10)
-- [[targeting_rules]] (proposed) — optimal relations between target variables, (4) under discretion and the price-level rule (13) under commitment, contrasted with instrument rules
+- [[targeting_rules]] — optimal relations between target variables, (4) under discretion and the price-level rule (13) under commitment, contrasted with instrument rules
 - [[monetary_policy/synthesis/monetary_policy_design_nk_ch4 (Gali, 2015)]] — the no-tradeoff benchmark this chapter departs from; its determinacy argument is reused for rules (8) and (10)
 - [[monetary_policy/synthesis/science_of_monetary_policy (Clarida, Gali & Gertler, 1999)]] — the paper the chapter "follows closely": cost-push shocks, discretion vs. commitment, and the inflation bias
 - [[monetary_policy/synthesis/zero_bound_optimal_policy (Eggertsson & Woodford, 2003)]] — the cited ZLB analysis the 5.4 exercise is "related (but different in details)" to, with the same lower-for-longer commitment result

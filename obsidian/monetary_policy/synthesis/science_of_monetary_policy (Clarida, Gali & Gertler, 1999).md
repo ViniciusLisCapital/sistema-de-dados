@@ -57,7 +57,7 @@ A small forward-looking model — an IS curve and a Phillips curve with a cost-p
 - [[nk_phillips_curve]] — the baseline forward-looking Phillips curve (2.2)/(2.6) with a cost-push shock, the hybrid with lagged inflation (6.2), and the case for real marginal cost as its driving variable
 - [[inflation_targeting]] — Result 2's sense in which optimal discretionary policy "embeds inflation targeting" (gradual convergence), the rationale for formal targets in section 7.2, and forecast targeting under information lags
 - [[divine_coincidence]] — without a cost-push shock there is no tradeoff and the central bank hits its inflation and output targets "simultaneously, all the time"; the cost-push shock is what breaks it (Result 1)
-- [[time_inconsistency]] (proposed) — section 4: the inflationary bias under discretion (Results 5–6) and the new result that commitment pays even with no output bias (Results 7–8)
-- [[interest_rate_smoothing]] (proposed) — section 5.2: estimated partial adjustment, and parameter uncertainty, long-rate leverage and financial fragility as candidate explanations
+- [[time_inconsistency]] — section 4: the inflationary bias under discretion (Results 5–6) and the new result that commitment pays even with no output bias (Results 7–8)
+- [[interest_rate_smoothing]] — section 5.2: estimated partial adjustment, and parameter uncertainty, long-rate leverage and financial fragility as candidate explanations
 - [[monetary_policy/synthesis/monetary_policy_design_nk_ch4 (Gali, 2015)]] — the textbook treatment of the same model's optimal policy with an efficient natural allocation (no cost-push shock), and of the determinacy conditions
 - [[monetary_policy/synthesis/taylor_rule (Taylor, 1993)]] — the rule and the 1987-1992 fit that section 7.1 takes as its starting point

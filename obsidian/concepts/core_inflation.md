@@ -26,6 +26,7 @@ Two distinct uses, which the sources keep apart:
 | Source | Role |
 |---|---|
 | [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] | "To core or not to core": exclusion vs. trimmed mean, why Brazil keeps the headline IPCA; the BCB's 20% trimmed mean is less volatile than headline (standard deviation 0.28 against 0.42, 1996:01-2002:08) and Granger-causes it (Table 9) |
+| [[inflation/synthesis/core_inflation_brazil_past_present (da Gama Machado, 2024)]] | Survey of the Brazilian literature and the BCB's measures (Ex-0, Ex-3, MS, DP, P55); on 2004-2023 data statistical measures win on bias, variance, trend and forecasting, exclusion measures on cycle and communication, the core average ranks first (Table 7), and cores mostly fail to forecast headline better than the IPCA itself (Tables 6, A5) |
 
 ## BRL / application to the current analysis
 
@@ -37,3 +38,4 @@ Minella et al. (2002) are about Brazil: the IPCA headline is the target, and the
 - [[administered_prices]] — in Brazil the core debate is mainly about whether to exclude administered prices
 - [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] — the case against a core target and for core as a predictor, with Brazilian evidence
 - [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — headline rather than core chosen in 1999 because past index manipulation would make exclusions suspect
+- [[inflation/synthesis/core_inflation_brazil_past_present (da Gama Machado, 2024)]] — the BCB's core measures over time, the criteria used to judge them, and an evaluation that includes the post-pandemic inflation

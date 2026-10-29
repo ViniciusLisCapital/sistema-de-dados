@@ -933,6 +933,15 @@ P = b3_premio.premios("2026-10-23")   # tipo (C/V), vencimento, strike, premio -
 - Strike × 10 (R$ por US$ 1.000); o número de casas do prêmio vem **na última coluna**.
 - Mesmas regras de ausência do `b3_curvas` (zip vazio = sem pregão; nunca cachear ausência do dia
   corrente), 2 workers, cache em `domain/db/brasil/b3/cache_premio/`.
+- **Opções de Copom (`CPM`, 2026-10-29)**: `premios(d, mercadoria="CPM")` / `parse_copom()`. Calls
+  digitais, uma por reunião × decisão; strike = 100 + variação da meta em p.p. (99,75 = corte de 25).
+  **O layout real é strike `[37:52]` com 2 decimais e prêmio `[52:67]`** — o `[37:50]`/`[50:67]` do
+  dólar só funciona porque strike de dólar não tem centavos; no CPM as duas casas do strike entram no
+  prêmio (10^16). Um download grava o cache das duas mercadorias (`cache_premio_cpm/` ao lado). O CPM
+  aparece no arquivo entre 2020-05 e 2020-07. Consumidor: `domain/db/brasil/b3/pm_copom_opcoes.py`.
+- **O `pesquisapregao/download` sai do ar sozinho**: em 2026-10-29 à tarde devolveu timeout e depois
+  500 por horas, com `www.b3.com.br` e o BDI respondendo normalmente. O `_baixar_com_retry` espera
+  4 × 90 s por pregão antes de desistir — numa carga histórica, espere a fonte voltar antes.
 
 ### `connectors/b3_precos.py` — boletim de preços da B3 (2026-10-28)
 

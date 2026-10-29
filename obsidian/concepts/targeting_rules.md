@@ -27,6 +27,7 @@ A targeting rule (Svensson's "target rule") states the condition the target vari
 | [[monetary_policy/synthesis/inflation_forecast_targeting (Svensson, 1997)]] | Coins the target-rule vs. instrument-rule distinction (Section 8) and argues commitment to a target rule beats commitment to the McCallum or Taylor rule |
 | [[monetary_policy/synthesis/discretion_vs_commitment_ch5 (Gali, 2015)]] | Optimal policy stated as targeting rules: (4) under discretion, the price-level rule (13) under commitment, contrasted with interest rate rules (8) and (10) |
 | [[monetary_policy/synthesis/inflation_targeting_handbook (Svensson, 2010)]] | Optimal targeting rules as first-order conditions equating marginal rates of substitution and transformation between target variables, invariant to additive judgment and shocks; the NK projection form (3.33); impractical for large models, where optimal projections are computed directly (Section 3.6) |
+| [[inflation/synthesis/targets_inflation_dynamics (Alves & Areosa, 2005)]] | Optimal target criterion (9)–(12) under a Phillips curve with target indexation: inflation plus the scaled output-gap change equals the official target when the target weight is one, and is kept constant (Giannoni–Woodford) when it is zero |
 
 ## BRL / application to the current analysis
 
@@ -41,3 +42,4 @@ The linked sources say nothing about Brazil.
 - [[monetary_policy/synthesis/inflation_forecast_targeting (Svensson, 1997)]] — target rules vs. instrument rules, and the case for committing to the former
 - [[monetary_policy/synthesis/discretion_vs_commitment_ch5 (Gali, 2015)]] — targeting rules derived from optimal policy under discretion and commitment
 - [[monetary_policy/synthesis/inflation_targeting_handbook (Svensson, 2010)]] — why a targeting rule is a more robust representation of policy than an instrument rule, and why policymakers need not know it
+- [[inflation/synthesis/targets_inflation_dynamics (Alves & Areosa, 2005)]] — how the optimal targeting criterion changes when firms index prices to the official target

@@ -61,6 +61,9 @@ no_release:
     # de dolar da B3 (arquivo RE do pregao, mesmo endpoint do TaxaSwap). Mesma
     # janela de 10 dias uteis por upsert. 2026-10-27.
     - cmb_vol_implicita
+    # Opcoes digitais de Copom (CPM), do MESMO arquivo RE: o premio de cada decisao
+    # possivel em cada reuniao. Um download enche o cache das duas. 2026-10-29.
+    - pm_copom_opcoes
     # Curva futura do dolar em prazos fixos, derivada do mesmo TaxaSwap (DI e cupom
     # cambial) mais a PTAX de D-1. Mesma janela de 10 dias uteis. 2026-10-28.
     - cmb_dol_futuro
@@ -177,6 +180,7 @@ max_age_days:
   fisc_mercado_secundario: 5  # lag medido 1d
   # Arquivo RE da B3, solto depois do fechamento (medido em 2026-10-27: ultimo 26/10).
   cmb_vol_implicita: 5        # lag medido 1d
+  pm_copom_opcoes: 5          # mesmo arquivo RE, lag 1d
   cmb_dol_futuro: 5           # lag medido 1d (o arquivo da B3 sai depois do fechamento)
   # Boletim de precos da B3: sai depois do fechamento, e a posicao em aberto do
   # ultimo pregao so chega com o arquivo do seguinte (fica NULL ate la).

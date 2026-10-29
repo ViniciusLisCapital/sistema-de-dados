@@ -1318,6 +1318,19 @@ Três decisões que valem além desta aba:
 O arquivo passou de ~2,1 para ~3,0 MB. A vol implícita entra pela tabela nova
 (`cmb_vol_implicita`); o `carry_vol` do FX Model continua no CSV da Bloomberg (Pending).
 
+## Campos De/Até e mira em cruz (2026-10-29)
+
+Pedidos do usuário. **De/Até**: o gráfico cujo `CHART_META` traz `datas: true` (hoje PTAX e
+câmbio efetivo real) ganha dois `<input type="date">` na régua, depois das pílulas
+(`_rangeDateInputs()`). Presos ao extent plotado, datas invertidas trocadas, a janela escolhida
+desliga as pílulas e sobrevive a redesenho (`_rangeSelected = 'custom'`); um `plotly_relayout`
+reescreve os campos, então pan, scroll ou pílula nunca deixam os campos mostrando outra janela.
+**Mira**: `mkLayout()` liga `showspikes` com `spikemode: 'across'` e `spikesnap: 'cursor'` nos
+dois eixos (só `yaxis`, não `yaxis2`), a mesma configuração que as abas de modelo já tinham, e o
+CSS põe `cursor: crosshair` no `.nsewdrag`. Conferido no Chrome headless: 4 `.spikeline` no hover,
+o pan continua. O Plotly não desenha o valor do eixo na ponta da linha, como o TradingView faz.
+`tests/test_fx_report_js.js` §19.
+
 ## Section → schema → table mapping
 
 | Report tab | Loader (`generate_report.py`) | Schema | Table(s) |

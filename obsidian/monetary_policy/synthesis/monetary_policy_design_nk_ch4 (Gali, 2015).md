@@ -52,6 +52,6 @@ With an employment subsidy that removes the monopolistic-competition distortion,
 - [[taylor_principle]] — defined here: determinacy condition (14), its reading in (15) as a long-run nominal-rate response above one-for-one, and the extra upper bound (18) for forward-looking rules
 - [[taylor_rule]] — simple rule (19) with Taylor's calibration, the original rule in footnote 9, and its welfare evaluation in Table 4.1 against inflation-only and output-heavy variants
 - [[natural_rate_of_interest]] — optimal policy sets the nominal rate equal to it, and the optimal rules (8), (11), (16) track it one-for-one; its unobservability is why those rules are impractical
-- [[divine_coincidence]] (proposed) — zero inflation and a zero output gap coincide when the natural allocation is efficient, so price stability delivers efficient output
+- [[divine_coincidence]] — zero inflation and a zero output gap coincide when the natural allocation is efficient, so price stability delivers efficient output
 - [[monetary_policy/synthesis/basic_nk_model_ch3 (Gali, 2015)]] — the model this chapter optimizes over; the determinacy condition ch3 states without interpretation is interpreted here as the Taylor principle
 - [[monetary_policy/synthesis/taylor_rule (Taylor, 1993)]] — the original rule, which this chapter rewrites in quarterly terms (φy = 0.125) and evaluates on welfare grounds

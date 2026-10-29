@@ -37,6 +37,7 @@ For a rule in which the nominal rate responds to current inflation and the outpu
 | [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] | The BCB's response to expected inflation exceeds one in every specification, 1999–2002: around 1.4-1.8 against the Selic and above 3.6 against its deviation from trend, where it is significantly above one |
 | [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] | Through 2002:12 the BCB's response to expected inflation stays above one: statistically greater than one with market expectations (around 2.0-2.3), less stable with BCB forecasts (from 2.7 to 5.7) |
 | [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]] | BCB rule on one-year-ahead expected inflation, 2000:01 to 2004:01: response of 4.03 (Table 3), so real rates rise with expected inflation — yet under fiscal dominance the principle does not guarantee control of inflation |
+| [[expectations/synthesis/market_forecasts_brazil_performance (Carvalho & Minella, 2012)]] | Tested on market expectations, 2002:1–2008:7: Selic forecasts respond 1.42 and 1.23 to expected inflation minus target, significantly above one (Table 7.2), but not significantly so with adjusted targets (footnote 25) |
 
 ## BRL / application to the current analysis
 
@@ -60,3 +61,4 @@ The sources linked here say nothing about Brazil yet.
 - [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] — evidence that the BCB satisfied the principle from the start of inflation targeting
 - [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] — the BCB's more-than-one-for-one response maintained through the 2002 crisis
 - [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]] — a rule that satisfies the principle can still lose control of inflation when default risk links rates to debt
+- [[expectations/synthesis/market_forecasts_brazil_performance (Carvalho & Minella, 2012)]] — the market's perception that the BCB satisfies the principle, and its sensitivity to the target series used

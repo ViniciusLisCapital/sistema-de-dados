@@ -282,6 +282,20 @@
       color: #fff;
       border-color: var(--lis-azul);
     }
+    /* Ponteiro em cruz sobre a area de plotagem, como no TradingView. O modo pan
+       do Plotly poe a seta de quatro pontas; o arrasto continua panejando. */
+    .js-plotly-plot .plotly .nsewdrag { cursor: crosshair !important; }
+    .range-datas {
+      display: flex; align-items: center; gap: 10px; margin-left: 10px;
+      font-size: 11px; font-weight: 600; color: var(--lis-azul);
+    }
+    .range-datas label { display: flex; align-items: center; gap: 5px; }
+    .range-datas input {
+      font: inherit; font-weight: 500; color: var(--lis-azul);
+      padding: 3px 8px; background: #fff;
+      border: 1px solid var(--border); border-radius: 20px;
+    }
+    .range-datas input:focus { outline: none; border-color: var(--lis-dourado); }
 
     /* ── Tabela hierárquica (mesmo padrão de analytics/brasil/credit) ── */
     .table-card {
@@ -2010,7 +2024,11 @@ function mkLayout(extra) {
       linecolor:     '#dde1e9',
       tickfont:      { size: 11 },
       rangeslider:   RANGESLIDER,
+      showspikes:    true, spikemode: 'across', spikesnap: 'cursor',
+      spikedash:     'dot', spikethickness: 1, spikecolor: '#8a90a3',
     },
+    // Mira de TradingView: a linha vertical (que o hover unificado ja dava) mais a
+    // horizontal, as duas seguindo o cursor. Mesma configuracao das abas de modelo.
     yaxis: {
       gridcolor:     '#eaecf1',
       zeroline:      true,
@@ -2018,6 +2036,8 @@ function mkLayout(extra) {
       zerolinewidth: 1,
       showline:      false,
       tickfont:      { size: 11 },
+      showspikes:    true, spikemode: 'across', spikesnap: 'cursor',
+      spikedash:     'dot', spikethickness: 1, spikecolor: '#8a90a3',
     },
   };
   if (extra) {
@@ -2128,6 +2148,11 @@ function _ensureRangeBar(divId, dates) {
     opt.btn = btn;
     bar.appendChild(btn);
   });
+  if (CHART_META[divId] && CHART_META[divId].datas) _rangeDateInputs(divId, bar, dates);
+  if (_rangeSelected[divId] === 'custom' && _rangeCustom[divId]) {
+    Plotly.relayout(divId, { 'xaxis.range': _rangeCustom[divId] });
+    return;
+  }
   // Redesenho (troca de agregacao/unidade/linhas marcadas) reinicia o eixo --
   // reaplica a faixa que estava escolhida para nao jogar o usuario de volta
   // para o historico inteiro a cada clique de checkbox.
@@ -2145,6 +2170,62 @@ function _ensureRangeBar(divId, dates) {
       return;
     }
   }
+}
+
+// Campos De/Ate ao lado da regua, nos graficos cujo CHART_META pede `datas: true`:
+// uma janela qualquer em vez das cinco fixas. Os campos sao presos ao extent da
+// serie (min/max) e acompanham o eixo -- um pan, um scroll ou um clique numa pilula
+// reescreve os dois, para nunca mostrarem uma janela que nao e a da tela.
+var _rangeCustom = {};   // divId -> [from, to] escolhido nos campos
+var _rangeInputs = {};   // divId -> {de, ate, lo, hi} da regua mais recente
+
+function _rangeDateInputs(divId, bar, dates) {
+  if (!dates || !dates.length) return;
+  var lo = String(dates[0]).slice(0, 10);
+  var hi = String(dates[dates.length - 1]).slice(0, 10);
+  var box = document.createElement('div');
+  box.className = 'range-datas';
+  function campo(rotulo) {
+    var lab = document.createElement('label');
+    lab.appendChild(document.createTextNode(rotulo));
+    var inp = document.createElement('input');
+    inp.type = 'date';
+    inp.min = lo;
+    inp.max = hi;
+    lab.appendChild(inp);
+    box.appendChild(lab);
+    return inp;
+  }
+  var de = campo('De'), ate = campo('até');
+  function prende(x) { return x < lo ? lo : (x > hi ? hi : x); }
+  function aplicar() {
+    if (!de.value || !ate.value) return;
+    var a = prende(de.value), b = prende(ate.value);
+    if (a > b) { var t = a; a = b; b = t; }
+    de.value = a;
+    ate.value = b;
+    _rangeSelected[divId] = 'custom';
+    _rangeCustom[divId] = [a + ' 00:00:00', b + ' 23:59:59'];
+    var pills = bar.querySelectorAll('.range-btn');
+    for (var i = 0; i < pills.length; i++) pills[i].classList.remove('active');
+    Plotly.relayout(divId, { 'xaxis.range': _rangeCustom[divId] });
+  }
+  de.addEventListener('change', aplicar);
+  ate.addEventListener('change', aplicar);
+  bar.appendChild(box);
+  _rangeInputs[divId] = { de: de, ate: ate, lo: lo, hi: hi };
+
+  var el = document.getElementById(divId);
+  if (!el || !el.on || el._rangeSyncBound) return;
+  el._rangeSyncBound = true;
+  el.on('plotly_relayout', function() {
+    var c = _rangeInputs[divId];
+    var r = el._fullLayout && el._fullLayout.xaxis && el._fullLayout.xaxis.range;
+    if (!c || !r) return;
+    var a = String(r[0]).slice(0, 10), b = String(r[1]).slice(0, 10);
+    c.de.value  = a < c.lo ? c.lo : (a > c.hi ? c.hi : a);
+    c.ate.value = b > c.hi ? c.hi : (b < c.lo ? c.lo : b);
+  });
 }
 
 // _bindYAutofit registra um listener em cada chamada; nos graficos que sao
@@ -2239,12 +2320,14 @@ var CHART_META = {
     title:  'PTAX — Câmbio à Vista',
     bits:   ['Taxa de venda do dólar, cotação de fechamento do dia', 'reais por dólar (BRL/USD)'],
     source: 'BCB — SGS 1 (série em reais desde jul/1994)',
+    datas:  true,
   },
   'chart-reer': {
     title:  'Câmbio Efetivo Real — Brasil e Pares Latinos',
     bits:   ['Câmbio contra uma cesta ampla de parceiros, deflacionado — acima de 100 = moeda mais apreciada que em 2020',
              'índice, 2020 = 100'],
     source: 'BIS — Effective Exchange Rate Indices (broad, real)',
+    datas:  true,
   },
   'chart-termos': {
     title:  'Termos de Troca — Brasil',

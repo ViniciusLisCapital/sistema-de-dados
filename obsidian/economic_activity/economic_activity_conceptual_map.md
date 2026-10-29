@@ -199,7 +199,7 @@ for every section:
   a fiscal story already moving the long rate in the base scenario cannot also enter as a demand
   factor for the same effect. *Registered for later, not in this plan:* this agent's own GDP model,
   taking government demand from the fiscal agent.
-- **Read:** [[fiscal_dominance]], [[mundell_fleming_policy_mix]], [[risk_premium]]; `fiscal_impulse`.
+- **Read:** [[fiscal_dominance]], [[mundell_fleming_policy_mix]], [[risk_premium]], [[fiscal_impulse]].
 - **Data (endogenous of the fiscal agent, for consultation):** `fisc_efgg` (general government by
   economic nature, the base of the impulse), `fisc_rtn` (central government, monthly, including
   transfers), `fisc_nfsp` (primary result); `atv_pib` (`consumo_adm_publica`).
@@ -393,17 +393,27 @@ other way, and it is in this map's Part 3 (S-CB1, S-CB2, S-EXT1–S-EXT3).
 
 ## Part 5 — Concept index
 
-The area has no literature in the vault yet; its layer 1 comes later (`PLANO_AGENTES.md` VI). The
-concept pages the map links, by channel:
+The concept pages the map links, by channel, then this agent's layer 1:
 
 - **Monetary transmission (2.1, 2.2):** [[monetary_transmission_lags]], [[natural_rate_of_interest]],
-  [[credit_channel]], [[financial_accelerator]], [[macroprudential_policy]], [[term_premium]].
-- **Fiscal (2.3):** [[fiscal_dominance]], [[mundell_fleming_policy_mix]], [[risk_premium]].
+  [[credit_channel]], [[financial_accelerator]], [[macroprudential_policy]], [[term_premium]],
+  [[financial_conditions_index]].
+- **Fiscal (2.3):** [[fiscal_dominance]], [[mundell_fleming_policy_mix]], [[risk_premium]],
+  [[fiscal_impulse]], [[fiscal_multiplier]].
 - **Income and labour (2.4):** [[natural_rate_of_unemployment]], [[sticky_wages]],
-  [[nk_phillips_curve]].
+  [[nk_phillips_curve]], [[phillips_curve]].
 - **External (2.5):** [[balance_of_payments_approach]], [[global_financial_cycle]].
-- **Investment (2.6):** [[jurisdictional_uncertainty]].
+- **Investment (2.6):** [[economic_uncertainty]], [[jurisdictional_uncertainty]].
 - **Supply (2.7):** [[food_inflation_drivers]].
-- **Measurement (2.8):** [[real_time_data]].
-- **No page yet:** `potential_output`, `okun_law`, `fiscal_impulse`, `terms_of_trade_income`,
-  `directed_credit`.
+- **Measurement (2.8):** [[output_gap]], [[real_time_data]].
+- **No page yet:** `potential_output`, `okun_law`, `terms_of_trade_income`, `directed_credit`.
+
+**Layer 1 (2026-10-29), one source per channel:**
+- 2.1 reached through [[monetary_transmission_lags]] (owner: monetary policy).
+- 2.2 [[economic_activity/synthesis/indicador_condicoes_financeiras (BCB, 2020)]]
+- 2.3 reached through [[fiscal_impulse]] and [[fiscal_multiplier]] (owner: fiscal).
+- 2.4 [[economic_activity/synthesis/taxa_desemprego_equilibrio_brasil (Borges, 2022)]]
+- 2.5 reached through [[global_financial_cycle]] and [[commodity_shocks]] (owner: external).
+- 2.6 [[economic_activity/synthesis/incerteza_atividade_economica (BCB, 2019)]]
+- 2.7 [[economic_activity/synthesis/ibcbr_vs_pib_metodologia (BCB, 2018)]] — a weak fit: monthly against quarterly GDP; agriculture only in passing.
+- 2.8 [[economic_activity/synthesis/output_gap_brazil_real_time (Cusinato, Minella & Porto Junior, 2013)]]

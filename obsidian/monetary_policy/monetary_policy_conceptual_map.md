@@ -181,7 +181,7 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   doubt (Minella et al. 2002, 2003). The Copom's current reading: deanchored expectations require
   "restrição monetária maior e por mais tempo" (ata of the 281st meeting, §10).
 - **Read:** [[time_inconsistency]], [[conservative_central_banker]], [[inflation_contract]],
-  [[central_bank_communication]], [[inflation_targeting]]; `inflation_expectations_anchoring`.
+  [[central_bank_communication]], [[inflation_targeting]], [[inflation_expectations_anchoring]].
 - **Mental models:** Verde §1.1 (a promise of discipline without a framework holds only if decisions
   corroborate it), §2.6.
 - **Data:** expectations', for consultation, `expc_focus`, `expc_focus_periodo` (IPCA), `expc_qpc`;
@@ -557,7 +557,7 @@ their cluster.
 
 - [[central_bank_communication]] — creating news and reducing noise; predictability; anchoring. [[monetary_policy/synthesis/central_bank_communication_survey (Blinder et al., 2008)]]
 - [[forward_guidance]] — Delphic against Odyssean guidance; thresholds. [[monetary_policy/synthesis/forward_guidance_effects (Campbell et al., 2012)]]
-- `inflation_expectations_anchoring` — no page. [[monetary_policy/synthesis/central_bank_communication_survey (Blinder et al., 2008)]]
+- [[inflation_expectations_anchoring]] — whether long expectations stay at the target. [[monetary_policy/synthesis/central_bank_communication_survey (Blinder et al., 2008)]]
 
 ### #term_structure_and_market_pricing
 

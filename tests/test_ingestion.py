@@ -168,6 +168,35 @@ def test_citation_tail_does_not_end_the_cut():
     assert [(a, b) for a, b, _ in clean_code.block_cut_spans(lines)] == [(0, 4)]
 
 
+def test_one_word_citation_tail_does_not_end_the_cut():
+    # Blanchard & Perotti (2002): a Fatas & Mihov entry wraps to "INSEAD." on its own line
+    lines = ["References", "Fatas, A. and I. Mihov, 2001, Government size, working paper,",
+             "INSEAD.", "Stock, J. and M. Watson, 1999, Business cycles.", "APPENDIX"]
+    assert clean_code.block_cut_spans(lines) == [(0, 4, "APPENDIX")]
+    # Corbo & Schmidt-Hebbel (2001): an IMF entry wraps to "D.C., USA."
+    lines = ["REFERENCES:", "IMF, 2000, International Financial Statistics, Washington", "D.C., USA.",
+             "King, M. (1997), Changes in UK Monetary Policy.", "APPENDIX"]
+    assert clean_code.block_cut_spans(lines) == [(0, 4, "APPENDIX")]
+
+
+def test_portuguese_references_heading():
+    for head in ("REFERÊNCIAS", "Referências", "REfERênCIAS", "Referências bibliográficas", "Bibliografia"):
+        spans = clean_code.block_cut_spans([PROSE, head, "SILVA, J. (2001). Título.", "Tabela A.1 – Resultado", PROSE])
+        assert spans == [(1, 3, "Tabela A.1 – Resultado")], head
+    for stop in ("Anexo", "Apêndice A", "Gráfico 1 – Dívida", "Quadro 2"):
+        spans = clean_code.block_cut_spans(["Referências", "SILVA, J. (2001). Título.", stop, PROSE])
+        assert spans == [(0, 2, stop)], stop
+    assert clean_code.block_cut_spans(["Preferências", PROSE]) == []
+
+
+def test_references_colon_and_bis_annex():
+    # Corbo & Schmidt-Hebbel (2001): "REFERENCES:"; Avdjiev et al. (2019): "Annex A: Country groups"
+    assert clean_code.block_cut_spans(["REFERENCES:", "Doe, A. (2001).", "APPENDIX"]) == [(0, 2, "APPENDIX")]
+    for stop in ("Annex A: Country groups", "Previous volumes in this series"):
+        assert clean_code.block_cut_spans(["References", "Doe, A. (2001).", stop, PROSE]) == [(0, 2, stop)]
+    assert clean_code.block_cut_spans(["References", "Doe, A. (2001), Annex to the report.", PROSE]) == [(0, 3, "EOF")]
+
+
 def test_acronym_line_does_not_end_the_cut():
     lines = ["References", "Smith, J. (2010), Report,", "ECB", "Working Paper.", "EXERCISES", PROSE]
     assert clean_code.block_cut_spans(lines) == [(0, 4, "EXERCISES")]

@@ -58,7 +58,7 @@ chamar `Plotly.newPlot`/`react` direto.**
 | **Condições** | `condicoes_copom.py` — MySQL + `domain/release_calendar/`. Matriz 25 variáveis × 9 reuniões (aba default) | pronta |
 | Projeções do Copom | `pm_copom_projecoes` × `pm_copom_reuniao` + `data/antecipa_*`; o caminho de cada edição do RPM por `projecao_rpm.py` | pronta |
 | Acompanhamento Condicionais | `condicionais.py` — o hiato em cada edição do RPM (`pm_hiato_produto_vintages`) e o caminho da Selic da Focus antes de cada reunião (`expc_focus_copom`) | nome provisório |
-| Expectativas de Juros | `expectativas_juros.py` — a Selic que a Focus espera (`expc_focus_copom`) e a que a curva DI precifica (`br_di_grade`), reunião a reunião | pronta |
+| Expectativas de Juros | `expectativas_juros.py` — a Selic que a Focus espera (`expc_focus_copom`), a que a curva DI precifica (`br_di_grade`) e a probabilidade de cada decisão nas opções de Copom (`pm_copom_opcoes`), reunião a reunião | pronta |
 
 **Seis abas foram removidas a pedido do usuário**, todas com os `_load_*` delas, para o payload
 não carregar série que ninguém lê (a seção 13 do teste cobra isso nos dois sentidos): Cenários,
@@ -718,6 +718,26 @@ do caminho + um sintético da pesquisa defasada); 3 mutantes pegos, e o de "deci
 é equivalente — a fonte com Selic vigente diferente da base sempre tem a reunião decidida como
 primeiro ponto, que sai da tabela.
 
+**As opções de Copom** (2026-10-29, pedido do usuário: *"veja quais dados temos e coloque isso no
+relatório de política monetária ... na aba Expectativa de juros"*). Terceira fonte da aba,
+`expectativas_juros.opcoes()` sobre `pm_copom_opcoes`, e a única com um ponto por **pregão** e não
+por semana. Uma seção nova — a probabilidade de cada decisão na reunião escolhida (barras, contra
+1 ou 4 semanas antes) e como ela andou desde que a reunião foi listada (uma linha por decisão que
+passou de 3% em algum pregão, o resto somado numa linha para fechar 100) — e uma linha roxa,
+**Selic esperada pelas opções**, na seção "Uma reunião". Três decisões:
+
+- **Probabilidade = prêmio ÷ soma da reunião**, não ÷ 100: o prêmio é valor presente, e a soma é
+  100 × o desconto. Dividir por 100 punha toda distribuição ~2% abaixo, mais quanto mais longe.
+- **A Selic esperada soma o passo esperado de CADA reunião até a escolhida**, e não existe quando
+  falta opção numa do meio — a B3 lista ~3 reuniões, então fora delas a linha simplesmente acaba.
+- **O casamento vencimento → reunião** aceita até 6 dias corridos depois da decisão; o pregão do
+  próprio dia da decisão ainda cota a reunião (o anúncio sai depois do fechamento), o seguinte não.
+
+O gráfico de barras é o único da aba que não passa por `_reactPreserveX`: o X são decisões, não
+datas. Coberto por `tests/test_opcoes_copom.py` (layout do arquivo com linhas reais, conta do
+payload) e §38 de `tests/test_monetary_policy_js.js` (probabilidade somando 100, Selic esperada
+refeita, nenhum pregão depois da reunião, prosa refeita).
+
 A suavização e as datas oficiais (2026-09-25) têm gabarito externo no teste: **a tela de CDI
 implícito da Bloomberg de 22 e 24/09/2026, transcrita no próprio teste** (§5 e §6) — o caminho
 tem de ficar a menos de 2,5 p.b. do dela com os contratos dela, e a menos de 2 p.b. com a curva da
@@ -845,6 +865,10 @@ estao em `.claude/rules/lis-dashboards.md`, secao "Every chart carries its own h
   (medido com cProfile; a função sozinha, 53 s). A geração inteira foi de 73 a 111 s no mesmo dia.
   Não vem das mudanças daquele dia (`todas_reunioes()` leva 0,4 s); vale vetorizar se a geração
   passar a incomodar.
+- **Aba Expectativas de Juros — volume e posição em aberto das opções de Copom.** Estão no boletim
+  de preços (arquivo `PR`), mas o cache de `b3_precos` guarda só os `PRODUTOS` de dólar, juros e
+  bolsa: pôr o `CPM` lá pede rebaixar ~1.600 boletins de ~127 MB. Valeria para mostrar quanto
+  dinheiro há atrás de cada probabilidade.
 - **Aba Expectativas de Juros — o resto do relatório de Expectativas que é política monetária.**
   Candidatos: a ancoragem das expectativas de inflação (Focus para o ano seguinte e o outro contra
   a meta, a leitura "t+1 rolando" que está pendente lá) e o juro real ex-ante em série (hoje só

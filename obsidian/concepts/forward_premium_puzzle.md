@@ -29,6 +29,7 @@ The bias is a joint rejection of risk neutrality and rational expectations, so e
 | Source | Role |
 |---|---|
 | [[exchange_rate/synthesis/fx_anomalies_survey (Froot & Thaler, 1990)]] | Survey of the evidence: none of some 75 published slope estimates reaches one; risk-premium tests and survey expectations attribute the bias to expectational errors, not risk; peso problems nearly rejected for the 1980–85 dollar; a slow-responding-investor explanation proposed |
+| [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]] | Argues its spillover results need only that fixed-income flows follow yield differentials, not that UIP holds; a policy surprise beyond fundamentals can depreciate the dollar on impact while a low-rate environment raises foreign-currency risk premia (citing Lustig, Roussanov & Verdelhan and Karnaukh) |
 
 ## BRL / application to the current analysis
 
@@ -40,3 +41,4 @@ The source linked here says nothing about Brazil; its evidence is on advanced-ec
 - [[risk_premium]] — the leading rational explanation, which the survey evidence does not support
 - [[carry_trade]] — the strategy that profits from the bias
 - [[exchange_rate/synthesis/fx_anomalies_survey (Froot & Thaler, 1990)]] — the anomaly, the tests of its explanations and the case for inefficiency
+- [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]] — why US policy-surprise days may fit interest arbitrage better than other days, and why the spillover mechanism does not hinge on UIP

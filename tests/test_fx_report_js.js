@@ -1879,5 +1879,38 @@ console.log('\n=== 18. derivativos da B3: posicao em aberto e volume ========');
   ok(semCab.length === 0, 'os dez graficos novos tem cabecalho com a fonte', semCab.join(', '));
 }
 
+console.log('\n=== 19. campos De/Ate na regua do PTAX e do cambio real ======');
+// So os graficos com `datas: true` no CHART_META ganham os campos. Eles sao presos
+// ao extent da serie plotada, e escolher uma janela desliga as pilulas.
+{
+  function camposDe(divId) {
+    const w = cardOf[divId].parentNode;
+    const box = w && w.querySelector('.range-datas');
+    if (!box) return null;
+    return box.children.map(lab => lab.children.find(c => c.tagName === 'INPUT'));
+  }
+  ['chart-ptax', 'chart-reer'].forEach(id => {
+    const ins = camposDe(id);
+    ok(!!ins && ins.length === 2 && ins.every(i => i && i.type === 'date'), `${id}: dois campos de data`);
+    if (!ins) return;
+    const tr = registry[id].data;
+    const datas = tr[0].x.filter((x, i) => tr.some(t => t.y[i] != null));
+    ok(ins[0].min === String(datas[0]).slice(0, 10) && ins[1].max === String(datas[datas.length - 1]).slice(0, 10),
+       `${id}: min/max = extent plotado`, ins[0].min + ' / ' + ins[1].max);
+  });
+  ok(!camposDe('chart-termos'), 'termos de troca nao pediu os campos');
+
+  const [de, ate] = camposDe('chart-ptax');
+  const n0 = relayoutCalls.length;
+  de.value = '2010-12-31'; ate.value = '2008-01-01'; ate.change();
+  const r = relayoutCalls.slice(n0).find(c => c.div === 'chart-ptax');
+  ok(!!r && r.upd['xaxis.range'][0] === '2008-01-01 00:00:00' && r.upd['xaxis.range'][1] === '2010-12-31 23:59:59',
+     'datas invertidas sao trocadas e viram o xaxis.range', r && JSON.stringify(r.upd));
+  const ativas = cardOf['chart-ptax'].parentNode.querySelectorAll('.range-btn').filter(b => b.classList.contains('active'));
+  ok(ativas.length === 0, 'janela escolhida nos campos desliga as pilulas', ativas.length);
+  de.value = '1900-01-01'; ate.value = '2100-01-01'; de.change();
+  ok(de.value === de.min && ate.value === ate.max, 'datas fora do extent sao presas ao extent', de.value + ' / ' + ate.value);
+}
+
 console.log(`\n${oks} ok, ${falhas} falhou`);
 process.exit(falhas ? 1 : 0);

@@ -33,8 +33,11 @@ repository/
     trader/                     — 26 PDF, all ingested 2026-10-20: chapters of two Willer et al.
                                   books (Trading Global Macro Markets, 2024; Trading Fixed Income
                                   and FX in Emerging Markets, 2020), literature of a new trader agent
-    fiscal_policy/, inflation/  — 1 PDF each, extracted
-    economic_activity/, labor_market/ — empty, future pillars
+    fiscal_policy/ (10), inflation/ (4), economic_activity/ (5), external/ (5), expectations/ (6)
+                                — the layer-1 literature of the five new agents, all ingested and
+                                  synthesized 2026-10-29 (SISTEMA_AGENTES II.IV); external/ and
+                                  expectations/ are new topics, their Qual tabs were created by tracker.py
+    labor_market/               — empty, future pillar
   mental_model/<gestora>/       — asset-manager letters: raw_pdf/ + raw_md/ + clean_md/. The letters
                                   are cross-area raw material, so their clean_md stays HERE; the
                                   syntheses built from them live in obsidian/<área>/mental_models/.
@@ -88,8 +91,12 @@ default (pymupdf splits the drop cap). Known loss: rotated chart labels read bac
 chapters, body text intact. The Qual - Trader tab is curated (8 clusters by asset class), Notes has
 the scope. Next: `/vault trader`.
 
-**economic_activity / fiscal_policy / inflation / labor_market — placeholders.** Candidates listed in
-their Qual tabs of `agent_mapping/data_tracker.xlsx`.
+**fiscal_policy / external / inflation / economic_activity / expectations — layer 1 in (2026-10-29).**
+One source per channel of each conceptual map, owner and layer in the Qual tabs; the rest of each tab is
+the stock for promotion. Some layer-1 sources of these agents live in other folders (Calvo 1983,
+Clarida, Galí & Gertler 2000, Miranda-Agrippino & Rey 2020 in monetary_policy/; Cortapasso 2023 and
+IMF 2010 in exchange_rate/): the owner comes from the tracker, never from the folder.
+**labor_market — placeholder.** Candidates in its Qual tab.
 
 **The Quant tabs date from July (2026-07-22, the inventories' last real revision; exchange rate
 and monetary policy to Sep).** Many gaps they list have since been closed — the Copom decision

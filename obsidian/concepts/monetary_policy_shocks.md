@@ -35,10 +35,11 @@ The part of a central bank's policy actions that is not a systematic response to
 | [[monetary_policy/synthesis/policy_actions_vs_words (Gurkaynak, Sack & Swanson, 2005)]] | High-frequency surprises from federal funds futures in 30-minute windows around FOMC announcements, 1990–2004; a rank test rejects a single surprise measure and accepts two factors, a target factor and a path factor tied to FOMC statements |
 | [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] | Sign restrictions on interest-rate and stock-price surprises split announcements into a policy shock (rate up, stocks down) and an information shock (both up); the purged policy shock lowers prices faster and tightens financial conditions more than standard high-frequency identification shows |
 | [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] | Brazil, October 2002 to November 2021: a Cholesky-identified Selic shock raises the IPCA (price puzzle) even with a commodity index in the VAR; the authors read it as a cost channel, not as a missing-information problem |
+| [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]] | US shocks as the change in the 2-year Treasury from the close before to the close after each FOMC meeting (after Hanson & Stein), applied to foreign bond yields; robust to a one-day window, the 1-year Treasury and 1-year-ahead Fed funds futures (Tables 16–18) |
 
 ## BRL / application to the current analysis
 
-The linked sources say nothing about Brazil: the evidence is for the United States, with a review of results for other G7 countries and Canada.
+One linked source is Brazilian. [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] identifies a Selic shock by Cholesky ordering in a monthly five-variable VAR (IPCA, exchange rate, Selic, monthly GDP, a commodity index), October 2002 to November 2021: the IPCA rises after the shock in the full sample and in both subperiods, so the price puzzle survives the commodity index that the US literature adds to remove it. The authors read it as a cost channel rather than as missing information, and stress the low sensitivity of inflation to the Selic, lower still when the currency was depreciating. The identification is the recursive kind the US surveys treat as the benchmark, not a narrative or high-frequency measure, so the Brazilian evidence here does not separate a policy shock from the information it may carry. The other sources are about the United States (with a review of results for other G7 countries and Canada), and Albagli et al. apply US shocks to foreign bond yields in a sample that does not include Brazil.
 
 ## Connections
 
@@ -51,3 +52,4 @@ The linked sources say nothing about Brazil: the evidence is for the United Stat
 - [[monetary_policy/synthesis/policy_actions_vs_words (Gurkaynak, Sack & Swanson, 2005)]] — intraday identification and the two-dimensional (target and path) structure of policy surprises
 - [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] — purging high-frequency policy surprises of central bank information
 - [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] — a Brazilian VAR where the price puzzle survives the inclusion of commodity prices
+- [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]] — two-day-window FOMC shocks in the 2-year Treasury as the identification of US spillovers to foreign bond markets

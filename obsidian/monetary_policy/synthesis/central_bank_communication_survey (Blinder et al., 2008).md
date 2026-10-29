@@ -51,7 +51,7 @@ Communication can be "an important and powerful part of the central bank's toolk
 - [[central_bank_communication]] — the paper's subject: why communication matters (creating news, reducing noise), what and how central banks communicate, and the evidence on markets, predictability and inflation
 - [[forward_guidance]] — guidance about future rates: FOMC bias and balance-of-risks statements and their predictive power, ECB code words, published numerical paths, and why communication is not precommitment
 - [[inflation_targeting]] — "long-run" communication: evidence that an announced target anchors expectations and lowers persistence, and the much weaker evidence that it lowers inflation (Section 5)
-- [[inflation_expectations_anchoring]] (proposed) — de-linking long-run inflation expectations from news and realized inflation as the measurable effect of an announced target (Tables 3–4) and its limits
+- [[inflation_expectations_anchoring]] — de-linking long-run inflation expectations from news and realized inflation as the measurable effect of an announced target (Tables 3–4) and its limits
 - [[monetary_policy/synthesis/inflation_forecast_targeting (Svensson, 1997)]] — Svensson's earlier case for publishing the central bank's forecast and model, which this survey evaluates empirically
 - [[monetary_policy/synthesis/inflation_targeting_handbook (Svensson, 2010)]] — the inflation-targeting view of transparency and published policy-rate paths, with later evidence on expectations anchoring
 - [[monetary_policy/synthesis/forward_guidance_effects (Campbell et al., 2012)]] — later evidence on FOMC forward guidance built on the same Gürkaynak, Sack and Swanson path-factor approach

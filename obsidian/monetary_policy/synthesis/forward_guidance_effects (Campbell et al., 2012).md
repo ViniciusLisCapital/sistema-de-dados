@@ -65,7 +65,7 @@ The paper distinguishes **Delphic** forward guidance — a public forecast of ma
 - [[forward_guidance]] — the paper's subject: defines Delphic vs. Odyssean guidance, measures its effects on futures, Treasury and corporate yields and private forecasts, and simulates threshold-based guidance at the ZLB
 - [[taylor_rule]] — estimates a rule with anticipated residuals to identify forward guidance shocks; the discussion questions whether a single known Taylor rule exists (Blinder, Romer, Woodford)
 - [[nk_phillips_curve]] — the estimated DSGE's very flat price Phillips curve is why a 1-percentage-point rise in inflation expectations barely moves inflation over 3 years
-- [[information_effect]] (proposed) — the "wrong-sign" response of private forecasts to policy surprises, read as Delphic information about fundamentals
-- [[time_inconsistency]] (proposed) — why Odyssean promises need reputation to be credible (Kydland and Prescott 1977), and the commitment-vs-discretion debate in the comments
-- [[zero_lower_bound]] (proposed) — the constraint that makes forward guidance the main remaining tool, and the Eggertsson–Woodford case for keeping rates at zero longer
+- [[information_effect]] — the "wrong-sign" response of private forecasts to policy surprises, read as Delphic information about fundamentals
+- [[time_inconsistency]] — why Odyssean promises need reputation to be credible (Kydland and Prescott 1977), and the commitment-vs-discretion debate in the comments
+- [[zero_lower_bound]] — the constraint that makes forward guidance the main remaining tool, and the Eggertsson–Woodford case for keeping rates at zero longer
 - [[monetary_policy/synthesis/basic_nk_model_ch3 (Gali, 2015)]] — the "correct sign" benchmark the paper tests against is the NK model's response to an exogenous policy shock (falling output and inflation after a tightening)

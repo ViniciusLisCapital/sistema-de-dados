@@ -157,7 +157,7 @@ Section 2.1 is the model's equation and how the agent reads it; 2.2–2.9 are th
   itself.
 - **Read:** [[time_inconsistency]], [[conservative_central_banker]], [[inflation_contract]],
   [[inflation_forecast_targeting]], [[central_bank_communication]], [[forward_guidance]],
-  [[information_effect]]; `inflation_expectations_anchoring`.
+  [[information_effect]], [[inflation_expectations_anchoring]].
 - **Data:** `expc_focus_periodo` (IPCA, each calendar year to the last one asked), `expc_qpc` (the
   balance of risks for the IPCA and, since the 281st meeting, the projection at the relevant horizon
   with the probability of a deviation from it); endogenous of monetary policy `inflc_meta`,
@@ -225,7 +225,7 @@ Section 2.1 is the model's equation and how the agent reads it; 2.2–2.9 are th
   carries an inflation risk premium and liquidity effects, and it moves every day. When the implied
   inflation moves and the survey does not, either the premium moved or the survey is late; the
   agent says which, and with what evidence.
-- **Read:** [[term_premium]], [[risk_premium]]; `breakeven_inflation`.
+- **Read:** [[term_premium]], [[risk_premium]], [[breakeven_inflation]].
 - **Data:** endogenous of monetary policy `br_interest_rate` (`DIPRE` and `NTNBJS`, the same
   maturities); `expc_focus`, `expc_focus_periodo` (IPCA).
 - **Model:** outside (E), which explains the survey. Type (ii) when the market leads the survey.
@@ -366,17 +366,30 @@ request until the cuts of `expc_focus_periodo` and `expc_qpc` are unified here.
 
 ## Part 5 — Concept index
 
-No literature of its own yet: these are the concept pages the skeleton links, and the ones that have
-no page.
+The concept pages the skeleton links, the ones that have no page, then this agent's layer 1.
 
-- Formation and persistence: [[inflation_persistence]], [[nk_phillips_curve]], [[core_inflation]] (2.1).
+- Formation and persistence: [[inflation_persistence]], [[nk_phillips_curve]], [[core_inflation]],
+  [[information_rigidities]] (2.1).
 - The regime and credibility: [[inflation_targeting]], [[inflation_forecast_targeting]],
-  [[time_inconsistency]], [[conservative_central_banker]], [[inflation_contract]] (2.2, 2.7).
+  [[time_inconsistency]], [[conservative_central_banker]], [[inflation_contract]],
+  [[inflation_expectations_anchoring]] (2.2, 2.7).
 - Communication: [[central_bank_communication]], [[forward_guidance]], [[information_effect]] (2.2, 2.8).
 - Fiscal and risk: [[fiscal_dominance]], [[risk_premium]] (2.3).
 - Shocks: [[exchange_rate_pass_through]], [[administered_prices]], [[food_inflation_drivers]] (2.4).
-- Measurement: [[real_time_data]] (2.5).
-- Market pricing: [[term_premium]] (2.6).
+- The survey: [[inflation_expectations_disagreement]], [[expectations_epidemiology]],
+  [[strategic_forecasting]], [[survey_forecast_rationality]], [[real_time_data]] (2.5).
+- Market pricing: [[breakeven_inflation]], [[term_premium]] (2.6).
 - The Selic side: [[taylor_rule]], [[natural_rate_of_interest]] (2.8).
-- No page yet: `inflation_expectations_anchoring`, `survey_expectations_dispersion`,
-  `breakeven_inflation`.
+- No page yet: none of the three listed at first (`survey_expectations_dispersion` became
+  [[inflation_expectations_disagreement]]).
+
+**Layer 1 (2026-10-29), one source per channel:**
+- 2.1 [[expectations/synthesis/formation_expectations_phillips_curve (Coibion, Gorodnichenko & Kamdar, 2018)]]
+- 2.2 [[expectations/synthesis/brazil_taming_inflation_expectations (Bevilaqua, Mesquita & Minella, 2007)]]
+- 2.3 reached through [[fiscal_dominance]] and [[risk_premium]] (owner: fiscal).
+- 2.4 reached through [[exchange_rate_pass_through]] (owners: FX and inflation).
+- 2.5 [[expectations/synthesis/inflation_expectations_public_private_info (Areosa, 2016)]]
+- 2.6 [[expectations/synthesis/breakeven_inflation_information (Vicente & Guillen, 2013)]]
+- 2.7 [[expectations/synthesis/empirical_findings_expectations_brazil (Gaglianone, 2017)]]
+- 2.8 [[expectations/synthesis/market_forecasts_brazil_performance (Carvalho & Minella, 2012)]]
+- 2.9 no source found: the breakdowns appear in the Copom's tables, not in the literature.

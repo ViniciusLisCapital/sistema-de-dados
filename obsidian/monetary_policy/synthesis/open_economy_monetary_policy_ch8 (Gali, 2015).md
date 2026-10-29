@@ -58,6 +58,6 @@ The small open economy's equilibrium reduces to a New Keynesian Phillips curve i
 - [[inflation_targeting]] — strict domestic vs. CPI inflation targeting and their flexible Taylor-rule versions ranked by welfare (Table 8.1); large CPI and exchange rate fluctuations are consistent with the optimum
 - [[currency_regimes]] — an exchange rate peg as a monetary rule in the NK small open economy: most stable terms of trade, larger welfare loss than strict inflation targeting (Table 8.1)
 - [[taylor_rule]] — rule (39) for the open economy, and FDIT/FCIT with Taylor (1993) coefficients giving the largest losses among the rules compared
-- [[international_risk_sharing]] (proposed) — complete markets link domestic consumption to world output and the real exchange rate (16)–(17), shaping the terms of trade, natural output and the efficient allocation
+- [[international_risk_sharing]] — complete markets link domestic consumption to world output and the real exchange rate (16)–(17), shaping the terms of trade, natural output and the efficient allocation
 - [[monetary_policy/synthesis/basic_nk_model_ch3 (Gali, 2015)]] — the closed-economy model this chapter nests as υ = 0 and whose calibration and determinacy condition it reuses
 - [[monetary_policy/synthesis/monetary_policy_design_nk_ch4 (Gali, 2015)]] — the closed-economy optimal policy and welfare loss this chapter extends; losses differ only by the factor (1 − υ)

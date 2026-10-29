@@ -55,5 +55,5 @@ Under an exogenous money growth rule (3.4.2), ρm = 0.5: a money growth shock ra
 - [[nk_phillips_curve]] — derived here from Calvo pricing: (17) in markups, (22) in the output gap, with κ and λ defined and their dependence on θ, α, ϵ stated
 - [[natural_rate_of_interest]] — defined as the flexible-price real rate (24); the DIS (23)/(25) makes the output gap the sum of expected deviations of the real rate from it
 - [[taylor_rule]] — rule (26) closes the model, with Taylor's original rule in footnote 5 and the quarterly calibration φπ = 1.5, φy = 0.5/4
-- [[taylor_principle]] (proposed) — determinacy condition (28), whose interpretation the text defers to chapter 4
-- [[calvo_pricing]] (proposed) — the staggered price-setting device behind (8), (11), (16); θ as the stickiness index, mean price duration of four quarters
+- [[taylor_principle]] — determinacy condition (28), whose interpretation the text defers to chapter 4
+- [[calvo_pricing]] — the staggered price-setting device behind (8), (11), (16); θ as the stickiness index, mean price duration of four quarters

@@ -52,3 +52,4 @@ The same headline policy announcement (e.g., "fiscal stimulus") can be currency-
 - [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — companion original source
 - [[uip]] — the high-capital-mobility channel is UIP-driven capital flow response to interest differentials
 - [[balance_of_payments_approach]] — Mundell-Fleming is explicitly a short-run model; the portfolio balance approach extends it to the long-run effect of sustained fiscal deficits
+- [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]] — with a long-term bond market, sterilized intervention can no longer stabilize both the short rate and the economy: the adjustment moves into term premia

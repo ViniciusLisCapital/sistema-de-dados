@@ -28,6 +28,7 @@ The data a policymaker actually had when a decision was made — preliminary rel
 | [[monetary_policy/synthesis/policy_rules_real_time_data (Orphanides, 2001)]] | Origin of the real-time Taylor-rule database (Greenbook forecasts, Q* potential, 1987-1992): real-time prescriptions differ from revised ones by a standard deviation of 58 basis points, within-year revisions of the prescription have a standard deviation of 67 basis points, and revised data obscure that forward-looking rules describe policy better |
 | [[monetary_policy/synthesis/new_measure_monetary_shocks (Romer & Romer, 2004)]] | Controls for the Fed's real-time Greenbook forecasts, including lagged data as the FOMC then believed it, to remove anticipatory moves from the shock series; policy moves driven by erroneous preliminary data are thereby excluded |
 | [[monetary_policy/synthesis/neutral_rate_time_varying_brazil (Perrelli & Roache, 2014)]] | Policy set on a mistaken estimate of a moving neutral rate (lagging or overshooting beliefs) has modest costs under an activist rule, in contrast with Orphanides' (2002) result for mismeasured potential output |
+| [[economic_activity/synthesis/output_gap_brazil_real_time (Cusinato, Minella & Porto Junior, 2013)]] | Brazil's real-time GDP vintages, 1996Q1-2008Q2: quarter-on-quarter growth revised by 0.67 p.p. on average (Table 4), less over longer windows; output-gap revisions large for all four detrending methods, from both GDP revisions and the end-of-sample effect |
 
 ## BRL / application to the current analysis
 
@@ -41,3 +42,4 @@ The linked sources say nothing about Brazil.
 - [[monetary_policy/synthesis/policy_rules_real_time_data (Orphanides, 2001)]] — the paper that measures the problem for the Taylor rule
 - [[monetary_policy/synthesis/new_measure_monetary_shocks (Romer & Romer, 2004)]] — the Fed's real-time information set used to purge monetary policy shocks
 - [[monetary_policy/synthesis/neutral_rate_time_varying_brazil (Perrelli & Roache, 2014)]] — neutral-rate misperception as a real-time measurement problem, and why its costs differ from output-gap mismeasurement
+- [[economic_activity/synthesis/output_gap_brazil_real_time (Cusinato, Minella & Porto Junior, 2013)]] — real-time GDP and output-gap revisions measured for Brazil

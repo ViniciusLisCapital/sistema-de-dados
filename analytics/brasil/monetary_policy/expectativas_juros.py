@@ -317,6 +317,86 @@ def di(reun: list[dict]) -> dict:
     }
 
 
+# ── opcoes de Copom ─────────────────────────────────────────────────────────────
+# Uma opcao vence no dia util seguinte a reuniao; o casamento vencimento -> reuniao aceita
+# ate 6 dias corridos (sexta de Carnaval, feriado na quinta) e nunca o proprio dia.
+_OPCAO_FOLGA = 6
+
+
+def opcoes(reun: list[dict]) -> dict:
+    """As opcoes digitais de Copom pregao a pregao (`pm_copom_opcoes`): a probabilidade de cada
+    decisao em cada reuniao cotada, e a Selic esperada que sai delas.
+
+    A probabilidade e o premio da decisao sobre a SOMA dos premios da reuniao naquele pregao --
+    o premio e valor presente de 100, e a soma e 100 x o fator de desconto, que assim se cancela
+    sem curva nenhuma. A Selic esperada para a reuniao j e a vigente mais a variacao esperada
+    (sum p x variacao) de cada reuniao ate j; so existe quando TODAS as reunioes de hoje ate j
+    tem opcao naquele pregao, senao faltaria um passo no meio da soma."""
+    o = q(_DB, "SELECT date, vencimento, variacao_bps, premio FROM pm_copom_opcoes ORDER BY date")
+    if o.empty:
+        return None
+    o["date"] = pd.to_datetime(o["date"]).dt.date
+    o["vencimento"] = pd.to_datetime(o["vencimento"]).dt.date
+    o["premio"] = pd.to_numeric(o["premio"])
+    datas_r = [r["date"] for r in reun]
+    venc_j = {}
+    for v in sorted(o["vencimento"].unique()):
+        js = [j for j, d in enumerate(datas_r) if d < v and (v - d).days <= _OPCAO_FOLGA]
+        if js:
+            venc_j[v] = js[-1]
+    o["j"] = o["vencimento"].map(venc_j)
+    sem = sorted(set(o.loc[o["j"].isna(), "vencimento"]))
+    if sem:
+        print(f"  expectativas   opcoes: {len(sem)} vencimento(s) sem reuniao: {sem[:4]}")
+    o = o[o["j"].notna()]
+    o["j"] = o["j"].astype(int)
+    # Reuniao so e "a frente" ate o dia dela, como na pesquisa: o premio do dia da decisao e o
+    # da vespera do anuncio, que sai depois do fechamento.
+    o = o[o["date"] <= o["j"].map(lambda j: datas_r[j])]
+
+    datas = sorted(o["date"].unique())
+    idx = {d: i for i, d in enumerate(datas)}
+    soma = o.groupby(["date", "j"])["premio"].transform("sum")
+    o = o[soma > 0]
+    o["p"] = o["premio"] / soma[soma > 0]
+    vig = [_vigente(reun, d) for d in datas]
+    j0 = _j0(reun, datas)
+
+    por_j: dict[int, dict] = {}
+    esp_delta: dict[tuple[int, int], float] = {}
+    for (d, j), g in o.groupby(["date", "j"]):
+        i = idx[d]
+        b = por_j.setdefault(j, {"dec": set(), "pts": {}})
+        b["dec"].update(int(x) for x in g["variacao_bps"])
+        b["pts"][i] = {"p": dict(zip(g["variacao_bps"].astype(int), g["p"])),
+                       "soma": float(g["premio"].sum())}
+        esp_delta[(i, j)] = float((g["p"] * g["variacao_bps"]).sum())
+
+    out_j = {}
+    for j, b in sorted(por_j.items()):
+        dec = sorted(b["dec"])
+        i0, i1 = min(b["pts"]), max(b["pts"])
+        p = {str(x): [] for x in dec}
+        v, dd, sm = [], [], []
+        for i in range(i0, i1 + 1):
+            pt = b["pts"].get(i)
+            for x in dec:
+                p[str(x)].append(None if pt is None else round(100 * pt["p"].get(x, 0.0), 2))
+            sm.append(None if pt is None else round(pt["soma"], 2))
+            dd.append(None if pt is None else round(esp_delta[(i, j)], 2))
+            # A Selic esperada: a vigente mais o passo esperado de cada reuniao de hoje ate j.
+            passos = [esp_delta.get((i, k)) for k in range(j0[i], j + 1)]
+            v.append(None if pt is None or vig[i] is None or any(s is None for s in passos)
+                     else round(vig[i] + sum(passos) / 100, 4))
+        out_j[str(j)] = {"i0": i0, "dec": dec, "p": p, "d": dd, "v": v, "soma": sm}
+    return {
+        "datas": [d.isoformat() for d in datas],
+        "vig": vig,
+        "j0": j0,
+        "por_reuniao": out_j,
+    }
+
+
 def montar() -> dict:
     """O payload da aba. Cada fonte degrada sozinha."""
     anos = q(_DB, "SELECT MAX(date) d FROM expc_focus_copom").iloc[0]["d"]
@@ -325,15 +405,15 @@ def montar() -> dict:
     out: dict = {"reunioes": [{"d": r["date"].isoformat(), "est": r["est"], "nro": r["nro"],
                                "selic": r["selic"], "rot": "R%d/%d" % (r["pos"], r["ano"])}
                               for r in reun]}
-    for nome, fn in (("focus", focus), ("di", di)):
+    for nome, fn in (("focus", focus), ("di", di), ("opcoes", opcoes)):
         try:
             out[nome] = fn(reun)
         except Exception as exc:  # noqa: BLE001 -- uma fonte que cai nao derruba a outra
             print(f"  expectativas   {nome} FALHOU -- {exc}")
             out[nome] = None
-    # Corta a lista de reunioes onde nenhuma das duas fontes cota mais: 2029 inteiro sem
-    # ponto nenhum so alargaria o eixo.
-    usadas = [int(j) for s in ("focus", "di") if out.get(s) for j in out[s]["por_reuniao"]]
+    # Corta a lista de reunioes onde nenhuma fonte cota mais: 2029 inteiro sem ponto nenhum so
+    # alargaria o eixo.
+    usadas = [int(j) for s in ("focus", "di", "opcoes") if out.get(s) for j in out[s]["por_reuniao"]]
     if usadas:
         out["reunioes"] = out["reunioes"][:max(usadas) + 1]
     return out

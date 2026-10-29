@@ -204,7 +204,7 @@ whoever has their tutela, as set in the "Exógenas" tab (proposal: the external 
   this is the loop the Copom guards against. In the model, the expectation of the headline is the
   common anchor of all four groups.
 - **Read:** [[inflation_targeting]], [[nk_phillips_curve]], [[inflation_forecast_targeting]];
-  `inflation_expectations_anchoring`.
+  [[inflation_expectations_anchoring]].
 - **Data:** endogenous of the expectations agent, for consultation: `expc_focus` (IPCA 12 and 24 months
   ahead, and the five components — livres, administrados, serviços, bens industrializados, alimentação
   no domicílio — since 2021), `expc_focus_periodo` (IPCA and components by calendar year, IGP-M),
@@ -447,20 +447,27 @@ global or idiosyncratic; how far it reaches prices is answered here.
 
 ## Part 5 — Concept index
 
-Concept pages this agent reaches (the area has almost no literature yet; its layer 1 comes after the
-first joint cycle, `PLANO_AGENTES.md` (VI)):
+Concept pages this agent reaches, then its layer 1:
 
 - [[core_inflation]], [[administered_prices]], [[inflation_persistence]] — the index, its groups and
   what persists (2.1, 2.2, 2.7).
-- [[nk_phillips_curve]], [[calvo_pricing]], [[sticky_wages]], [[natural_rate_of_unemployment]],
+- [[nk_phillips_curve]], [[phillips_curve]], [[calvo_pricing]], [[sticky_wages]], [[natural_rate_of_unemployment]],
   [[divine_coincidence]], [[real_time_data]] — demand, wages and the gap (2.4).
-- [[inflation_targeting]], [[inflation_forecast_targeting]], [[taylor_rule]],
+- [[inflation_targeting]], [[inflation_expectations_anchoring]], [[inflation_forecast_targeting]], [[taylor_rule]],
   [[monetary_transmission_lags]] — the target, the Copom and the loop (2.3, 2.8).
 - [[exchange_rate_pass_through]], [[ppp_balassa_samuelson]] — the exchange rate (2.5).
-- [[food_inflation_drivers]] — food and commodities (2.6); from
-  [[inflation/synthesis/em_food_inflation (Goldman, 2026)]], the one source with a synthesis in this
-  area so far (layer not decided).
+- [[food_inflation_drivers]], [[commodity_shocks]] — food and commodities (2.6).
 
 Concepts with no page yet: `relative_price_shock`, `diffusion_index`, `seasonality`, `indexation`,
-`second_round_effects`, `inflation_expectations_anchoring`, `unit_labour_costs`,
-`tradables_vs_nontradables`, `supply_shocks`, `energy_tariff_flag`.
+`second_round_effects`, `unit_labour_costs`, `tradables_vs_nontradables`, `supply_shocks`,
+`energy_tariff_flag`.
+
+**Layer 1 (2026-10-29), one source per channel:**
+- 2.1 [[inflation/synthesis/core_inflation_brazil_past_present (da Gama Machado, 2024)]]
+- 2.2 [[monetary_policy/synthesis/staggered_prices (Calvo, 1983)]]
+- 2.3 reached through [[inflation_expectations_anchoring]] (owner: expectations).
+- 2.4 [[inflation/synthesis/targets_inflation_dynamics (Alves & Areosa, 2005)]]
+- 2.5 [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]]
+- 2.6 [[inflation/synthesis/em_food_inflation (Goldman, 2026)]]
+- 2.7 [[inflation/synthesis/administered_prices_projection_pass_through (Alves et al., 2013)]]
+- 2.8 reached through [[monetary_transmission_lags]] (owner: monetary policy).

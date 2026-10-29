@@ -52,5 +52,5 @@ A one-period model with three assets: a default-free bond whose real rate r is c
 - [[fiscal_dominance]] — a specific, estimated incarnation: higher real rates raise default risk and depreciate the currency, so inflation targeting becomes perverse and fiscal policy is the right instrument; Brazil 2002 as the case
 - [[risk_premium]] — the risk premium pθ∗ (default probability times foreign risk aversion, proxied by the Baa spread) is the dominant, highly significant driver of BRL in the capital-flow estimates
 - [[uip]] — the capital-flow relation is a risk-adjusted interest parity; once the risk premium is controlled for, the interest differential has no consistent effect on the exchange rate
-- [[inflation_targeting]] (proposed) — the paper's lesson for IT under fiscal dominance: a rate rise in response to inflation can raise inflation through the exchange rate
+- [[inflation_targeting]] — the paper's lesson for IT under fiscal dominance: a rate rise in response to inflation can raise inflation through the exchange rate
 - [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]] — Itaú presents this paper's mechanism in its framework and assesses whether it was operating in Brazil at the time Itaú wrote

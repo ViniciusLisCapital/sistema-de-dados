@@ -1011,6 +1011,24 @@
     </section>
 
     <section>
+      <h2>As opções de Copom — a probabilidade de cada decisão</h2>
+      <p class="lead" id="ej-lead-op">—</p>
+
+      <div class="ctrl-bar chart-ctrl-bar">
+        <span class="ctrl-label">Reunião</span>
+        <div class="pill-group" id="pg-ej-op-reu"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Comparar com</span>
+        <div class="pill-group" id="pg-ej-op-comp"></div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-chart-ej-op"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-ej-op-dist"></div></div>
+      <div class="chart-card"><div id="chart-ej-op-hist"></div></div>
+      <p class="chart-caption" id="ej-cap-op">—</p>
+    </section>
+
+    <section>
       <h2>Como ler estes gráficos</h2>
       <div style="margin-top:6px">
         <details class="appendix-item"><summary>Pesquisa e curva: por que não são o mesmo número</summary>
@@ -1083,6 +1101,29 @@
             da real desloca a divisão entre duas reuniões vizinhas, não o nível das duas.
           </div>
         </details>
+        <details class="appendix-item"><summary>Opções de Copom: do preço à probabilidade</summary>
+          <div class="appendix-body">
+            A B3 lista, para cada uma das próximas reuniões, uma opção por decisão possível —
+            corte de 50, de 25, manutenção, alta de 25, e assim por diante. Cada uma paga
+            <b>100 pontos se o Copom decidir exatamente aquilo</b> e nada se decidir outra coisa,
+            e vence no dia útil seguinte à reunião.
+            <br><br>
+            O preço de uma opção dessas é o valor de hoje de "100 se acontecer". Somando os preços
+            de todas as decisões da mesma reunião, o resultado fica um pouco abaixo de 100 — a
+            diferença é o juro até o vencimento (hoje a soma da próxima reunião é
+            <b><span id="ej-ap-op-soma">—</span></b>). Dividindo o preço de cada decisão por essa
+            soma, o juro sai da conta e o que sobra é a <b>probabilidade que o preço atribui à
+            decisão</b>. É uma probabilidade de mercado: como a curva, carrega o que se cobra
+            para correr o risco, e não é pesquisa de opinião.
+            <br><br>
+            O preço usado é o <b>prêmio de referência</b> que a B3 calcula todo dia para cada série,
+            negociada ou não — por isso há número para todas as decisões, inclusive as que ninguém
+            espera, que ficam num piso de poucos centésimos de ponto. A <b>Selic esperada pelas
+            opções</b> (a linha roxa da segunda seção) é a Selic vigente mais a variação esperada
+            de cada reunião até a escolhida, e só existe enquanto todas as reuniões do meio têm
+            opção listada. O arquivo traz essas opções desde <span id="ej-ap-op-ini">—</span>.
+          </div>
+        </details>
         <details class="appendix-item"><summary>A fila de reuniões à frente</summary>
           <div class="appendix-body">
             Na terceira seção, "a quarta reunião à frente" é, em cada semana, a quarta reunião
@@ -1102,7 +1143,7 @@
 </main>
 
 <footer>
-  Fontes: <span>BCB — comunicados do Copom (API) &nbsp;·&nbsp; anexo estatístico do RPM &nbsp;·&nbsp; Focus &nbsp;·&nbsp; B3 — curva DI × pré</span>
+  Fontes: <span>BCB — comunicados do Copom (API) &nbsp;·&nbsp; anexo estatístico do RPM &nbsp;·&nbsp; Focus &nbsp;·&nbsp; B3 — curva DI × pré e opções de Copom</span>
   &nbsp;|&nbsp; LIS Capital — Uso interno
 </footer>
 
@@ -1144,6 +1185,7 @@ var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true}
 var SRC_COPOM = 'BCB — comunicados do Copom e Relatório de Política Monetária; decisões de Selic da SGS 432';
 var SRC_RPM = 'BCB — anexo estatístico do Relatório de Política Monetária (Relatório de Inflação até 2024), cenário de referência';
 var SRC_EJ = 'BCB — pesquisa Focus, Selic esperada por reunião do Copom; B3 — curva DI × pré do arquivo de pregão';
+var SRC_EJ_OP = 'B3 — opções de Copom, prêmio de referência do arquivo de pregão';
 // O cenário de juros vai no subtítulo, que muda com a edição escolhida -- aqui ele mentiria
 // quando a escolhida é de juros constantes.
 var SRC_RPM_PROJ = 'BCB — Relatório de Política Monetária (Relatório de Inflação até 2024); IBGE — IPCA realizado';
@@ -1162,6 +1204,9 @@ var CHART_META = {
   'chart-ej-reuniao': {title: '', source: SRC_EJ},
   'chart-ej-hz':      {title: '', source: SRC_EJ},
   'chart-ej-gap':     {title: '', source: SRC_EJ},
+  // A reuniao e um seletor: titulo derivado nos dois.
+  'chart-ej-op-dist': {title: '', source: SRC_EJ_OP},
+  'chart-ej-op-hist': {title: '', source: SRC_EJ_OP},
 };
 
 
@@ -3537,12 +3582,13 @@ function renderCondicionais() {
 //  índice j0 da primeira reunião ainda por acontecer e um bloco {i0, ...} por reunião. O JS
 //  só escolhe, recorta e desenha.
 // ═══════════════════════════════════════════════════════════════════════════════
-var EJ = {dlHoje: false, dlReu: false, dlHz: false, comp: 4, reuniao: null, hz: 4};
+var EJ = {dlHoje: false, dlReu: false, dlHz: false, comp: 4, reuniao: null, hz: 4,
+          dlOp: false, opReu: null, opComp: 4};
 var EJ_HOJE = 'chart-ej-hoje', EJ_REU = 'chart-ej-reuniao', EJ_HZ = 'chart-ej-hz', EJ_GAP = 'chart-ej-gap';
 var EJ_UNID = 'meta Selic, % ao ano';
 var EJ_UNID_GAP = 'curva DI menos pesquisa Focus, pontos-base';
 var EJ_COR = {focus: C.azul, focusAnt: '#8C93B5', di: C.dourado, diAnt: '#DCC67A', b1: C.azulCl,
-              vig: '#8A8A8A', dec: C.verde, faixa: 'rgba(31,40,83,0.10)'};
+              vig: '#8A8A8A', dec: C.verde, faixa: 'rgba(31,40,83,0.10)', op: '#8E44AD'};
 var EJ_COMP = [0, 1, 4, 12, 52];
 var EJ_HZS = [1, 2, 4, 8];
 
@@ -3569,10 +3615,10 @@ function ejQuandoEntre(j) {
   return r.est ? cnMesAno(r.d) + ', data estimada' : cnDataBR(r.d);
 }
 function ejSemanas(n) { return n === 1 ? '1 semana' : n + ' semanas'; }
-// A pesquisa pode cair num oitavo de ponto (13,625); a curva é um preço contínuo e sai com
-// duas casas -- a terceira seria precisão que a conta não tem.
-function ejFmt(fonte, v) { return fonte === 'di' ? fmtBR(v, 2) : cnSel(v); }
-function ejCampo(fonte) { return fonte === 'di' ? 'v' : 'm'; }
+// A pesquisa pode cair num oitavo de ponto (13,625); a curva e as opções são preços contínuos e
+// saem com duas casas -- a terceira seria precisão que a conta não tem.
+function ejFmt(fonte, v) { return fonte === 'focus' ? cnSel(v) : fmtBR(v, 2); }
+function ejCampo(fonte) { return fonte === 'focus' ? 'm' : 'v'; }
 function ejVal(fonte, campo, j, i) {
   var S = ejD()[fonte];
   var b = S && S.por_reuniao[String(j)];
@@ -3856,6 +3902,7 @@ function renderEjReuniao() {
     {fonte: 'focus', campo: 'b1', nome: 'Pesquisa, só respostas dos últimos 4 dias úteis', cor: EJ_COR.b1, w: 1.6, dash: 'dot'},
     {fonte: 'focus', campo: 'm', nome: 'Pesquisa Focus, mediana', cor: EJ_COR.focus, w: 2.6},
     {fonte: 'di', campo: 'v', nome: 'Curva DI', cor: EJ_COR.di, w: 2.6},
+    {fonte: 'opcoes', campo: 'v', nome: 'Opções de Copom', cor: EJ_COR.op, w: 1.8},
   ];
   linhas.forEach(function(L) {
     var s = ejSerieReuniao(L.fonte, L.campo, j);
@@ -3864,7 +3911,8 @@ function renderEjReuniao() {
              line: {color: L.cor, width: L.w, dash: L.dash || 'solid'},
              customdata: s.values.map(function(v) { return ejFmt(L.fonte, v) + '%'; }),
              hovertemplate: '<b>' + L.nome + '</b> — %{customdata}<extra></extra>'};
-    if (EJ.dlReu && L.campo !== 'b1') {
+    // As opções têm um ponto por pregão: rotular cada um cobriria a linha.
+    if (EJ.dlReu && L.campo !== 'b1' && L.fonte !== 'opcoes') {
       t.mode = 'lines+text';
       t.text = dlText(s.values, 2, '');
       t.textposition = L.fonte === 'di' ? 'top center' : 'bottom center';
@@ -3887,10 +3935,12 @@ function renderEjReuniao() {
   // A reunião muda pelo seletor: a janela da anterior não serve para esta.
   delete _chartXRange[EJ_REU];
   _reactPreserveX(EJ_REU, traces, layout);
+  var temOp = ejSerieReuniao('opcoes', 'v', j).dates.length > 0;
   describeChart(EJ_REU, ejSemNome(traces), [
     'pesquisa semana a semana: mediana e faixa das respostas',
     X.di && X.di.por_reuniao[String(j)] ? 'curva: a taxa precificada para depois da reunião' : '',
-  ], EJ_UNID, {freq: 'dia', titulo: ejTituloReuniao(j)});
+    temOp ? 'opções: pregão a pregão' : '',
+  ], EJ_UNID, {freq: 'dia', titulo: ejTituloReuniao(j), fonte: temOp ? SRC_EJ + '; opções de Copom' : null});
 }
 function renderEjReuniaoTextos() {
   var j = EJ.reuniao, r = ejReu(j);
@@ -3917,14 +3967,21 @@ function renderEjReuniaoTextos() {
     txt += ' No pregão mais recente que a cota, de ' + cnDataBR(sd.dates[sd.dates.length - 1]) +
       ', a curva precifica <b>' + ejFmt('di', sd.values[sd.values.length - 1]) + '%</b>.';
   }
+  var so = ejSerieReuniao('opcoes', 'v', j);
+  if (so.dates.length) {
+    txt += ' Nas opções de Copom do pregão de ' + cnDataBR(so.dates[so.dates.length - 1]) +
+      ', a Selic esperada é <b>' + fmtBR(so.values[so.values.length - 1], 2) + '%</b>.';
+  }
   if (r.selic != null) txt += ' O Copom decidiu <b>' + cnSel(r.selic) + '%</b>.';
   ejPut('ej-lead-reu', txt);
   ejPut('ej-cap-reu',
     'Azul: a mediana da pesquisa, e a faixa sombreada da menor à maior resposta. Azul-claro ' +
     'pontilhada: a mediana só das respostas dos últimos 4 dias úteis. Dourada: a taxa que a curva DI ' +
-    'precifica para depois desta reunião. Cinza pontilhada: a Selic vigente em cada semana' +
+    'precifica para depois desta reunião.' +
+    (so.dates.length ? ' Roxa: a Selic esperada pelas opções de Copom, pregão a pregão.' : '') +
+    ' Cinza pontilhada: a Selic vigente em cada semana' +
     (r.selic != null ? '; o losango verde é a decisão.' : '.') +
-    ' Uma linha por semana: a última pesquisa e o último pregão de cada uma.');
+    ' A pesquisa e a curva têm um ponto por semana: a última pesquisa e o último pregão de cada uma.');
 }
 
 // ── 3. A n-ésima reunião à frente ─────────────────────────────────────────────────
@@ -4039,6 +4096,206 @@ function renderEjHzTextos() {
 }
 function ejPbSinal(x) { return (x > 0 ? '+' : x < 0 ? '−' : '') + fmtBR(Math.abs(x), 0); }
 
+// ── 4. As opções de Copom ─────────────────────────────────────────────────────────
+// D.expectativas.opcoes: um ponto por PREGÃO (não por semana), e por reunião `dec` (as decisões
+// listadas, em p.b.), `p` (a probabilidade de cada uma, %, já normalizada pela soma dos prêmios
+// da reunião), `d` (a variação esperada, p.b.), `v` (a Selic esperada) e `soma` (a soma dos
+// prêmios, 100 × o fator de desconto). O JS só escolhe e desenha.
+var EJ_OP_DIST = 'chart-ej-op-dist', EJ_OP_HIST = 'chart-ej-op-hist';
+var EJ_OP_UNID = 'probabilidade da decisão, % (prêmio da opção ÷ soma dos prêmios da reunião)';
+var EJ_OP_COMP = [0, 1, 4];
+// Cor pela DECISÃO, não pela posição: a mesma decisão tem a mesma cor nas duas vistas e em
+// qualquer reunião. Todas da paleta de séries (ΔE2000 ≥ 20 entre si).
+var EJ_OP_COR = {'-100': '#B39DDB', '-75': '#64B5F6', '-50': '#1565C0', '-25': '#418791', '0': '#1F2853',
+                 '25': '#EA523A', '50': '#AD1457', '75': '#795548', '100': '#F06292'};
+var EJ_OP_OUTRAS = '#9E9E9E';
+// Uma decisão ganha linha própria no histórico se em algum pregão passou disto; as outras
+// entram somadas, para as linhas continuarem somando 100.
+var EJ_OP_MIN = 3;
+
+function ejOp() { var X = ejD(); return X.opcoes && X.opcoes.datas && X.opcoes.datas.length ? X.opcoes : null; }
+function ejOpRotulo(b) { return b === 0 ? 'Manutenção' : (b < 0 ? 'Corte de ' : 'Alta de ') + Math.abs(b) + ' pb'; }
+function ejOpCor(b) { return EJ_OP_COR[String(b)] || EJ_OP_OUTRAS; }
+// As reuniões com opção no pregão mais recente, em ordem.
+function ejOpReunioes() {
+  var O = ejOp();
+  if (!O) return [];
+  var i = O.datas.length - 1;
+  return Object.keys(O.por_reuniao).map(Number).filter(function(j) {
+    var b = O.por_reuniao[String(j)], k = i - b.i0;
+    return k >= 0 && k < b.v.length && b.d[k] != null;
+  }).sort(function(a, b) { return a - b; });
+}
+// A distribuição de uma reunião num pregão (índice i do eixo de pregões): [{b, p}] em ordem.
+function ejOpDist(j, i) {
+  var O = ejOp(), b = O && O.por_reuniao[String(j)];
+  if (!b) return null;
+  var k = i - b.i0;
+  if (k < 0 || k >= b.d.length || b.d[k] == null) return null;
+  return b.dec.map(function(x) { return {b: x, p: b.p[String(x)][k]}; });
+}
+// O pregão mais recente com data até `semanas` semanas antes do último -- por data, como na
+// comparação do caminho de hoje.
+function ejOpPregaoAtras(semanas) {
+  var O = ejOp();
+  if (!O) return -1;
+  var alvo = Date.parse(O.datas[O.datas.length - 1]) - semanas * 7 * 86400000;
+  for (var i = O.datas.length - 1; i >= 0; i--) if (Date.parse(O.datas[i]) <= alvo) return i;
+  return -1;
+}
+function ejOpTitulo(j) {
+  var r = ejReu(j);
+  return (r.nro ? r.nro + 'ª Reunião do Copom, de ' + cnDataBR(r.d) : cnPosicao(r.rot).replace('reunião', 'Reunião') + ' do Copom');
+}
+// As decisões que entram no gráfico: as que têm probabilidade visível em algum dos pregões
+// desenhados. A que nunca sai do piso só esticaria o eixo.
+function ejOpDecVisiveis(dists) {
+  var vis = {};
+  dists.forEach(function(D0) { (D0 || []).forEach(function(x) { if (x.p != null && x.p >= 0.5) vis[x.b] = true; }); });
+  return Object.keys(vis).map(Number).sort(function(a, b) { return a - b; });
+}
+
+function renderEjOpDist() {
+  var el = document.getElementById(EJ_OP_DIST), O = ejOp(), j = EJ.opReu;
+  if (!O || j == null) { if (el) el.innerHTML = ''; return; }
+  var iH = O.datas.length - 1, iC = EJ.opComp ? ejOpPregaoAtras(EJ.opComp) : -1;
+  var dH = ejOpDist(j, iH), dC = iC >= 0 ? ejOpDist(j, iC) : null;
+  var decs = ejOpDecVisiveis([dH, dC]);
+  var val = function(D0, x) { var e = (D0 || []).filter(function(y) { return y.b === x; })[0]; return e ? e.p : null; };
+  var cats = decs.map(ejOpRotulo), traces = [];
+  if (dC) {
+    traces.push({x: cats, y: decs.map(function(x) { return val(dC, x); }), type: 'bar',
+                 name: ejSemanas(EJ.opComp) + ' antes — ' + cnDataBR(O.datas[iC]),
+                 marker: {color: '#D5D7E3'},
+                 hovertemplate: '<b>%{x}</b> — ' + cnDataBR(O.datas[iC]) + ': %{y:.1f}%<extra></extra>'});
+  }
+  var tH = {x: cats, y: decs.map(function(x) { return val(dH, x); }), type: 'bar',
+            name: 'Pregão de ' + cnDataBR(O.datas[iH]),
+            marker: {color: decs.map(ejOpCor)},
+            hovertemplate: '<b>%{x}</b> — ' + cnDataBR(O.datas[iH]) + ': %{y:.1f}%<extra></extra>'};
+  if (EJ.dlOp) {
+    tH.text = tH.y.map(function(v) { return v == null ? '' : fmtBR(v, 1) + '%'; });
+    tH.textposition = 'outside';
+    tH.textfont = {family: 'JetBrains Mono,monospace', size: 10, color: C.azul};
+  }
+  traces.push(tH);
+  // Não é série temporal: o X são as decisões, sem régua de período nem preservação de janela.
+  var layout = {
+    height: 380, margin: {l: 55, r: 30, t: 20, b: 60}, barmode: 'group', bargap: 0.25,
+    hovermode: 'closest',
+    hoverlabel: {bgcolor: C.azul, font: {family: 'Barlow,sans-serif', size: 12, color: '#fff'}},
+    xaxis: {type: 'category', gridcolor: '#eee'},
+    yaxis: {title: {text: EJ_OP_UNID, font: {size: 11}}, range: [0, 105], gridcolor: '#eee', zeroline: true,
+            zerolinecolor: '#bbb'},
+    legend: {orientation: 'h', y: -0.2, x: 0.5, xanchor: 'center', font: {size: 10.5}},
+    showlegend: !!dC,
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: C.azul, size: 12},
+  };
+  Plotly.react(EJ_OP_DIST, traces, layout, _PLOTLY_CONFIG);
+  describeChart(EJ_OP_DIST, ejSemNome(traces), [
+    'uma barra por decisão possível',
+    dC ? 'cinza: ' + ejSemanas(EJ.opComp) + ' antes' : '',
+  ], EJ_OP_UNID, {titulo: 'Probabilidade de Cada Decisão na ' + ejOpTitulo(j),
+                  periodo: 'pregão de ' + cnDataBR(O.datas[iH]) + (dC ? ' contra ' + cnDataBR(O.datas[iC]) : '')});
+}
+
+// O histórico da reunião escolhida: uma linha por decisão relevante e as outras somadas.
+function ejOpHist(j) {
+  var O = ejOp(), b = O && O.por_reuniao[String(j)];
+  if (!b) return null;
+  var datas = O.datas.slice(b.i0, b.i0 + b.d.length);
+  var prin = b.dec.filter(function(x) {
+    return b.p[String(x)].some(function(v) { return v != null && v >= EJ_OP_MIN; });
+  });
+  var resto = b.dec.filter(function(x) { return prin.indexOf(x) < 0; });
+  var outras = datas.map(function(_, k) {
+    if (b.d[k] == null) return null;
+    return resto.reduce(function(a, x) { return a + (b.p[String(x)][k] || 0); }, 0);
+  });
+  return {datas: datas, prin: prin, resto: resto, outras: outras, b: b};
+}
+function renderEjOpHist() {
+  var el = document.getElementById(EJ_OP_HIST), j = EJ.opReu, H = j != null ? ejOpHist(j) : null;
+  if (!H) { if (el) el.innerHTML = ''; return; }
+  var traces = H.prin.map(function(x) {
+    var y = H.b.p[String(x)].map(function(v, k) { return H.b.d[k] == null ? null : v; });
+    return {x: H.datas, y: y, type: 'scatter', mode: 'lines', name: ejOpRotulo(x),
+            line: {color: ejOpCor(x), width: 2},
+            hovertemplate: '<b>' + ejOpRotulo(x) + '</b> — %{y:.1f}%<extra></extra>'};
+  });
+  if (H.resto.length && H.outras.some(function(v) { return v != null && v >= 0.05; })) {
+    traces.push({x: H.datas, y: H.outras, type: 'scatter', mode: 'lines', name: 'Outras decisões, somadas',
+                 line: {color: EJ_OP_OUTRAS, width: 1.4, dash: 'dot'},
+                 hovertemplate: '<b>Outras decisões</b> — %{y:.1f}%<extra></extra>'});
+  }
+  if (EJ.dlOp) {
+    traces.forEach(function(t) {
+      t.mode = 'lines+text';
+      // Um rótulo só, no último pregão: um por dia cobriria a linha.
+      t.text = t.y.map(function(v, k) { return k === t.y.length - 1 && v != null ? fmtBR(v, 1) + '%' : ''; });
+      t.textposition = 'middle right';
+      t.textfont = {family: 'JetBrains Mono,monospace', size: 10, color: t.line.color};
+    });
+  }
+  _PERIOD_LABEL[EJ_OP_HIST] = cnDataBR;
+  var layout = mkTimeseriesLayout(EJ_OP_UNID, 460, traces, {
+    hovermode: 'x unified',
+    legend: {orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center', font: {size: 10.5}},
+  });
+  layout.xaxis.hoverformat = '%d/%m/%Y';
+  layout.yaxis.range = [-3, 103];
+  // A reunião muda pelo seletor: a janela da anterior não serve para esta.
+  delete _chartXRange[EJ_OP_HIST];
+  _reactPreserveX(EJ_OP_HIST, traces, layout);
+  describeChart(EJ_OP_HIST, ejSemNome(traces), [
+    'pregão a pregão, desde que a reunião foi listada',
+    H.resto.length ? 'decisões que nunca passaram de ' + EJ_OP_MIN + '% somadas numa linha' : '',
+  ], EJ_OP_UNID, {freq: 'dia', titulo: 'Como a Probabilidade de Cada Decisão Andou — ' + ejOpTitulo(j)});
+}
+function renderEjOpTextos() {
+  var O = ejOp(), js = ejOpReunioes();
+  if (!O || !js.length) {
+    ejPut('ej-lead-op', 'Sem dado: as opções de Copom não carregaram.');
+    ejPut('ej-cap-op', '');
+    return;
+  }
+  var iH = O.datas.length - 1, d0 = cnDataBR(O.datas[iH]);
+  var txt = 'A B3 lista uma opção para cada decisão possível nas próximas reuniões, e cada uma paga se o ' +
+    'Copom decidir exatamente aquilo. O preço de cada uma, dividido pela soma dos preços da reunião, é a ' +
+    '<b>probabilidade que o mercado dá àquela decisão</b>. No pregão de ' + d0 + ':';
+  var partes = js.map(function(j) {
+    var D0 = ejOpDist(j, iH).slice().sort(function(a, b) { return (b.p || 0) - (a.p || 0); });
+    var b = O.por_reuniao[String(j)], k = iH - b.i0;
+    var s = ' na <b>' + ejNome(j) + '</b> (' + ejQuandoEntre(j) + '), ' + ejOpRotulo(D0[0].b).toLowerCase() +
+      ' com <b>' + fmtBR(D0[0].p, 0) + '%</b>';
+    if (D0[1] && D0[1].p >= 1) s += ' e ' + ejOpRotulo(D0[1].b).toLowerCase() + ' com ' + fmtBR(D0[1].p, 0) + '%';
+    if (b.v[k] != null) s += ' — Selic esperada de ' + fmtBR(b.v[k], 2) + '%';
+    return s;
+  });
+  txt += partes.join(';') + '.';
+  // A ponte com a curva: a mesma reunião, o pregão mais recente das duas.
+  var j1 = js[js.length - 1], Dd = ejD().di;
+  if (Dd && Dd.por_reuniao[String(j1)]) {
+    var bd = Dd.por_reuniao[String(j1)], kd = bd.v.length - 1;
+    while (kd > 0 && bd.v[kd] == null) kd--;
+    var bo = O.por_reuniao[String(j1)], vo = bo.v[iH - bo.i0];
+    if (vo != null && bd.v[kd] != null) {
+      var g = Math.round((bd.v[kd] - vo) * 100);
+      txt += ' Para a ' + ejNome(j1) + ', a mais distante que as opções cotam, a curva DI de ' +
+        cnDataBR(Dd.datas[bd.i0 + kd]) + ' precifica ' + fmtBR(bd.v[kd], 2) + '% — ' +
+        (g === 0 ? 'o mesmo número.' : Math.abs(g) + ' p.b. ' + (g > 0 ? 'acima' : 'abaixo') + ' das opções.');
+    }
+  }
+  ejPut('ej-lead-op', txt);
+  ejPut('ej-cap-op',
+    'Em cima: a probabilidade de cada decisão na reunião escolhida, no pregão mais recente' +
+    (EJ.opComp ? ', e em cinza a de ' + ejSemanas(EJ.opComp) + ' antes' : '') + '. Embaixo: como essas ' +
+    'probabilidades andaram desde que a reunião passou a ter opção listada, uma linha por decisão; as que ' +
+    'nunca passaram de ' + EJ_OP_MIN + '% entram somadas, para as linhas continuarem somando 100%. As ' +
+    'probabilidades são de mercado, lidas do preço: carregam o que se cobra para correr o risco, como a curva.');
+}
+
 function renderEjNotas() {
   var X = ejD(), H = ejHoje();
   if (X.di && X.di.spread && X.di.spread.length) {
@@ -4065,6 +4322,12 @@ function renderEjNotas() {
     ejPut('ej-ap-est', est + ' das ' + H.focus.pts.length + ' reuniões');
     ejPut('ej-ap-nfocus', String(H.focus.pts.length));
   }
+  var O = ejOp(), js = ejOpReunioes();
+  if (O && js.length) {
+    var b = O.por_reuniao[String(js[0])];
+    ejPut('ej-ap-op-soma', fmtBR(b.soma[O.datas.length - 1 - b.i0], 2) + ' pontos');
+    ejPut('ej-ap-op-ini', cnMesAno(O.datas[0]));
+  }
 }
 
 function renderExpectativas() {
@@ -4073,6 +4336,22 @@ function renderExpectativas() {
   wireDlToggle('dl-chart-ej-hoje', function(on) { EJ.dlHoje = on; if (!primeiro) renderEjHoje(); });
   wireDlToggle('dl-chart-ej-reuniao', function(on) { EJ.dlReu = on; if (!primeiro) renderEjReuniao(); });
   wireDlToggle('dl-chart-ej-hz', function(on) { EJ.dlHz = on; if (!primeiro) renderEjHz(); });
+  wireDlToggle('dl-chart-ej-op', function(on) { EJ.dlOp = on; if (!primeiro) { renderEjOpDist(); renderEjOpHist(); } });
+  var opJs = ejOpReunioes();
+  EJ.opReu = opJs.length ? opJs[0] : null;
+  setupPillGroup('pg-ej-op-reu', opJs.map(function(j) {
+    var r = ejReu(j);
+    return {key: String(j), label: (r.nro ? r.nro + 'ª' : cnPosicao(r.rot)) + ' · ' + cnDataBR(r.d)};
+  }), EJ.opReu != null ? String(EJ.opReu) : '', function(k) {
+    EJ.opReu = parseInt(k, 10);
+    if (!primeiro) { renderEjOpDist(); renderEjOpHist(); }
+  });
+  setupPillGroup('pg-ej-op-comp', EJ_OP_COMP.map(function(n) {
+    return {key: String(n), label: n ? ejSemanas(n) + ' antes' : 'Nenhuma'};
+  }), String(EJ.opComp), function(k) {
+    EJ.opComp = parseInt(k, 10);
+    if (!primeiro) { renderEjOpDist(); renderEjOpTextos(); }
+  });
   setupPillGroup('pg-ej-comp', EJ_COMP.map(function(n) {
     return {key: String(n), label: n ? ejSemanas(n) + ' antes' : 'Nenhuma'};
   }), String(EJ.comp), function(k) {
@@ -4105,6 +4384,7 @@ function renderExpectativas() {
   renderEjHoje(); renderEjHojeTextos(); renderEjTabela();
   renderEjReuniao(); renderEjReuniaoTextos();
   renderEjHz(); renderEjHzTextos();
+  renderEjOpDist(); renderEjOpHist(); renderEjOpTextos();
   renderEjNotas();
 }
 

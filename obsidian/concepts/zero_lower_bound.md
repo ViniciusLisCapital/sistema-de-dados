@@ -32,6 +32,7 @@ Short-term nominal interest rates cannot be driven below zero (more generally, b
 | [[monetary_policy/synthesis/liquidity_trap_japan (Krugman, 1998)]] | The trap rederived in an intertemporal cash-in-advance model: a negative full-employment real rate plus a zero nominal rate; ineffectiveness of money as a credibility problem in reverse; escape by credibly committing to a higher future price level; Japan in the 1990s |
 | [[monetary_policy/synthesis/zero_bound_alternatives (Bernanke, Reinhart & Sack, 2004)]] | Empirical assessment of three levers at the bound (shaping rate expectations, quantitative easing, balance-sheet composition) for the US and Japan; some grounds for optimism, but effects too uncertain to rely on, so keep an inflation buffer and ease preemptively |
 | [[monetary_policy/synthesis/natural_rate_international (Holston, Laubach & Williams, 2017)]] | A persistently lower natural rate in all four advanced economies makes episodes at the effective lower bound more frequent and longer, and raises the gains from international coordination |
+| [[fiscal_policy/synthesis/can_government_purchases_stimulate_economy (Ramey, 2011)]] | Fiscal policy at the bound: NK models predict larger spending multipliers when the nominal rate is fixed, but U.S. 1939–1949, with near-zero T-bill rates, gives a multiplier of 0.7 — no evidence of amplification |
 
 ## BRL / application to the current analysis
 
@@ -49,3 +50,4 @@ The sources linked here say nothing about Brazil yet.
 - [[monetary_policy/synthesis/liquidity_trap_japan (Krugman, 1998)]] — the modern revival of the liquidity trap: why base expansion fails unless expected to persist, and managed inflation as the way out
 - [[monetary_policy/synthesis/zero_bound_alternatives (Bernanke, Reinhart & Sack, 2004)]] — evidence on what nonstandard policies can do at the bound, and why avoidance remains the preferred strategy
 - [[monetary_policy/synthesis/natural_rate_international (Holston, Laubach & Williams, 2017)]] — why a falling natural rate makes the bound a recurring rather than exceptional constraint
+- [[fiscal_policy/synthesis/can_government_purchases_stimulate_economy (Ramey, 2011)]] — the spending multiplier at the bound, in theory and in the 1939–1949 U.S. data

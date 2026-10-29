@@ -35,6 +35,8 @@ Derived from staggered (Calvo) price setting: each period only a fraction 1−θ
 | [[monetary_policy/synthesis/nk_small_open_economy (Gali & Monacelli, 2005)]] | Small open economy NKPC in domestic inflation (40): same form as the closed economy, slope κα depending on openness and the trade elasticity, flatter with more openness if ση > 1 |
 | [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] | Hybrid NKPC (8) estimated by impulse-response matching: Calvo parameter 0.94 and indexation 0.91 under standard high-frequency identification, 0.88 and 0.00 once information shocks are purged — moderate rather than high nominal rigidity |
 | [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] | Brazil 1999: hybrid estimates gave at least 60% weight to expected inflation, rejected by BCB staff as implying too much credibility and "almost no inertia"; an average of backward and forward curves was used instead |
+| [[inflation/synthesis/targets_inflation_dynamics (Alves & Areosa, 2005)]] | Hybrid NKPC generalized so that non-optimizing firms index to a weighted average of the official target and lagged inflation (5)–(7); open-economy marginal-cost version (18) estimated for Brazil 1996Q1–2004Q4 by 2SLS, target weight 0.689 (Table 1) |
+| [[expectations/synthesis/formation_expectations_phillips_curve (Coibion, Gorodnichenko & Kamdar, 2018)]] | The FIRE NKPC's puzzles (ad hoc lags, instability, missing disinflation, weak forecasts, slack sensitivity) eased by survey expectations; Adam–Padula condition for using survey averages and a LIE test on MSC and SPF data (Table 6) |
 
 ## BRL / application to the current analysis
 
@@ -57,3 +59,5 @@ The sources linked here say nothing about Brazil yet.
 - [[monetary_policy/synthesis/nk_small_open_economy (Gali & Monacelli, 2005)]] — the canonical small open economy NKPC in domestic inflation and the output gap
 - [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] — Phillips curve parameters depend on purging information from policy shocks
 - [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — why a central bank may discount the forward-looking weight its own estimates give right after a regime change
+- [[inflation/synthesis/targets_inflation_dynamics (Alves & Areosa, 2005)]] — a Phillips curve with indexation to the inflation target, nesting the hybrid curve, estimated for Brazil
+- [[expectations/synthesis/formation_expectations_phillips_curve (Coibion, Gorodnichenko & Kamdar, 2018)]] — replacing FIRE with survey expectations in the NKPC, and when that is legitimate

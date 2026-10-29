@@ -39,6 +39,7 @@ Taylor's original rule, as Galí prints it: `i = 4 + 1.5(πt − 2) + 0.5(yt −
 | [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] | Forward-looking Taylor-type rule for the BCB, 1999–2002, on the expected deviation of inflation from target (Inflation Report or market forecasts), the output gap and two Selic lags; the output gap is insignificant or wrong-signed and the exchange rate insignificant |
 | [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] | The BCB reaction function re-estimated through 2002:12 with the 12-month exchange rate change added; the output gap comes out wrong-signed, explained by supply shocks (electricity rationing) that raise inflation and cut output at once |
 | [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]] | A smoothed rule on one-year-ahead expected inflation alone describes BCB policy after the float (output gap and exchange rate add nothing); simulated forward to predict the Selic path and extract term premia from swap yields |
+| [[expectations/synthesis/market_forecasts_brazil_performance (Carvalho & Minella, 2012)]] | The rule as the market perceives it: 12-month-ahead Selic forecasts on expected inflation minus target, with smoothing, 2002:1–2008:7 (Table 7.2); the constant implies an equilibrium real rate of 7.7% per year |
 
 ## BRL / application to the current analysis
 
@@ -66,3 +67,4 @@ The sources linked here say nothing about Brazil yet.
 - [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] — an estimated reaction function for the BCB in the first years of inflation targeting
 - [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] — why an estimated rule can show a negative output-gap response when supply shocks dominate
 - [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]] — an estimated BCB rule used both to forecast policy rates and as the monetary block of a fiscal-dominance model
+- [[expectations/synthesis/market_forecasts_brazil_performance (Carvalho & Minella, 2012)]] — a Taylor-type rule estimated on market forecasts of the Selic rather than on the Selic itself

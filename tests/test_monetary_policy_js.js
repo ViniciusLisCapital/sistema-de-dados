@@ -295,7 +295,9 @@ const EXPORTS = ['fmtBR', 'fmtTrunc', 'fmtDate', 'lastValid', 'growthN', 'dlText
                  'renderCnSelicTextos',
                  'renderExpectativas', 'renderEjHoje', 'renderEjHojeTextos', 'renderEjReuniao',
                  'renderEjReuniaoTextos', 'renderEjHz', 'renderEjHzTextos', 'EJ',
-                 'ejSemanaAtras', 'ejSegunda', 'ejGap', 'ejTabelaLinhas', 'renderEjTabela', 'ejNumero'];
+                 'ejSemanaAtras', 'ejSegunda', 'ejGap', 'ejTabelaLinhas', 'renderEjTabela', 'ejNumero',
+                 'ejOp', 'ejOpReunioes', 'ejOpDist', 'ejOpHist', 'ejOpPregaoAtras', 'renderEjOpDist',
+                 'renderEjOpHist', 'renderEjOpTextos', 'EJ_OP_COR', 'EJ_OP_MIN', 'ejSerieReuniao'];
 let MP;
 try {
   new Function(SRC + ';global.__MP = {' + EXPORTS.join(',') + '};')();
@@ -2725,6 +2727,136 @@ console.log('\n37. Aba Projecoes: o caminho que cada Relatorio projetou, e um tr
   ok(ids.size >= 12, 'a checagem de ids achou os alvos das duas secoes', String(ids.size));
   const falta = [...ids].filter((id) => RAW.indexOf('id="' + id + '"') < 0);
   ok(!falta.length, 'todo id que o JS das duas secoes busca existe no markup', JSON.stringify(falta));
+}
+
+console.log('\n38. Aba Expectativas de Juros: as opcoes de Copom');
+// Pedida em 2026-10-29: as opcoes digitais de Copom da B3 (`pm_copom_opcoes`), que pagam 100
+// se o Copom decidir exatamente aquilo. A probabilidade de cada decisao e o premio dela sobre
+// a soma da reuniao; a Selic esperada soma o passo esperado de cada reuniao ate a escolhida.
+// Nada disso levanta se quebrar: uma probabilidade que nao soma 100, um passo que falta no
+// meio da soma, uma reuniao cotada depois da decisao, uma linha "outras" que some.
+{
+  const X = MP.D.expectativas || {}, O = X.opcoes, R = X.reunioes || [];
+  ok(O && O.datas && O.datas.length > 100, 'o payload traz as opcoes, pregao a pregao', O && String(O.datas.length));
+  if (O) {
+    ok(O.datas.every((d, i) => i === 0 || O.datas[i - 1] < d), 'um ponto por pregao, em ordem estrita');
+    const vigDe = (d) => { let v = null; R.forEach((r) => { if (r.d < d && r.selic != null) v = r.selic; }); return v; };
+    ok(O.datas.every((d, i) => O.vig[i] === vigDe(d)), 'a Selic vigente de cada pregao, refeita das decisoes');
+    let somaRuim = 0, dRuim = 0, passou = 0, vRuim = 0, nV = 0, descRuim = 0;
+    Object.keys(O.por_reuniao).forEach((k) => {
+      const b = O.por_reuniao[k], j = +k;
+      b.d.forEach((dd, t) => {
+        if (dd == null) return;
+        const i = b.i0 + t;
+        if (O.datas[i] > R[j].d) passou++;
+        const tot = b.dec.reduce((a, x) => a + b.p[String(x)][t], 0);
+        if (Math.abs(tot - 100) > 0.1) somaRuim++;
+        const esp = b.dec.reduce((a, x) => a + b.p[String(x)][t] * x, 0) / 100;
+        if (Math.abs(esp - dd) > 0.02) dRuim++;
+        if (b.soma[t] < 80 || b.soma[t] > 102) descRuim++;
+        // A Selic esperada, refeita: a vigente mais o passo esperado de CADA reuniao de hoje ate j.
+        let acc = O.vig[i], falta = false;
+        for (let q = O.j0[i]; q <= j; q++) {
+          const bq = O.por_reuniao[String(q)], tq = bq ? i - bq.i0 : -1;
+          const dq = bq && tq >= 0 && tq < bq.d.length ? bq.d[tq] : null;
+          if (dq == null) { falta = true; break; }
+          acc += dq / 100;
+        }
+        const v = b.v[t];
+        if (falta || acc == null) { if (v != null) vRuim++; }
+        else { nV++; if (v == null || Math.abs(v - acc) > 0.002) vRuim++; }
+      });
+    });
+    ok(passou === 0, 'nenhum pregao cota uma reuniao que ja passou', String(passou));
+    ok(somaRuim === 0, 'as probabilidades de cada reuniao somam 100 em todo pregao', String(somaRuim));
+    ok(dRuim === 0, 'a variacao esperada e a soma de probabilidade x decisao', String(dRuim));
+    ok(descRuim === 0, 'a soma dos premios fica entre 80 e 102 (100 x o desconto)', String(descRuim));
+    ok(nV > 100 && vRuim === 0, 'a Selic esperada soma o passo de cada reuniao ate a escolhida, e so existe sem buraco no meio',
+       vRuim + ' de ' + nV);
+
+    // ── Render: a distribuicao e o historico ──
+    const ultOp = (id) => chamadas.filter((c) => c.tipo === 'react' && c.divId === id).pop();
+    const js = MP.ejOpReunioes(), iH = O.datas.length - 1;
+    ok(js.length >= 1 && MP.EJ.opReu === js[0], 'a secao abre na reuniao mais proxima com opcao', JSON.stringify(js));
+    const rot = (b) => b === 0 ? 'Manutenção' : (b < 0 ? 'Corte de ' : 'Alta de ') + Math.abs(b) + ' pb';
+    const rD = ultOp('chart-ej-op-dist');
+    ok(!!rD, 'a distribuicao foi plotada');
+    if (rD) {
+      const tH = rD.traces[rD.traces.length - 1], dist = MP.ejOpDist(js[0], iH);
+      const bDe = (c) => dist.map((x) => x.b).find((bb) => rot(bb) === c);
+      const porB = {}; dist.forEach((x) => { porB[x.b] = x.p; });
+      ok(tH.x.every((c, k) => bDe(c) != null && porB[bDe(c)] === tH.y[k]),
+         'cada barra e a probabilidade do payload para aquela decisao, no pregao mais recente');
+      ok(dist.filter((x) => x.p >= 0.5).length === tH.x.length, 'entram as decisoes com probabilidade visivel, e so elas');
+      ok(tH.marker.color.every((c, k) => c === (MP.EJ_OP_COR[String(bDe(tH.x[k]))] || '#9E9E9E')),
+         'cor pela decisao, a mesma em qualquer reuniao');
+      const iC = MP.ejOpPregaoAtras(4);
+      ok(rD.traces.length === 2 && rD.traces[0].name.indexOf(O.datas[iC].split('-').reverse().join('/')) >= 0,
+         'com a comparacao default, as barras de 4 semanas antes ao lado, com a data', rD.traces[0] && rD.traces[0].name);
+      ok(Date.parse(O.datas[iH]) - Date.parse(O.datas[iC]) >= 28 * 86400000, 'e "4 semanas antes" e por data');
+      ok(rD.layout.xaxis.type === 'category', 'o X sao as decisoes, eixo de categoria');
+    }
+    const rHi = ultOp('chart-ej-op-hist');
+    ok(!!rHi, 'o historico foi plotado');
+    if (rHi) {
+      const T = rHi.traces, n = T[0].x.length;
+      let ruim = 0;
+      for (let k = 0; k < n; k++) {
+        if (T[0].y[k] == null) continue;
+        const tot = T.reduce((a, t) => a + (t.y[k] || 0), 0);
+        if (Math.abs(tot - 100) > 0.1) ruim++;
+      }
+      ok(ruim === 0, 'as linhas do historico, com "outras" somadas, fecham 100 em todo pregao', String(ruim));
+      const H = MP.ejOpHist(js[0]);
+      ok(H.prin.every((b) => H.b.p[String(b)].some((v) => v != null && v >= MP.EJ_OP_MIN)) &&
+         H.resto.every((b) => H.b.p[String(b)].every((v) => v == null || v < MP.EJ_OP_MIN)),
+         'linha propria so para a decisao que passou de ' + MP.EJ_OP_MIN + '% em algum pregao');
+      ok(T[0].x[0] === O.datas[O.por_reuniao[String(js[0])].i0], 'o historico comeca no primeiro pregao com opcao da reuniao');
+    }
+    // A segunda reuniao pela pill: redesenha.
+    if (js.length > 1) {
+      const pg = doc.getElementById('pg-ej-op-reu');
+      pg.children[1].fire('click');
+      ok(MP.EJ.opReu === js[1] && ultOp('chart-ej-op-dist') !== rD, 'a pill troca a reuniao e redesenha');
+      pg.children[0].fire('click');
+    }
+    // "Nenhuma" tira as barras de comparacao.
+    const pc = doc.getElementById('pg-ej-op-comp');
+    pc.children.find((b) => b.textContent === 'Nenhuma').fire('click');
+    ok(ultOp('chart-ej-op-dist').traces.length === 1, '"Nenhuma" deixa so as barras de hoje');
+    pc.children.find((b) => b.textContent.indexOf('4 semanas') === 0).fire('click');
+
+    // A linha das opcoes na secao "Uma reuniao": a Selic esperada do payload, pregao a pregao.
+    const jRe = MP.EJ.reuniao;
+    MP.EJ.reuniao = js[0]; MP.renderEjReuniao();
+    const lo = chamadas.filter((c) => c.tipo === 'react' && c.divId === 'chart-ej-reuniao').pop().traces
+      .find((t) => t.name === 'Opções de Copom');
+    const so = MP.ejSerieReuniao('opcoes', 'v', js[0]);
+    ok(lo && so.dates.length && JSON.stringify(lo.y) === JSON.stringify(so.values) && lo.x.every((d) => d <= R[js[0]].d),
+       'a secao de uma reuniao ganha a Selic esperada pelas opcoes, e nenhum pregao depois dela');
+    MP.EJ.reuniao = jRe; MP.renderEjReuniao();
+
+    // ── A prosa, refeita ──
+    const brl = (v, d) => v.toFixed(d).replace('.', ',');
+    const lead = doc._els['ej-lead-op'].innerHTML;
+    js.forEach((j) => {
+      const top = MP.ejOpDist(j, iH).slice().sort((a, b) => b.p - a.p)[0];
+      ok(lead.indexOf('com <b>' + brl(top.p, 0) + '%</b>') >= 0, 'a chamada da a decisao mais provavel da reuniao ' + j + ' com o numero dela');
+    });
+    ok(lead.indexOf(O.datas[iH].split('-').reverse().join('/')) >= 0, 'e a data do pregao');
+    const b0 = O.por_reuniao[String(js[0])];
+    ok(doc._els['ej-ap-op-soma'].innerHTML === brl(b0.soma[iH - b0.i0], 2) + ' pontos', 'a nota usa a soma do pregao mais recente');
+    const escrito = ['ej-lead-op', 'ej-cap-op'].map((id) => doc._els[id].innerHTML).join(' ').replace(/<[^>]*>/g, ' ');
+    ['payload', 'pm_copom', 'variacao_bps', 'CPM', 'neutra a risco', 'acerto', 'previsão'].forEach((t) => {
+      ok(escrito.indexOf(t) < 0, 'a secao das opcoes nao usa "' + t + '"');
+    });
+  }
+  const ids = new Set();
+  const re = /(?:getElementById|ejPut|wireDlToggle|setupPillGroup)\(\s*'((?:ej-lead-op|ej-cap-op|pg-ej-op|dl-chart-ej-op|ej-ap-op|chart-ej-op)[\w-]*)'/g;
+  let m; while ((m = re.exec(SRC))) ids.add(m[1]);
+  ok(ids.size >= 6, 'a checagem de ids achou os alvos da secao', String(ids.size));
+  const falta = [...ids].filter((id) => RAW.indexOf('id="' + id + '"') < 0);
+  ok(!falta.length, 'todo id que o JS da secao busca existe no markup', JSON.stringify(falta));
 }
 
 console.log('\n' + (falhas ? falhas + ' FALHA(S)' : 'todos os testes passaram'));

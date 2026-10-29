@@ -152,7 +152,7 @@ premises, `SISTEMA_AGENTES.md` IV.ix).
   timing and what they correct for; when they agree the reading is firm, when they disagree the
   disagreement is information. Correcting for the cycle needs the output gap, which is the activity
   agent's.
-- **Read:** [[natural_rate_of_interest]]; `fiscal_impulse`, `structural_primary_balance`.
+- **Read:** [[natural_rate_of_interest]], [[fiscal_impulse]], [[structural_fiscal_balance]].
 - **Data:** `fisc_rtn`, `fisc_nfsp` (the primary in % of GDP over 12 months and the monthly flow,
   for the quarter), `fisc_efgg`, `fisc_dlsp_fatores` (credits to official financial institutions);
   consultation of `pm_hiato_produto` (the BCB gap, endogenous of atividade), `atv_pib_mensal` (the
@@ -443,9 +443,23 @@ FX, monetary policy, external and expectations. Two rows (FE-AT2, FE-EX2) are as
 - [[time_inconsistency]] — the rule as commitment (2.7, 2.11).
 - [[jurisdictional_uncertainty]] — institutional risk in the premium (2.9, 2.11).
 - [[global_financial_cycle]] — the global component of spreads (2.9).
-- No page yet: `fiscal_stance`, `fiscal_impulse`, `structural_primary_balance`, `directed_credit`,
-  `quasi_fiscal_operations`, `fiscal_rule_credibility`, `debt_dynamics`.
+- [[structural_fiscal_balance]], [[fiscal_impulse]] — the stance and its change (2.1, 2.2).
+- [[fiscal_multiplier]] — how government demand reaches output (2.3, 2.4).
+- [[fiscal_rules]] — the rule and its design (2.7).
+- [[debt_sustainability]] — r − g and the debt path (2.8).
+- [[sovereign_cds_spreads]] — what moves the CDS, fiscal against global (2.9).
+- No page yet: `fiscal_stance`, `directed_credit`, `quasi_fiscal_operations`.
 
-The area folder holds one source with a synthesis,
-[[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]]; it is not read in the first cycle (no
-literature), and this agent's layer 1 is chosen later.
+**Layer 1 (2026-10-29), one source per channel:**
+- 2.1 [[fiscal_policy/synthesis/boletim_resultado_fiscal_estrutural (SPE-MF, 2025)]]
+- 2.2 [[fiscal_policy/synthesis/resultado_estrutural_impulso_fiscal_brasil (Schettini et al., 2011)]]
+- 2.3 [[fiscal_policy/synthesis/can_government_purchases_stimulate_economy (Ramey, 2011)]]
+- 2.4 [[fiscal_policy/synthesis/empirical_characterization_fiscal_shocks (Blanchard & Perotti, 2002)]]
+- 2.5 [[fiscal_policy/synthesis/creditos_tesouro_bndes_juros_dlsp (BCB, 2018)]]
+- 2.6 reached through [[fiscal_dominance]] and [[mundell_fleming_policy_mix]] (owner: monetary policy).
+- 2.7 [[fiscal_policy/synthesis/lc200_comentada_regime_fiscal_sustentavel (Conof-Conle, 2023)]]
+- 2.8 [[fiscal_policy/synthesis/public_debt_low_interest_rates (Blanchard, 2019)]]
+- 2.9 [[fiscal_policy/synthesis/short_term_drivers_sovereign_cds (Takami, 2018)]]
+- 2.10 [[fiscal_policy/synthesis/determinantes_premio_risco_taxas_nominais (BCB, 2025)]]
+- 2.11 no source: an event channel, read from the news.
+- 2.12 [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]]

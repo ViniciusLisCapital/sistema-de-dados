@@ -30,6 +30,7 @@ The effect of a central bank announcement on private-sector beliefs about **non-
 | [[monetary_policy/synthesis/information_effect_hf_identification (Nakamura & Steinsson, 2018)]] | Names and estimates the Fed information effect: expected output growth rises after a tightening; a NK model where ψ of the shock moves beliefs about the natural rate, estimated at about 2/3 |
 | [[monetary_policy/synthesis/policy_actions_vs_words (Gurkaynak, Sack & Swanson, 2005)]] | Offered as a possible explanation for why stocks react little to path-factor surprises while long yields react strongly: statements may raise investors' outlook for output and inflation (after Romer & Romer 2000) |
 | [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] | Central bank information shocks identified by the positive co-movement of rate and stock surprises (34% of FOMC and 46% of ECB surprises): they raise rates persistently and also raise prices, activity, growth and inflation expectations and ease financial conditions; in the model they match news of an asset-valuation shock |
+| [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]] | Tested as an explanation of international yield comovement on FOMC days and rejected: foreign long yields react less to the US 2-year yield on US macro release days than on FOMC days (Table 5), and the FOMC component is followed by lower, not higher, foreign activity and inflation (Table 6) |
 
 ## BRL / application to the current analysis
 
@@ -44,3 +45,4 @@ The sources linked here say nothing about Brazil yet.
 - [[monetary_policy/synthesis/information_effect_hf_identification (Nakamura & Steinsson, 2018)]] — the defining paper for the term and its structural estimate
 - [[monetary_policy/synthesis/policy_actions_vs_words (Gurkaynak, Sack & Swanson, 2005)]] — path-factor surprises and the possibility that FOMC statements reveal the Fed's view of the outlook
 - [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] — VAR identification of information shocks with sign restrictions, US and euro area, and their macroeconomic effects
+- [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]] — the information channel as an explanation of US spillovers abroad, and the evidence against it

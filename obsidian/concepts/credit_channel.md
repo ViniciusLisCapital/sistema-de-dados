@@ -46,3 +46,4 @@ The linked sources say nothing about Brazil.
 - [[monetary_policy/synthesis/monetary_policy_shocks_survey (Christiano, Eichenbaum & Evans, 1999)]] — VAR evidence on borrowing and lending after a policy shock, used to assess credit-market theories of transmission
 - [[monetary_policy/synthesis/liquidity_trap_japan (Krugman, 1998)]] — monetary aggregates and bank credit in a liquidity trap, and why weak banks need not be the cause of the slump
 - [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — why the credit channel was left out of the BCB's first transmission models
+- [[financial_channel_exchange_rate]] — the open-economy analogue: an exchange-rate move, not the policy rate, changes borrowers' net worth and lenders' risk capacity through currency mismatch

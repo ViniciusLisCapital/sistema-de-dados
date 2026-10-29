@@ -285,5 +285,50 @@ files:
     mode: pymupdf
     reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (44 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a figure/body page and the last page checked against the image/text (2026-10-20)"
 
+
+  "can_government_purchases_stimulate_economy (Ramey, 2011).pdf":
+    mode: pymupdf
+    reason: "two-column journal page; plumber interleaves the columns line by line (p.3, p.11), pymupdf reads each column in order. Same one-letter share (0.047) and common-word share (0.257); pymupdf also finds the References cut (289 lines, ends at EOF after the 'cited by' list) that plumber missed (measured 2026-10-29)"
+
+  "empirical_characterization_fiscal_shocks (Blanchard & Perotti, 2002).pdf":
+    mode: pymupdf
+    reason: "plumber drops the '=' of inline equations on p.10 ('a2 0, b = or the 0)'); pymupdf keeps 'b = 0' in order, otherwise equal (common-word share 0.293, one-letter 0.048 in both) (measured 2026-10-29). The References cut used to stop at the wrapped citation 'INSEAD.'; fixed in clean_code.py the same day and the file rewritten"
+
+  "public_debt_low_interest_rates (Blanchard, 2019).pdf":
+    mode: pymupdf
+    reason: "equation-driven; plumber leaves 32 (cid:NN) glyphs and prints the rotated chart axis backwards ('xedni') and the product formula as '(cid:89)'; pymupdf 0 cid glyphs, formula intact (p.12 checked) (measured 2026-10-29)"
+
+  "resultado_estrutural_impulso_fiscal_brasil (Schettini et al., 2011).pdf":
+    mode: pymupdf
+    reason: "Portuguese text, so the 'garbled' flag (common-word share 0.049) is the English word list and not a real problem. pymupdf keeps subscripts in line (Ti, TBi) and drops the running header 'Texto para Discussao' that plumber inlines (p.20 checked). Known loss in both modes: displayed equations such as (16) are images, only the number prints. (measured 2026-10-29). The Portuguese References heading is cut since the clean_code.py fix of the same day"
+
+  "china_demand_commodity_shocks_brazil (Fry-McKibbin & Souza, 2018).pdf":
+    mode: pymupdf
+    reason: "SVAR paper with equations; plumber common-word share 0.101 and 21817 unmapped math glyphs (garbled), pymupdf 0.235 and 0 glyphs, no flags (measured by the ingestion agent 2026-10-29). References cut ends at 'Data appendix', which survives"
+
+  "dollar_global_risk_factor (Avdjiev et al., 2019).pdf":
+    mode: pymupdf
+    reason: "plumber leaves 528 unmapped math glyphs (cid_glyphs 528 -> 0 with pymupdf), other metrics equal (common-word 0.238 vs 0.248); equations in SPVAR section (p.9) are in a private-use font and come out as symbol characters in both modes (measured 2026-10-29)"
+
+  "targets_inflation_dynamics (Alves & Areosa, 2005).pdf":
+    mode: pymupdf
+    reason: "plumber leaves 1508 unmapped math glyphs as (cid:NN) (e.g. the weight parameter on p.14) and common-word share 0.202; pymupdf 0 cid glyphs, share 0.230. Both turn the paper's fi/ff ligatures into odd glyphs ('con...dence'), and pymupdf drops the Greek letter silently on p.14. Page 1 is an image-only cover (measured 2026-10-29)"
+
+  "ibcbr_vs_pib_metodologia (BCB, 2018).pdf":
+    mode: pymupdf
+    reason: "Portuguese text, so the 'garbled' flag (common-word share 0.04) is the English word list; text read and clean. plumber interleaves the chart source/footnote lines on p.3 ('F o V nt a e r s ia ...'), pymupdf keeps them as lines (measured 2026-10-29)"
+
+  "output_gap_brazil_real_time (Cusinato, Minella & Porto Junior, 2013).pdf":
+    mode: pymupdf
+    reason: "plumber leaves 386 (cid:NN) glyphs, pymupdf 0 and prose in order. Display equations (e.g. eq. 3 and the HP loss function, p.22) have unextractable symbols: pymupdf prints blanks, plumber (cid:N), ocr (tried 2026-10-29) garbles them ('Y= M+ xX') and adds footnote-marker noise, so no mode recovers them; the prose that states them is intact"
+
+  "formation_expectations_phillips_curve (Coibion, Gorodnichenko & Kamdar, 2018).pdf":
+    mode: pymupdf
+    reason: "plumber leaves 2226 (cid:NN) glyphs (math_glyphs flag), pymupdf 0 and no flags, common-word share 0.248 vs 0.223; prose identical on p.12. In the regression tables (e.g. Table 8, p.45) the variable names (UEGap_t, E_t pi_t+1) come out as private-use symbols in pymupdf and as (cid:NN) in plumber; the numbers are intact in all modes. ocr recovers the names approximately ('UEGap,', 'EyTe+1') but is noisier overall, so not chosen (measured 2026-10-29). References cut (345 lines) ends at 'Table 1. Hybrid Phillips Curve' of the appendix, which survives"
+
+  "inflation_expectations_public_private_info (Areosa, 2016).pdf":
+    mode: pymupdf
+    reason: "plumber: 256 unmapped math glyphs, run_together 0.0023, and the rotated tables on p.16, 22, 23, 24 read backwards ('snoitavresbo'); pymupdf: 0 glyphs, no flags, common-word share 0.277 vs 0.247, rotated tables read forwards (p.23 checked: values and Greek letters intact, one cell per line so the row structure is lost). Both modes turn the ffi/ff ligatures into odd glyphs ('coe¢ cient', 'coeﬃcient') (measured 2026-10-29). Reference list is the last 68 lines to EOF"
+
 # trader: released 2026-10-20 (the literature of a new trader agent).
 topics_on_hold: {}

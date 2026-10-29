@@ -51,8 +51,14 @@ _BLOCK_TRIGGERS = re.compile(
     (
         Bibliography |
         References? |
-        Literature\s+Cited    # Annual Review and older journals (Broz & Frieden 2001, Krugman 1979)
-    )$""",
+        Literature\s+Cited |  # Annual Review and older journals (Broz & Frieden 2001, Krugman 1979)
+        # Portuguese (BCB, IPEA, Tesouro; 2026-10-29): "REFERÊNCIAS" left the whole list in the
+        # clean_md of four fiscal documents. IGNORECASE folds Ê/ê, so "REfERênCIAS" matches too.
+        Refer[êe]ncias(\s+Bibliogr[áa]ficas)? |
+        Bibliografia
+    )
+    # "REFERENCES:" (Corbo & Schmidt-Hebbel 2001) left ~30 pages of references in the text
+    :?$""",
     re.IGNORECASE | re.VERBOSE,
 )
 
@@ -74,6 +80,12 @@ _NEXT_SECTION_RE = re.compile(
         # A Roman section number may precede it: "X. Appendix" (Goldfajn 2000) is the model
         # appendix that follows "XI. References" in the text order.
         ([IVX]{1,5}\.\s*)?(Online\s+|Data\s+|Technical\s+|Mathematical\s+)?Appendi(x|ces)(\s|:|$) |
+        # Portuguese: "Apêndice", "Anexo" (2026-10-29, the SPE structural-balance bulletin)
+        ([IVX]{1,5}\.\s*)?(Ap[êe]ndices?|Anexos?)(\s|:|$) |
+        # BIS working papers: "Annex A: Country groups" after the list (Avdjiev et al. 2019),
+        # which the cut ran on to EOF and deleted, with the series' back page
+        Annex(es)?(\s|:|$) |
+        Previous\s+volumes\s+in\s+this\s+series |
         Comments?\s+and\s+Discussion\b |
         Comment\s+By\b |
         # The heading alone, the discussant on the next line: "Comment" / "BY PETER GARBER" in
@@ -93,7 +105,8 @@ _NEXT_SECTION_RE = re.compile(
         # "A Credit and Banking Data – For Online Publication", "A.1 Domestic and Cross-Border Credit"
         .*\bFor\s+Online\s+Publication\b |
         [A-Z]\.\d+\s+[A-Z] |
-        (Table|Figure|Fig\.?|Chart|Graph|Exhibit)\s+[A-Z]?\d+\b |
+        # "[A-Z]\.?": a lettered appendix table, "Tabela A.1" (SPE 2025) as well as "Table A1"
+        (Table|Figure|Fig\.?|Chart|Graph|Exhibit|Tabela|Figura|Gr[áa]fico|Quadro)\s+[A-Z]?\.?\d+\b |
         Coefficients?\s*$
     )""",
     re.IGNORECASE | re.VERBOSE,
@@ -181,6 +194,12 @@ def block_cut_spans(lines: list[str]) -> list[tuple[int, int, str]]:
         # A wrapped citation tail is all caps too: "FEDS 2001-53." ended the cut of Perrelli &
         # Roache (2014) with ~75 references to go. A heading does not end in a year and a period.
         if heading and re.search(r"\b(19|20)\d\d\b.*\.$", s):
+            heading = None
+        # Nor is a single word that ends in a period: "INSEAD." (a wrapped Fatás & Mihov entry)
+        # ended the cut of Blanchard & Perotti (2002) with ~25 references to go (2026-10-29).
+        # Same for a place line, "D.C., USA." (an IMF entry in Corbo & Schmidt-Hebbel 2001, ~25
+        # references to go): a heading does not end in a period after a comma.
+        if heading and s.endswith(".") and (" " not in s or "," in s):
             heading = None
         if s and not _BLOCK_TRIGGERS.match(s) and (heading or _NEXT_SECTION_RE.match(s)):
             spans.append((start, i, s))

@@ -1365,47 +1365,6 @@ v.33 n.2 2023
 Nova Economia
 
 Araújo, Caldarelli & Cortapasso
-Referências
-ANDRÉS, S. A.; SANTIAGO, J. V. Exchange rate pass-through to prices: Var evidence for 
-Chile. Economia Chilena, Banco Central de Chile, v. 19, n. 1, p. 20-37, Apr. 2016.
-ARAUJO, E.; ARAUJO, E.; FERRARI FILHO, F. Macroeconomic Performance in Brazil Under 
-the Inﬂ ation Targeting Regime. Investigación Económica, v. 77, p. 72-101, 2018.
-ARESTIS, P.; PAULA, L. F. DE; FERRARI-FILHO, F. A nova política monetária: uma análise 
-do regime de metas de inﬂ ação no Brasil. Economia e Sociedade, Campinas, v. 18, n. 1, 
-p. 1-30, abr. 2009.
-ASSIS, T. M. DE; FONSECA, L. F. C.; FEIJÓ, C. A. DO V. C. Determinantes do repasse cam-
-bial: uma resenha com foco no caso brasileiro. Revista de Economia Contemporânea, Rio de 
-Janeiro, v. 23, n. 1, p. 1-31, jan./abr. 2019.
-BANCO CENTRAL DO BRASIL – BCB. Séries temporais.
-BARBOSA-FILHO, N. H. Inﬂ ation targeting in Brazil: 1999-2006. International Review of Ap-
-plied Economics, Rio de Janeiro, v. 22, n. 2, p. 187-200, Mar. 2008.
-BELAISCH, A. Exchange rate pass-through in Brazil. IMF, Working Papers, n. 141, 2003.
-BERNANKE, B. Alternative explanations of the money-income correlation. Carnegie Rochester 
-Conference Series on Public Policy, v. 25, p. 49-100, 1986.
-BLANCHARD, O. J.; QUAH, D. The dynamic effects of aggregate demand and supply dis-
-turbances. American Economic Review, v. 79, p. 655-673, 1989.
-BRESSER-PEREIRA, L. C. Macroeconomia da estagnação: crítica da ortodoxia convencional pós-
-1994. São Paulo: Editora 34, 2007.
-CAMPA, J. M.; GOLDBERG, L. S. Exchange rate pass-through into import prices. The Review 
-of Economics and Statistics, Cambridge, v. 87, n. 4, p. 679-690, Nov. 2005.
-CARNEIRO, D. D.; MONTEIRO, A. M. D.; WU, T. Y. H. Mecanismos não lineares de repasse 
-cambial para o IPCA. Rio de Janeiro: Departamento de Economia da Pontifícia Universida-
-de Católica, 2004. (Textos para discussão, n. 462).
-ENDERS, W. Applied econometric time series. 4th ed. New York: Wiley, 2014.
-ERBER, F. S. As convenções de desenvolvimento no governo Lula: um ensaio de economia 
-política. Revista de Economia Política, São Paulo, v. 31, n. 1 (121), p. 31-55, jan./mar. 2011.
-FEIJÓ, C.; ARAUJO, E. C.; BRESSER-PEREIRA, L. C. B. Política monetária em tempos de 
-pandemia. Revista de Economia Política, São Paulo, v. 42, n.1, p. 151-171, jan./mar. 2022.
-FERREIRA, G. Q.; MATTOS, L. B. O grau de exchange rate pass-through na economia brasi-
-leira no período pós Real. Economia e Sociedade, v. 30 (2), p. 311-350, 2021.
-FONSECA, M. R. R. DA; ARAÚJO, E. C. DE; ARAÚJO, E. Não linearidade entre câmbio e 
-preços no Brasil e implicações para uma estratégia de desenvolvimento econômico. Revis-
-ta de Economia Política, São Paulo, v. 39, n. 2, p. 263-284, abr./jun. 2019.
-FUNDO MONETÁRIO INTERNACIONAL – FMI. Índice Global de Commodities.
-GAGNON, J. E.; IHRIG, J. Monetary policy and exchange rate pass-through. International 
-Journal of Finance and Economics, Wiley Online Library, v. 9, n. 4, p. 315-338, Oct. 2004.
-386
-Nova Economia
 v.33 n.2 2023
 
 Padrões da transmissão cambial para taxa de inﬂ ação no Brasil

@@ -32,6 +32,8 @@ The first and third are outside monetary policy's control and the second only pa
 |---|---|
 | [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] | Definition, the three distinguishing features, pass-through more than twice that of market prices (Table 7), and the BCB's primary-effect method (section 4, Table 8) |
 | [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] | The same three features and the accommodation of their first-round effects, now with the announced "adjusted target"; pass-through 1.9 times that of market prices through 2002:12 (Table 7) |
+| [[inflation/synthesis/administered_prices_projection_pass_through (Alves et al., 2013)]] | The BCB's projection of the group after the POF 2008/2009 reweighting: item-by-item "accounting" from adjustment rules in the short run, a hybrid accounting/econometric split in the medium run; exchange-rate pass-through coefficients for gasoline, LPG, electricity and fixed telephone set to zero (Section 3) |
+| [[inflation/synthesis/core_inflation_brazil_past_present (da Gama Machado, 2024)]] | Their place in the BCB's exclusion cores: Ex-0 drops them all, later measures keep the persistent ones because dropping them all biases the core downward |
 
 ## BRL / application to the current analysis
 
@@ -44,3 +46,5 @@ The concept is Brazilian. Minella et al. (2002) report that administered prices 
 - [[inflation_targeting]] — accommodating first-round effects of relative-price shocks within a target regime
 - [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] — the BCB's treatment of administered prices in the first years of inflation targeting
 - [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] — administered prices and the exchange rate as the sources of the 2001–2002 target breaches, through the 2002 crisis
+- [[inflation/synthesis/administered_prices_projection_pass_through (Alves et al., 2013)]] — how the BCB projects administered prices from each item's adjustment rule, and why the exchange-rate channel to them had vanished by 2006-2011
+- [[inflation/synthesis/core_inflation_brazil_past_present (da Gama Machado, 2024)]] — how the BCB's exclusion core measures treat administered prices

@@ -434,3 +434,38 @@ One line per file written by `run.py` (newest last). Settings "default" = plumbe
 | 2026-10-20 | trader | trading_rates_framework_ch5 (Willer & Saunders, 2024) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-20 | trader | trading_rates_globalizing_ch7 (Willer & Saunders, 2024) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-20 | trader | trading_rates_tactics_ch6 (Willer & Saunders, 2024) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-29 | fiscal_policy | can_government_purchases_stimulate_economy (Ramey, 2011) | mode pymupdf | 14 | 50,871 | 25.0% | heavy_removal (25% removed by the cleaner) |
+| 2026-10-29 | fiscal_policy | empirical_characterization_fiscal_shocks (Blanchard & Perotti, 2002) | mode pymupdf | 52 | 78,683 | 2.4% | — |
+| 2026-10-29 | fiscal_policy | public_debt_low_interest_rates (Blanchard, 2019) | mode pymupdf | 43 | 94,084 | 7.8% | — |
+| 2026-10-29 | fiscal_policy | short_term_drivers_sovereign_cds (Takami, 2018) | default | 54 | 128,598 | 2.1% | — |
+| 2026-10-29 | fiscal_policy | boletim_resultado_fiscal_estrutural (SPE-MF, 2025) | default | 38 | 108,378 | 0.0% | garbled (common-word share 0.028) |
+| 2026-10-29 | fiscal_policy | creditos_tesouro_bndes_juros_dlsp (BCB, 2018) | default | 5 | 13,618 | 0.0% | garbled (common-word share 0.045) |
+| 2026-10-29 | fiscal_policy | determinantes_premio_risco_taxas_nominais (BCB, 2025) | default | 6 | 14,811 | 0.0% | garbled (common-word share 0.045) |
+| 2026-10-29 | fiscal_policy | lc200_comentada_regime_fiscal_sustentavel (Conof-Conle, 2023) | default | 49 | 133,538 | 0.1% | garbled (common-word share 0.043) |
+| 2026-10-29 | fiscal_policy | resultado_estrutural_impulso_fiscal_brasil (Schettini et al., 2011) | mode pymupdf | 60 | 115,321 | 0.0% | garbled (common-word share 0.049) |
+| 2026-10-29 | fiscal_policy | boletim_resultado_fiscal_estrutural (SPE-MF, 2025) | default | 38 | 108,378 | 1.0% | garbled (common-word share 0.028) |
+| 2026-10-29 | fiscal_policy | determinantes_premio_risco_taxas_nominais (BCB, 2025) | default | 6 | 14,811 | 3.5% | garbled (common-word share 0.045) |
+| 2026-10-29 | fiscal_policy | empirical_characterization_fiscal_shocks (Blanchard & Perotti, 2002) | mode pymupdf | 52 | 78,683 | 4.0% | — |
+| 2026-10-29 | fiscal_policy | resultado_estrutural_impulso_fiscal_brasil (Schettini et al., 2011) | mode pymupdf | 60 | 115,321 | 7.3% | garbled (common-word share 0.049) |
+| 2026-10-29 | exchange_rate | padrao_transmissao_cambial (Cortapasso, 2023) | mode pymupdf | 30 | 64,572 | 4.7% | garbled (common-word share 0.069) |
+| 2026-10-29 | external | china_demand_commodity_shocks_brazil (Fry-McKibbin & Souza, 2018) | mode pymupdf | 88 | 143,496 | 6.3% | — |
+| 2026-10-29 | external | us_inflation_phillips_curve (Hooper, Mishkin & Sufi, 2019) | default | 66 | 130,654 | 6.3% | math_glyphs (86 unmapped symbols — consider pymupdf) |
+| 2026-10-29 | external | us_mp_spillovers_bond_markets (Albagli et al., 2018) | default | 50 | 136,588 | 6.6% | math_glyphs (63 unmapped symbols — consider pymupdf); reversed_text (p.45: 7 words, e.g. 'elbaT' — rotated text read backwards) |
+| 2026-10-29 | external | us_inflation_phillips_curve (Hooper, Mishkin & Sufi, 2019) | default | 66 | 130,654 | 6.2% | math_glyphs (86 unmapped symbols — consider pymupdf) |
+| 2026-10-29 | external | dollar_global_risk_factor (Avdjiev et al., 2019) | mode pymupdf | 43 | 97,121 | 6.1% | — |
+| 2026-10-29 | external | it_latin_america (Corbo & Schmidt-Hebbel, 2001) | default | 67 | 114,572 | 4.5% | — |
+| 2026-10-29 | inflation | administered_prices_projection_pass_through (Alves et al., 2013) | default | 38 | 63,317 | 1.2% | garbled (common-word share 0.042); reversed_text (p.31: 4 words, e.g. 'oibm' — rotated text read backwards) |
+| 2026-10-29 | inflation | core_inflation_brazil_past_present (da Gama Machado, 2024) | default | 35 | 60,387 | 8.8% | — |
+| 2026-10-29 | inflation | targets_inflation_dynamics (Alves & Areosa, 2005) | mode pymupdf | 40 | 92,951 | 5.1% | — |
+| 2026-10-29 | economic_activity | ibcbr_vs_pib_metodologia (BCB, 2018) | mode pymupdf | 3 | 9,012 | 0.0% | garbled (common-word share 0.039) |
+| 2026-10-29 | economic_activity | incerteza_atividade_economica (BCB, 2019) | default | 5 | 15,364 | 14.0% | garbled (common-word share 0.053) |
+| 2026-10-29 | economic_activity | indicador_condicoes_financeiras (BCB, 2020) | default | 5 | 16,048 | 19.8% | garbled (common-word share 0.047) |
+| 2026-10-29 | economic_activity | output_gap_brazil_real_time (Cusinato, Minella & Porto Junior, 2013) | mode pymupdf | 66 | 122,520 | 3.1% | — |
+| 2026-10-29 | economic_activity | taxa_desemprego_equilibrio_brasil (Borges, 2022) | default | 13 | 14,078 | 0.0% | garbled (common-word share 0.039) |
+| 2026-10-29 | expectations | brazil_taming_inflation_expectations (Bevilaqua, Mesquita & Minella, 2007) | default | 40 | 71,240 | 2.0% | — |
+| 2026-10-29 | external | it_latin_america (Corbo & Schmidt-Hebbel, 2001) | default | 67 | 114,572 | 7.4% | — |
+| 2026-10-29 | expectations | breakeven_inflation_information (Vicente & Guillen, 2013) | default | 31 | 57,689 | 56.7% | heavy_removal (57% removed by the cleaner); long_references_cut (632 lines, ended by '196 The role of macroeconomic variables in sovereign risk Oc') |
+| 2026-10-29 | expectations | empirical_findings_expectations_brazil (Gaglianone, 2017) | default | 26 | 59,736 | 11.4% | — |
+| 2026-10-29 | expectations | formation_expectations_phillips_curve (Coibion, Gorodnichenko & Kamdar, 2018) | mode pymupdf | 56 | 156,531 | 16.3% | long_references_cut (363 lines, ended by 'Table 1. Hybrid Phillips Curve (1968:Q4–2000:Q4), Brissimis and Maggin') |
+| 2026-10-29 | expectations | inflation_expectations_public_private_info (Areosa, 2016) | mode pymupdf | 27 | 56,371 | 7.5% | — |
+| 2026-10-29 | expectations | market_forecasts_brazil_performance (Carvalho & Minella, 2012) | default | 53 | 103,628 | 31.1% | heavy_removal (31% removed by the cleaner); long_references_cut (647 lines, ended by 'EOF') |

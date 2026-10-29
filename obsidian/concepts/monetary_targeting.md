@@ -29,6 +29,7 @@ Conducting monetary policy by a monetary total — a quantity the central bank c
 | [[monetary_policy/synthesis/classical_monetary_model_ch2 (Gali, 2015)]] | In a flexible-price economy an exogenous money supply path always determines the price level uniquely, but the price level overreacts to persistent money growth shocks and there is no liquidity effect |
 | [[monetary_policy/synthesis/inflation_forecast_targeting (Svensson, 1997)]] | Money growth targeting as money growth forecast targeting: a conditional target replicates the optimal inflation-targeting policy less transparently; an unconditional target equal to the inflation target gives more inflation variability; optimal only if money growth is a sufficient statistic for future inflation (Section 5) |
 | [[monetary_policy/synthesis/credit_money_aggregate_demand (Bernanke & Blinder, 1988)]] | Money versus credit as targets: money targeting destabilizes GNP under money-demand shocks ("the familiar Achilles heel of monetarism"), credit targeting under credit-demand shocks; in the 1980s money-demand shocks dominated |
+| [[external/synthesis/it_latin_america (Corbo & Schmidt-Hebbel, 2001)]] | Why a money anchor fails after high and variable inflation: agents learn to economize on money, and when inflation falls hysteresis breaks the old money demand relation |
 
 ## BRL / application to the current analysis
 
@@ -44,3 +45,4 @@ The linked sources say nothing about monetary targeting in Brazil. Friedman ment
 - [[monetary_policy/synthesis/classical_monetary_model_ch2 (Gali, 2015)]] — price-level determinacy under an exogenous money path, and its counterfactual predictions for prices and the nominal rate
 - [[monetary_policy/synthesis/inflation_forecast_targeting (Svensson, 1997)]] — why money growth targeting is generally inferior to inflation (forecast) targeting
 - [[monetary_policy/synthesis/credit_money_aggregate_demand (Bernanke & Blinder, 1988)]] — targeting a credit aggregate instead of money, ranked by the relative variance of money-demand and credit-demand shocks
+- [[external/synthesis/it_latin_america (Corbo & Schmidt-Hebbel, 2001)]] — unstable money demand after high inflation as the reason Latin American floaters turned to inflation targets instead of money targets

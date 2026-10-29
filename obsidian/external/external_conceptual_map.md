@@ -397,21 +397,31 @@ agent argues from what it has and says so (2.3, 2.5, 2.6).
 
 ## Part 5 — Concept index
 
-No literature is read in the first cycle; these are the concept pages the skeleton uses, which any
-agent may read (`obsidian/concepts/`).
+The concept pages the skeleton uses, which any agent may read (`obsidian/concepts/`), then this
+agent's layer 1.
 
 - **Fed and the policy rate:** [[taylor_rule]], [[taylor_principle]], [[interest_rate_smoothing]],
   [[forward_guidance]], [[central_bank_communication]], [[information_effect]],
   [[monetary_policy_shocks]], [[real_time_data]].
 - **Rates and the curve:** [[term_premium]], [[natural_rate_of_interest]],
   [[unconventional_monetary_policy]], [[zero_lower_bound]].
-- **Inflation and labour:** [[core_inflation]], [[nk_phillips_curve]],
+- **Inflation and labour:** [[core_inflation]], [[phillips_curve]], [[nk_phillips_curve]],
   [[natural_rate_of_unemployment]], [[sticky_wages]], [[inflation_targeting]].
 - **The global cycle and the dollar:** [[global_financial_cycle]], [[financial_trilemma]],
   [[capital_controls]], [[macroprudential_policy]], [[uip]], [[carry_trade]], [[risk_premium]],
-  [[international_risk_sharing]], [[currency_regimes]].
-- **Commodities and Brazil:** [[food_inflation_drivers]], [[administered_prices]],
+  [[international_risk_sharing]], [[currency_regimes]], [[financial_channel_exchange_rate]].
+- **Commodities and Brazil:** [[commodity_shocks]], [[food_inflation_drivers]], [[administered_prices]],
   [[balance_of_payments_approach]], [[exchange_rate_pass_through]].
 - **No page yet:** `global_risk_appetite` (the common factor behind risky assets, proxied here by the
   S&P 500), `terms_of_trade` (export over import prices, the channel by which commodities reach the
   BRL).
+
+**Layer 1 (2026-10-29), one source per channel:**
+- 2.1 [[monetary_policy/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]]
+- 2.2 [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]]
+- 2.3 [[external/synthesis/us_inflation_phillips_curve (Hooper, Mishkin & Sufi, 2019)]]
+- 2.4 [[external/synthesis/dollar_global_risk_factor (Avdjiev et al., 2019)]]
+- 2.5 [[monetary_policy/synthesis/us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020)]]
+- 2.6 [[external/synthesis/china_demand_commodity_shocks_brazil (Fry-McKibbin & Souza, 2018)]]
+- 2.7 [[external/synthesis/it_latin_america (Corbo & Schmidt-Hebbel, 2001)]]
+- 2.8 [[exchange_rate/synthesis/capital_inflow (IMF, 2010)]]

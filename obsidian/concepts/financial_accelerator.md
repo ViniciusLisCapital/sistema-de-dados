@@ -42,3 +42,4 @@ The linked sources say nothing about Brazil. Bernanke, Gertler & Gilchrist note 
 - [[monetary_policy/synthesis/credit_channel_transmission (Bernanke & Gertler, 1995)]] — names procyclical balance sheets that amplify cycles "the financial accelerator" and documents the balance sheet channel empirically
 - [[monetary_policy/synthesis/unconventional_policy_model (Gertler & Karadi, 2011)]] — the intermediary-side version of the mechanism, with an agency problem between banks and depositors
 - [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] — empirical support for financial amplification once policy shocks are purged of information
+- [[financial_channel_exchange_rate]] — the same net-worth amplification where the shock is a currency revaluation of dollar debt

@@ -33,6 +33,7 @@
 | [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] | Brazil's move to immediate Copom announcements, faster minutes and a quarterly Inflation Report, a "full disclosure strategy" in the Bank of England's line, as the way credibility is earned |
 | [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] | Clear communication — why inflation exceeded the target and how policy will return it — as one of two conditions for anchored expectations, with policy consistent with the stated guidelines; Brazil 2001–2002 |
 | [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] | Open letters explaining the 2001 and 2002 breaches and a publicly announced adjusted target: the credibility cost of changing the target is outweighed by the transparency gain (Brazil 2003) |
+| [[expectations/synthesis/market_forecasts_brazil_performance (Carvalho & Minella, 2012)]] | Publicizing the survey and the Top 5 forecasts as a high-precision public signal, argued welfare-improving after Cornand and Heinemann (Section 6); Brazil's Focus survey |
 
 ## BRL / application to the current analysis
 
@@ -50,3 +51,4 @@ The linked source says nothing about Brazil.
 - [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — the communication framework set up with inflation targeting in Brazil
 - [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] — communication as a condition for keeping expectations anchored through a breach of the target
 - [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] — announcing an adjusted target as communication under large supply shocks
+- [[expectations/synthesis/market_forecasts_brazil_performance (Carvalho & Minella, 2012)]] — publication of survey forecasts and of the Top 5 as part of the central bank's information policy
