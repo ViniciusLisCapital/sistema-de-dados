@@ -412,7 +412,7 @@ The concept pages the map links, by channel, then this agent's layer 1:
 - 2.1 reached through [[monetary_transmission_lags]] (owner: monetary policy).
 - 2.2 [[economic_activity/synthesis/indicador_condicoes_financeiras (BCB, 2020)]]
 - 2.3 reached through [[fiscal_impulse]] and [[fiscal_multiplier]] (owner: fiscal).
-- 2.4 [[economic_activity/synthesis/taxa_desemprego_equilibrio_brasil (Borges, 2022)]]
+- 2.4 [[labor_market/synthesis/taxa_desemprego_equilibrio_brasil (Borges, 2022)]] (owner: labour market since 2026-10-30; reached as layer 1 of that owner).
 - 2.5 reached through [[global_financial_cycle]] and [[commodity_shocks]] (owner: external).
 - 2.6 [[economic_activity/synthesis/incerteza_atividade_economica (BCB, 2019)]]
 - 2.7 [[economic_activity/synthesis/ibcbr_vs_pib_metodologia (BCB, 2018)]] — a weak fit: monthly against quarterly GDP; agriculture only in passing.

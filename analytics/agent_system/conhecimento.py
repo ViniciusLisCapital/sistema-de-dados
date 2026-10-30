@@ -64,7 +64,7 @@ SCRIPTS = RAIZ / "repository" / "ingestion" / "scripts"
 # o mapa que o owner.py usa para mover as fontes; tests/test_conhecimento.py exige os dois iguais
 AREA = {"cambio": "exchange_rate", "politica_monetaria": "monetary_policy", "inflacao": "inflation",
         "fiscal": "fiscal_policy", "atividade": "economic_activity", "mercado_trabalho": "labor_market",
-        "trader": "trader", "externo": "external", "expectativas": "expectations", "credito": None}
+        "trader": "trader", "externo": "external", "expectativas": "expectations", "credito": "credit"}
 DONO_DA_AREA = {a: d for d, a in AREA.items() if a}
 DONO_COPOM = "politica_monetaria"
 

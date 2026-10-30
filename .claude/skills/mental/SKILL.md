@@ -28,10 +28,15 @@ design exists to remove. Commands: `uv run python repository/ingestion/scripts/m
      `repository/mental_model/ledger/<document>.log.md`. Go to 6.
    - It is blocked → step 5.
 
-5. **Findings.** Send the blocking lines, verbatim, to the **same** writer agent (SendMessage to the
-   agent from step 2) and wait for it. Then launch a **new** reviewer (step 3) and run `done` again.
-   At most two rounds. If it is still blocked, stop and give the user the open findings, each with
-   the old text and the new text it concerns, and the two ways out:
+5. **Findings, at most one fix round.** Run `mental.py findings <manager> <area>` and launch a
+   **new** `mental-model` agent in the foreground with the prompt `<manager> <area> --fix` (never
+   SendMessage to the writer of step 2: resuming carries its whole context and costs as much as the
+   first pass). Then launch a **new** `mental-model-reviewer` with the prompt
+   `<manager> <area> --delta` (it judges only the blocks the fix changed), and run `done` again.
+   If it is still blocked, do **one second fix round the same way** without asking (user's rule,
+   2026-10-30: "corrigir sempre, sem perguntar"): a new `--fix` writer, a new `--delta` reviewer,
+   `done`. Only if that second round is still blocked, stop: give the user the open findings in
+   full (`mental.py findings <manager> <area>`) and the two ways out:
    - the user accepts a verdict → `mental.py done <manager> <area> --accept <block>:<id> ...`
      (only with the user's explicit word; the acceptance is written to the log);
    - the user gives up on the run → `mental.py abort <manager> <area>` and `git checkout` of the

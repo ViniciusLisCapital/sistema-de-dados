@@ -278,18 +278,20 @@ finally:
         setattr(motor, nome, originais[nome])
     modelo.retratar, conhecimento.gerar = originais["retratar"], originais["gerar"]
 
-# 15. os sete agentes: cada declaracao bate com a propria lista, nao ha conflito de consulta, e
+# 15. os agentes registrados: cada declaracao bate com a propria lista, nao ha conflito de consulta, e
 #     as `variante` que sobraram sao as conhecidas (uma nova obriga a atualizar este teste)
 import importlib  # noqa: E402
 
-check("AGENTES tem os sete agentes",
+check("AGENTES tem os nove agentes (os sete, o mercado de trabalho e o credito, 2026-10-30)",
       sorted(dados_main.AGENTES) == sorted(["cambio", "politica_monetaria", "inflacao", "atividade",
-                                            "fiscal", "externo", "expectativas"]), sorted(dados_main.AGENTES))
+                                            "fiscal", "externo", "expectativas", "mercado_trabalho",
+                                            "credito"]),
+      sorted(dados_main.AGENTES))
 modulos = {a: importlib.import_module(m) for a, m in dados_main.AGENTES.items()}
 for agente, mod in modulos.items():
     check(f"{agente}: a declaracao bate com a lista do SISTEMA_AGENTES.md",
           not levanta(lambda mod=mod: motor.conferir(mod.TABELAS, motor.ler_lista(mod.SECAO)), ""))
-check("conferir_consultas passa sobre os sete juntos",
+check("conferir_consultas passa sobre todos juntos",
       not levanta(lambda: motor.conferir_consultas({a: m.TABELAS for a, m in modulos.items()}), ""))
 
 declaradas = [(a, t) for a, m in modulos.items() for t in m.TABELAS if not t.fora]
@@ -300,13 +302,22 @@ check("variantes que restam: so as sem dono declarando (Focus de componentes, de
                        ("externo", "us_interest_rate", None, "curva completa"),
                        ("fiscal", "expc_focus_periodo", "fiscal", "fiscal"),
                        ("inflacao", "expc_focus_periodo", "componentes", "inflacao"),
+                       ("mercado_trabalho", "expc_focus_periodo", "desocupação", "atividade"),
                        ("politica_monetaria", "us_interest_rate", None, "curva")], com_variante)
 arquivos = {}
 for a, t in declaradas:
     arquivos.setdefault(t.arquivo, set()).add(a)
-check("cada variante e de um agente so (dois agentes com a mesma variante dividiriam o arquivo)",
-      all(len(arquivos[t.arquivo]) == 1 for _, t in declaradas if t.variante),
-      [t.arquivo for _, t in declaradas if t.variante and len(arquivos[t.arquivo]) > 1])
+# Excecao conhecida: a Focus de desocupacao, que a atividade le com variante porque expectativas
+# (dona da Focus) nao a declara (a V.VII nao a lista), e que o mercado de trabalho le da atividade
+# com de(), na mesma consulta. Sai quando expectativas a declarar e os dois a lerem dela (chat B,
+# B3); entao este conjunto fica vazio.
+DIVIDIDAS = {"expc_focus_periodo__desocupacao__atividade.csv.gz": {"atividade", "mercado_trabalho"}}
+check("cada variante e de um agente so (dois agentes com a mesma variante dividiriam o arquivo), "
+      "fora a excecao conhecida",
+      all(len(arquivos[t.arquivo]) == 1 or arquivos[t.arquivo] == DIVIDIDAS.get(t.arquivo)
+          for _, t in declaradas if t.variante),
+      [t.arquivo for _, t in declaradas if t.variante and len(arquivos[t.arquivo]) > 1
+       and arquivos[t.arquivo] != DIVIDIDAS.get(t.arquivo)])
 # Variante duplicada: a mesma consulta (nome, recorte, SQL e params) em dois arquivos de A.
 por_consulta = {}
 for a, t in declaradas:

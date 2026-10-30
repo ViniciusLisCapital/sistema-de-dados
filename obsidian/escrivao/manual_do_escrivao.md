@@ -3,7 +3,7 @@
 
 # 1. O trabalho
 
-O escrivão recebe o report final (RF) de cada agente e o cenário final (PF\*), e a partir deles entrega um relatório único. O trabalho tem duas partes:
+O escrivão recebe o R1 de cada agente, na versão atualizada depois da conversa moderada, e o cenário final (PF\*), e a partir deles entrega um relatório único. A ata da conversa é só referência: diz que divergências ficaram registradas, e o escrivão confere que cada uma está nos R1. Neste manual, "o report" é esse R1. O trabalho tem duas partes:
 
 - **Escrever.** O relatório precisa de uma estrutura, uma voz e um vocabulário. O leitor não deve perceber onde acaba o texto de um agente e começa o de outro.
 - **Revisar e cobrar.** O escrivão lê cada argumento como um leitor cético. Um defeito de forma ele mesmo corrige. Um defeito de conteúdo volta para o agente como cobrança (seção 10).
@@ -27,7 +27,7 @@ Quem lê o relatório não leu os reports, o log nem o mapa conceitual, e não s
 
 Pinker dá o nome de *maldição do conhecimento* à dificuldade de imaginar alguém que não sabe o que nós sabemos. Num texto montado a partir de reports técnicos, esse é o defeito mais provável. Para evitá-lo, faça a mesma pergunta a cada parágrafo: alguém inteligente que nunca viu este sistema entende o parágrafo sem precisar perguntar nada?
 
-Disso sai uma regra que o usuário já aplicou aos dashboards: **o vocabulário de construção do sistema não aparece no relatório.** Ficam de fora F(A), G, P1, P2, PF\*, rodada, ciclo, log, TWA, endógeno, exógeno, mapa conceitual, os nomes de tabela (`cmb_ptax`) e os códigos de canal ou de saída (2.4, S1, E3). A fonte é dita do jeito que o leitor a conhece, com instituição, série e data: "a PTAX de venda do Banco Central em 30/set", e não "`cmb_ptax`". O nome da tabela continua no RF, que é onde o número é conferido.
+Disso sai uma regra que o usuário já aplicou aos dashboards: **o vocabulário de construção do sistema não aparece no relatório.** Ficam de fora F(A), G, R1, P1, PF\*, rodada, ciclo, log, ata, conversa, moderador, TWA, endógeno, exógeno, mapa conceitual, os nomes de tabela (`cmb_ptax`) e os códigos de canal ou de saída (2.4, S1, E3). A fonte é dita do jeito que o leitor a conhece, com instituição, série e data: "a PTAX de venda do Banco Central em 30/set", e não "`cmb_ptax`". O nome da tabela continua no R1, que é onde o número é conferido.
 
 ## 1.3 Notas de rodapé
 
@@ -52,6 +52,7 @@ As seções do relatório estão na seção 13 (decidido 2026-10-22). Os princí
 - **Uma abertura em quatro tempos**, quando o leitor precisa de contexto para entender por que a tese importa (SCQA, de Minto): a *situação* (o que o leitor já sabe), a *complicação* (o que mudou), a *questão* (o que isso levanta) e a *resposta* (a tese). Tudo em um parágrafo.
 - **Argumentos do mesmo nível não se sobrepõem e, juntos, não deixam lacuna** (o MECE de Minto). Um teste: se dois argumentos podem trocar de lugar sem que nada pareça estranho, o agrupamento está errado.
 - **A ordem tem um motivo.** Dentro de um grupo, ordene por importância (o canal que mais pesa vem primeiro), pelo tempo ou pela cadeia causal. Nunca pela ordem em que os agentes escreveram.
+- **O mesmo fato é dito uma vez** (decidido 2026-10-30), no lugar em que pesa mais. As outras seções o citam ("o prêmio fiscal, visto acima, …") sem repetir o número e o argumento. Um fato que aparece com número e mecanismo em quatro seções faz o leitor reler a mesma coisa quatro vezes e perder o que cada seção acrescenta. O lugar em que ele pesa mais é o elo da cadeia causal em que ele nasce (a seção 2 do relatório); nos riscos e no que acompanhar, ele volta só pelo que dispara.
 - **Juntar não é concordar.** Se uma divergência entre agentes continuou aberta e afeta o cenário, o relatório a mostra como divergência: as duas posições e o que decidiria entre elas. Apresentar consenso onde não há é informação enganosa (I.I.iv).
 
 
@@ -116,13 +117,13 @@ As seis regras de Orwell resumem a seção. Não use uma imagem gasta. Não use 
 
 McCloskey lembra que o leitor confia nos números, e por isso eles exigem mais cuidado do que o texto em volta.
 
-- **O escrivão não cria número.** Todo número do relatório existe em algum RF com valor, tabela e data. Se o texto precisa de uma conta que nenhum agente fez, nem que seja uma subtração, isso vira cobrança.
+- **O escrivão não cria número.** Todo número do relatório existe em algum R1 com valor, tabela e data. Se o texto precisa de uma conta que nenhum agente fez, nem que seja uma subtração, isso vira cobrança.
 - **Toda variação diz contra o quê e em que janela**: "+4,2% em setembro (do fim de agosto ao fim de setembro)", "+1,1 p.p. em 12 meses". Dizer só que "o real se depreciou", sem a janela, não informa nada.
 - **A variação de uma taxa se mede em p.p. ou pb, nunca em %.** Se a Selic foi de 15,00% para 14,75%, ela caiu 0,25 p.p. (25 pb), e não 1,7%.
-- **Um número sem referência não tem tamanho.** Diante de "US$ 3,1 bi de saída", o leitor pergunta se isso é muito: comparado à média do ano, ao mesmo mês do ano anterior? A referência é conteúdo, então se o RF não traz uma, é cobrança.
+- **Um número sem referência não tem tamanho.** Diante de "US$ 3,1 bi de saída", o leitor pergunta se isso é muito: comparado à média do ano, ao mesmo mês do ano anterior? A referência é conteúdo, então se o R1 não traz uma, é cobrança.
 - **A frase que interpreta um número precisa concordar com ele.** "A maior alta desde 2020" só pode ser escrita se o dado sustenta tanto "maior" quanto "desde 2020". Esse é o defeito que mais sobrevive a revisões: o número é atualizado e a frase que o comenta não.
 - **Uma convenção por grandeza no relatório inteiro.** Escolha pb ou p.p. para juros, duas casas para R$/US$, uma casa para %, e mantenha. Não use mais casas do que a fonte publica nem do que a afirmação precisa.
-- **Arredonde ao que a afirmação precisa.** No relatório, "~60 mil contratos", e não 59.481. O arredondamento vem do agente, no report final; a tabela e a data que o acompanham bastam para conferir o valor exato na fonte. O escrivão confere: um número que dava para arredondar e ficou exato, ou um arredondamento que muda o sentido da frase, é cobrança.
+- **Arredonde ao que a afirmação precisa.** No relatório, "~60 mil contratos", e não 59.481. O arredondamento vem do agente, no R1; a tabela e a data que o acompanham bastam para conferir o valor exato na fonte. O escrivão confere: um número que dava para arredondar e ficou exato, ou um arredondamento que muda o sentido da frase, é cobrança.
 - **Use o formato brasileiro**: vírgula decimal, ponto como separador de milhar, "US$ 3,1 bi", "set/2026", "3T26".
 - **Tabela a partir de quatro números comparáveis; com um ou dois, texto.** O texto não repete a tabela: diz o que ela mostra.
 
@@ -159,9 +160,9 @@ Para Toulmin, um argumento tem cinco partes, e o formato do report já pede cada
 | dados | as premissas, com valor, tabela e data |
 | garantia: o mecanismo que liga o dado à afirmação | a argumentação, pelos canais |
 | qualificador: a força da afirmação | a probabilidade |
-| refutação: quando a afirmação deixa de valer | as caudas e os signposts |
+| refutação: quando a afirmação deixa de valer | as caudas e "O que derrubaria a tese" |
 
-Para cada afirmação central do relatório, o escrivão encontra no RF as cinco partes. Se faltar alguma, ele cobra. Othon Garcia cataloga as falácias. As que mais aparecem em análise macro são estas:
+Para cada afirmação central do relatório, o escrivão encontra no R1 as cinco partes. Se faltar alguma, ele cobra. Othon Garcia cataloga as falácias. As que mais aparecem em análise macro são estas:
 
 1. **Afirmação sem dado.**
 2. **Dado sem mecanismo.** "O real se valorizou e o fluxo foi positivo": pôr dois fatos lado a lado sugere uma causa sem dizer qual.
@@ -172,7 +173,7 @@ Para cada afirmação central do relatório, o escrivão encontra no RF as cinco
 7. **Contradição interna.** A argumentação diz uma coisa e a tabela da tese diz outra. Exemplo: o texto fala em risco maior de depreciação, mas P(up) − P(down) é negativo.
 8. **Contradição entre agentes.** A premissa de um agente sobre a área de outro diverge do que esse outro escreveu. Exemplo: o câmbio assume a Selic estável e a política monetária projeta corte. O escrivão aponta a contradição e não a resolve.
 9. **O número do texto diferente do número da tese** ou da premissa que ele diz citar.
-10. **Dado solto.** Um dado no parágrafo que não sustenta nem contraria a afirmação dele: "As reservas caíram US$ 9,7 bi. O estoque de swaps estava em −US$ 91,6 bi." Todo dado tem um papel (`_modelo_report.md`, seção 2): sustenta, contraria (no mesmo parágrafo, com "mas") ou não diz nada neste ciclo (bloco "Olhado, sem sinal"). O escrivão cobra a ligação do agente; não a inventa. E cobra também a falta de dado contra: uma afirmação central em que todo dado só sustenta foi checada?
+10. **Dado solto.** Um dado no parágrafo que não sustenta nem contraria a afirmação dele: "As reservas caíram US$ 9,7 bi. O estoque de swaps estava em −US$ 91,6 bi." Todo dado tem um papel (`_modelo_report.md`, seção 3): sustenta, contraria (no mesmo parágrafo, com "mas") ou não diz nada neste ciclo (bloco "Olhado, sem sinal"). O escrivão cobra a ligação do agente; não a inventa. E cobra também a falta de dado contra: uma afirmação central em que todo dado só sustenta foi checada?
 
 
 # 9. Vícios de texto gerado por modelo
@@ -192,11 +193,11 @@ O escrivão e os agentes são modelos de linguagem, e os modelos têm vícios pr
 
 # 10. Como cobrar clareza
 
-A cobrança reabre o RF só no trecho cobrado: o agente responde à pergunta e reescreve aquele trecho, e o resto do report fica como está. Ela se escreve assim:
+A cobrança reabre o R1 só no trecho cobrado: o agente responde à pergunta e reescreve aquele trecho, e o resto do report fica como está. Ela se escreve assim:
 
 ```
 Para: <agente>
-Trecho: "<citação exata>" (seção do RF)
+Trecho: "<citação exata>" (seção do R1)
 Defeito: <item deste manual, por exemplo 8.2 dado sem mecanismo>
 Pergunta: <o que falta, numa pergunta que o agente responde com um fato, um número ou um mecanismo>
 Por que importa: <que afirmação do relatório depende da resposta>
@@ -216,11 +217,11 @@ A ordem importa: a estrutura vem antes da frase, porque não adianta polir uma f
 1. O primeiro parágrafo diz o cenário e o que o mudaria?
 2. Cada seção abre com a sua conclusão? Os agrupamentos estão livres de sobreposição e de lacunas?
 3. Cada afirmação central tem dado, mecanismo, probabilidade e o que a derrubaria (8)? Todo dado tem papel (sustenta, contraria ou vai para "Olhado, sem sinal"), e nenhum ficou solto (8.10)?
-4. Algum número do texto não está em nenhum RF? Alguma variação está sem janela, sem referência ou com a unidade errada (6)?
+4. Algum número do texto não está em nenhum R1? Alguma variação está sem janela, sem referência ou com a unidade errada (6)?
 5. As palavras de probabilidade seguem a escala? O texto e a tabela da tese concordam (7)?
 6. Sobrou algum termo de construção do sistema (1.2)? Algum conceito aparece com dois nomes (5)?
 7. Há nominalizações, voz passiva sem motivo, frases de mais de cerca de 30 palavras ou palavras vazias (4, 5)?
-8. Sobrou algum vício da seção 9?
+8. Sobrou algum vício da seção 9? Algum fato aparece com número e argumento em mais de uma seção (2)?
 9. As divergências abertas aparecem como divergências (2)?
 10. Sobrou comentário sobre o processo no texto principal? Percentil, arcabouço e conceito pouco conhecido têm nota de rodapé (1.3)?
 11. Lendo só a primeira frase de cada parágrafo, dá para entender o relatório?
@@ -254,9 +255,16 @@ A ordem importa: a estrutura vem antes da frase, porque não adianta polir uma f
     5. **O que acompanhar:** as premissas e as datas que podem mudar o cenário.
     - **Apêndice:** uma tabela por variável, com central, faixa, caudas e probabilidades por trimestre.
     - **Notas de rodapé** (1.3).
+- **Mantida em 2026-10-30, sem teto de tamanho** (decisão do usuário). O que torna a leitura mais leve é dizer cada fato uma vez (2) e o R1 de atualização, que é curto onde nada mudou.
+- **De onde vem cada seção, no R1** (`_modelo_report.md`, 2026-10-30):
+    - *o que nos faria mudar de ideia* (seção 1 do relatório) e *o que acompanhar* (seção 5): da tabela "O que derrubaria a tese" de cada R1 (o que observar · direção · até quando · o que muda), já testada na conversa;
+    - *o que move o cenário*: das seções 1 (o que mudou), 3 (argumentação) e 4.1 (cenários) do R1. Um argumento que o R1 marca "Mantido" entra como o R1 o escreve, em uma frase; o escrivão não o expande nem o busca no relatório anterior;
+    - *riscos*: das linhas "o que leva a cada cauda" e da tabela de temperos;
+    - *onde os analistas discordam*: das divergências registradas no encerramento da ata, com as posições e o que decidiria como os R1 as escrevem. Divergência registrada na ata que não aparece num R1 é cobrança ao agente;
+    - ficam fora o placar e as seções 5 (para os outros agentes), 6 (sobre o modelo) e 7 (mudanças) do R1.
 - Regras de aplicação escritas na definição do escrivão (`.claude/agents/escrivao.md`, 2026-10-22), **a revisar no 1º ciclo conjunto**:
-    - a central publicada é a central conjunta do PF\*; se ela difere da central do RF, a frase que cita a antiga vira cobrança; se o PF\* a marca fora da faixa do agente, faixa e caudas daquele trimestre ficam pendentes, com cobrança;
-    - uma cobrança não para o relatório: o ponto fica com o marcador `[pendente · C<n>]` até o agente responder; o escrivão só para quando falta insumo (um RF ou o PF\*);
+    - a central publicada é a central conjunta do PF\*; se ela difere da central do R1, a frase que cita a antiga vira cobrança; se o PF\* a marca fora da faixa do agente, faixa e caudas daquele trimestre ficam pendentes, com cobrança;
+    - uma cobrança não para o relatório: o ponto fica com o marcador `[pendente · C<n>]` até o agente responder; o escrivão só para quando falta insumo (um R1 ou o PF\*);
     - o placar fica fora do relatório;
     - a única conversão de unidade permitida é p.p. ↔ p.b.;
     - a única nota que o escrivão escreve é a que reproduz um aviso do PF\* (ex.: uma exógena segurada no último valor), porque esses avisos não têm agente dono.

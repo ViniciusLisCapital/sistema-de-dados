@@ -31,7 +31,7 @@ from analytics.agent_system.dados import especiais as esp
 from analytics.agent_system.dados.motor import (Ctx, Tabela, antes, de, em, fdata, fmt, md_tabela,
                                                 pctl, so)
 
-SECAO = ("## (V.VII) Agente de expectativas", "*Fim das listas por agente.*")
+SECAO = ("## (V.VII) Agente de expectativas", "## (V.VIII)")
 PIB = None
 
 # O IPCA e os cinco componentes, com o nome que a pesquisa usa.

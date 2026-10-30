@@ -11,6 +11,8 @@ areas:                     # obsidian/<area>/ -> the code in the document's file
   inflation: inflation
   economic_activity: activity
   labor_market: labor
+  external: external
+  expectations: expectations     # no document yet: Verde's was dropped 2026-10-30 (it repeated verde_inflation); kept for a future one
 
 managers:                  # corpora: folders under repository/mental_model/ with one .md per letter, written by
                            # /ingest mental_model/<folder> (Kinea: fetch_kinea.py). date: regex on the file name,
@@ -48,3 +50,9 @@ documents:                 # per-document settings. start/end: letters dated bef
   kapitalo_fx_mental_models: {start: 2019-07}
   kinea_fx_mental_models: {start: 2021-05}
   verde_mp_mental_models: {start: 2021-01, end: 2022-12}   # 2021-2022 tightening cycle only (decided 2026-10-21)
+  # Layer 1 of the five agents created 2026-10-22: one manager per area, the ~24 most recent letters (decided 2026-10-30)
+  verde_inflation_mental_models: {start: 2024-09}
+  # verde_expectations_mental_models dropped 2026-10-30 (user): its entries repeated verde_inflation; the expectations agent reaches that one through the concepts
+  kapitalo_external_mental_models: {start: 2024-09}
+  kinea_fiscal_mental_models: {start: 2025-09}
+  kinea_activity_mental_models: {start: 2025-09}

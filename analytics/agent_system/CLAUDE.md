@@ -2,8 +2,9 @@
 
 Gera `team_materials/structure_materials/Sistema de Agentes.html`: um diagrama SVG da visão geral
 — processos de entrada, as três fontes do agente (MySQL, ferramentas, conhecimento), cada uma
-apontando para cada agente, e o ciclo dos agentes (rodada 1 → P1 → rodada 2 → P2 → report final →
-PF*), no desenho do usuário de 2026-10-07. Não está no manifesto de dashboards.
+apontando para cada agente, e o ciclo dos agentes no fluxo de 2026-10-30 (SISTEMA III.III.viii): R1 →
+agente web (D1) → R1 final → P1 → conversa com o moderador → PF* → atualização → escrivão. Não está no
+manifesto de dashboards.
 
 ```
 uv run python -m analytics.agent_system.generate_report
@@ -11,9 +12,13 @@ uv run python -m analytics.agent_system.generate_report
 
 - **À mão, no `report.html`:** caixas, setas e o estado de cada bloco (existe / em construção /
   planejado), em `SPECS.geral` e `rodadasGeral()`; a lista `FERRAMENTAS`; o texto de cada detalhe.
-  Desde 2026-10-22 o ciclo mostra os **sete agentes** do primeiro batch (`AGENTES`, uma linha cada, em
-  `AY`; as três fontes ficam em `LINHAS`). A leitura entre rodadas é **uma seta só** ("leem todos"), não
-  uma por par, que seriam 49. P1, P2, PF* e o escrivão estão em construção; o relatório macro, planejado.
+  O ciclo mostra os **sete agentes** do primeiro batch (`AGENTES`, uma linha cada, em `AY`; as três fontes
+  ficam em `LINHAS`) em três colunas, os três momentos do R1 (R1, R1 final, atualização). O moderador é uma
+  caixa alta entre a segunda e a terceira, ligada aos agentes por uma seta só, não uma por agente; o P1 o
+  alimenta e o PF* alimenta a atualização. O agente web fica embaixo, com a D1 e as pausas. P1, PF*, o
+  moderador e o escrivão estão em construção; o relatório macro, planejado. Os dois agentes novos (mercado
+  de trabalho e crédito) entram em `AGENTES` quando o chat B os registrar. Conferido em Chrome headless em
+  2026-10-30: zero exceções, nenhum rótulo de seta sobre caixa, o detalhe do moderador abre.
 - **Lido na geração:** contagens do registry, dos connectors e das notas do vault por área; a lista
   de dados do câmbio, da seção V.I do `SISTEMA_AGENTES.md` (com a fonte de cada tabela pelo
   registry).
@@ -25,10 +30,10 @@ O diagrama é um guia expansível (pedido do usuário, 2026-10-07): seta ou caix
 um detalhe: uma entrada em `DETALHES` (chave `<fonte>><agente>` para as setas do leque, ou `det` na
 caixa) e a função que monta o HTML. Ir aos poucos, sem encher de conteúdo.
 
-Desde 2026-10-22 os **sete agentes** têm as duas caixas (MySQL → agente, da V.I–V.VII, e report 1, das perguntas da Parte 1 do mapa; `AGENTES_DET` no `generate_report.py`, `DET_AGENTES` no `report.html`; só o texto da tese muda por agente). Antes, só câmbio e PM. Primeiro, para o câmbio: **MySQL → Câmbio** (como os dados chegam e as tabelas da lista, lidas da V.I do
-`SISTEMA_AGENTES.md`), **Ferramentas** e **Câmbio · report 1** (as perguntas centrais, lidas da Parte 1
+Desde 2026-10-22 os **sete agentes** têm as duas caixas (MySQL → agente, da V.I–V.VII, e R1, das perguntas da Parte 1 do mapa; `AGENTES_DET` no `generate_report.py`, `DET_AGENTES` no `report.html`; só o texto da tese muda por agente). Antes, só câmbio e PM. Primeiro, para o câmbio: **MySQL → Câmbio** (como os dados chegam e as tabelas da lista, lidas da V.I do
+`SISTEMA_AGENTES.md`), **Ferramentas** e **Câmbio · R1** (as perguntas centrais, lidas da Parte 1
 do mapa conceitual), e as duas mesmas caixas da política monetária (**MySQL → Política monetária**, da
-V.II, e **Política monetária · report 1**; 2026-10-21, quando o agente passou a existir). O tratamento de cada tabela (as métricas do F) não entra na caixa: é do sistema,
+V.II, e **Política monetária · R1**; 2026-10-21, quando o agente passou a existir). O tratamento de cada tabela (as métricas do F) não entra na caixa: é do sistema,
 não do usuário (2026-10-07). Tabela da lista fora do registry vira aviso na página.
 
 Conferido em Chrome headless (2026-10-07): zero exceções, as três caixas abrem, sem rolagem
@@ -178,24 +183,47 @@ regras na docstring do módulo.
 Teste: `uv run python tests/test_modelo_agentes.py` (lê o payload do relatório entregue, não o
 banco; ~1 min).
 
-## consolidacao.py — P1, P2 e PF* (SISTEMA_AGENTES.md IV.ii, IV.vi; 2026-10-22)
+## consolidacao.py — P1 e PF* (SISTEMA_AGENTES.md IV.ii, IV.vi; ciclo novo de 2026-10-30, III.III.viii)
 
 ```
-uv run python -m analytics.agent_system.consolidacao --ciclo AAAA-MM-DD --rodada {r1|r2|rf} [--sem-faixa]
+uv run python -m analytics.agent_system.consolidacao --ciclo AAAA-MM-DD --etapa {p1|pf} [--sem-faixa] [--refazer]
 ```
 
-Lê `obsidian/ciclos/<data>/caminhos/<agente>_<rodada>.json` (o contrato está na docstring: caminhos
-base na convenção do `modelo.CONVENCAO`, mais a tese por trimestre, validada) e a tutela da aba
-"Exógenas" do `data_tracker.xlsx` (colunas achadas pelo nome). Desde 2026-10-27 (SISTEMA IV.ii) cada
-exógena tem exatamente um "Principal" e zero ou mais "Subordinado" (em branco = sem papel); zero ou
-mais de um Principal numa linha, ou outro valor, levanta. Vale só o caminho do principal; se ele não
-escreveu, o padrão do simulador, com aviso. Quem escreveu caminho diferente do usado vira
-divergência, com o papel (`subordinado` ou `sem papel`). Sem média e sem nível. Uma rodada de `modelo.rodar` sem
-multiplicadores grava `P1|P2|PF.md` e o `.json` ao lado. No PF* a faixa do agente não é deslocada
-para a central conjunta: o P mostra a diferença e marca "fora da faixa". O dono de cada endógena
-está em `ENDOGENA_DONO`, no topo do módulo; o das exógenas, só na aba.
-Caudas da tese (2026-10-22, SISTEMA III.III.i): `p_faixa`, `p_upside` (acima de `faixa[1]`) e
+**As duas etapas leem os mesmos arquivos.** Cada agente grava um só arquivo,
+`obsidian/ciclos/<data>/caminhos/<agente>_r1.json`, no R1. Ele o atualiza no R1 final e na conversa
+moderada, e o congela quando a conversa fecha.
+- `p1` roda depois do R1 final e grava `P1.md`/`.json`: é a mesa comum da conversa.
+- `pf` roda no fechamento e grava `PF.md`/`.json`.
+- `pf` roda de novo depois da atualização curta dos agentes, para levar as teses novas. Nessa
+  segunda vez ele confere que os caminhos usados, a central e a faixa são idênticos aos do `PF.json`
+  gravado. Se não forem, levanta e não grava. `--refazer` pula a conferência.
+- Não há P2 nem `rf`. `*_r1b.json`, a segunda rodada de ruído do ciclo 2, é ignorado.
+
+**O contrato está na docstring:**
+- os caminhos base na convenção do `modelo.CONVENCAO`;
+- as `caudas` (upside e downside) de cada exógena de que o agente é principal;
+- a tese por trimestre, validada.
+
+**As caudas.** O validador exige os dois lados, a base escrita no mesmo trimestre e
+upside ≥ base ≥ downside. Cauda de quem não é o principal levanta. O P usa só a base e lista as
+caudas numa tabela (seção 4 do `P*.md` e `caudas` no `.json`), que os agentes sem papel na exógena
+leem.
+
+**A tutela.** Vem da aba "Exógenas" do `data_tracker.xlsx`, com as colunas achadas pelo nome. Desde
+2026-10-27 (SISTEMA IV.ii) cada exógena tem exatamente um "Principal" e zero ou mais "Subordinado"
+(em branco = sem papel); zero ou mais de um Principal numa linha, ou outro valor, levanta.
+- Vale só o caminho do principal. Se ele não escreveu, vale o padrão do simulador, com aviso.
+- Quem escreveu caminho diferente do usado vira divergência, com o papel (`subordinado` ou
+  `sem papel`). Sem média e sem nível.
+
+Uma rodada de `modelo.rodar`, sem multiplicadores. No PF* a faixa do agente não é deslocada para a
+central conjunta: o P mostra a diferença e marca "fora da faixa". O dono de cada endógena está em
+`ENDOGENA_DONO`, no topo do módulo; o das exógenas, só na aba.
+
+**As caudas da tese** (2026-10-22, SISTEMA III.III.i): `p_faixa`, `p_upside` (acima de `faixa[1]`) e
 `p_downside` (abaixo de `faixa[0]`), que somam 100; um JSON com `worst`/`p_worst`/`p_best` levanta.
 Assimetria = (P(up) − P(down))/100. Os grupos do IPCA são da inflação em `ENDOGENA_DONO`.
-Teste: `uv run python tests/test_consolidacao.py` (cópia do tracker com Principal/Subordinado fictícios, retrato de
-2026-10-22, pasta temporária; ~25 s).
+
+Teste: `uv run python tests/test_consolidacao.py`. Usa uma cópia do tracker com Principal/Subordinado
+fictícios e o retrato de 2026-10-27, só lido (a pasta de 2026-10-22 não existe mais); grava numa
+pasta temporária e confere pelo mtime que a pasta real não mudou.

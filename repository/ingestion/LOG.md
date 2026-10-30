@@ -461,7 +461,7 @@ One line per file written by `run.py` (newest last). Settings "default" = plumbe
 | 2026-10-29 | economic_activity | incerteza_atividade_economica (BCB, 2019) | default | 5 | 15,364 | 14.0% | garbled (common-word share 0.053) |
 | 2026-10-29 | economic_activity | indicador_condicoes_financeiras (BCB, 2020) | default | 5 | 16,048 | 19.8% | garbled (common-word share 0.047) |
 | 2026-10-29 | economic_activity | output_gap_brazil_real_time (Cusinato, Minella & Porto Junior, 2013) | mode pymupdf | 66 | 122,520 | 3.1% | — |
-| 2026-10-29 | economic_activity | taxa_desemprego_equilibrio_brasil (Borges, 2022) | default | 13 | 14,078 | 0.0% | garbled (common-word share 0.039) |
+| 2026-10-29 | labor_market | taxa_desemprego_equilibrio_brasil (Borges, 2022) | default | 13 | 14,078 | 0.0% | garbled (common-word share 0.039) |
 | 2026-10-29 | expectations | brazil_taming_inflation_expectations (Bevilaqua, Mesquita & Minella, 2007) | default | 40 | 71,240 | 2.0% | — |
 | 2026-10-29 | external | it_latin_america (Corbo & Schmidt-Hebbel, 2001) | default | 67 | 114,572 | 7.4% | — |
 | 2026-10-29 | expectations | breakeven_inflation_information (Vicente & Guillen, 2013) | default | 31 | 57,689 | 56.7% | heavy_removal (57% removed by the cleaner); long_references_cut (632 lines, ended by '196 The role of macroeconomic variables in sovereign risk Oc') |
@@ -469,3 +469,4 @@ One line per file written by `run.py` (newest last). Settings "default" = plumbe
 | 2026-10-29 | expectations | formation_expectations_phillips_curve (Coibion, Gorodnichenko & Kamdar, 2018) | mode pymupdf | 56 | 156,531 | 16.3% | long_references_cut (363 lines, ended by 'Table 1. Hybrid Phillips Curve (1968:Q4–2000:Q4), Brissimis and Maggin') |
 | 2026-10-29 | expectations | inflation_expectations_public_private_info (Areosa, 2016) | mode pymupdf | 27 | 56,371 | 7.5% | — |
 | 2026-10-29 | expectations | market_forecasts_brazil_performance (Carvalho & Minella, 2012) | default | 53 | 103,628 | 31.1% | heavy_removal (31% removed by the cleaner); long_references_cut (647 lines, ended by 'EOF') |
+| 2026-10-30 | labor_market | credit_market_shocks_real_economy (Greenstone et al., 2014) | mode ocr | 47 | 93,835 | 7.7% | — |

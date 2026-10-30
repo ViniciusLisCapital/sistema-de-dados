@@ -1150,3 +1150,25 @@ Podem envolver mais de dois agentes: uma linha por agente com posição própria
 ## Relatório
 
 2026-10-28 · `relatorio.md` (primeira passada e retomada 1) · números conferidos contra os RF e o PF\* (escrivão): sim · contra a fonte, no banco (sessão que conduz o ciclo, III.III.iii): não · cobranças: C1–C5 respondidas (câmbio, PM, inflação ×2, fiscal, ~20k), C6 aberta (fiscal, sem lacuna no texto) · custo do escrivão: 534k na primeira passada e 94k na retomada (agente retomado com o contexto)
+
+2026-10-30 · fechamento (chat E do Plano 2):
+
+- **C6 respondida.** Agente fiscal novo, sem o contexto da rodada, só com C6, o item da seção 4 e o IN-E7 (~105k). Mudou uma frase de `fiscal_rf.md`, seção 4, "O fato": sem o ato legal até 31/12, o degrau de janeiro fica na cauda de alta da inflação, não na base, e a base fiscal tira o custo. Nenhum caminho, faixa ou probabilidade muda, e o relatório também não, porque já dizia "cauda de alta da inflação". As seis cobranças estão respondidas.
+- **Conferência contra a fonte (III.III.iii).** Cada número de dado do relatório foi refeito do bruto do A do ciclo (`dados/A/`, o banco congelado em 27/10), e não copiado do F. Os números de modelo foram conferidos contra o `PF.json`, e as notícias contra `noticias/`. Faixas, probabilidades e limiares, que são julgamento, ficaram de fora.
+    - Método: dois subagentes Sonnet, um para as linhas 1–96 e outro da 98 ao fim (221k + 305k = ~526k).
+    - Resultado: ~100 números de dado batem; o apêndice inteiro bate com o PF\* (15 tabelas, 450 campos, nenhuma diferença); as 18 notícias citadas foram achadas.
+    - **Três defeitos, nenhum do F e nenhum que mova central, faixa ou probabilidade.** Corrigidos direto no `relatorio.md` em 2026-10-30, por decisão do usuário (sem reabrir o escrivão): "novembro e dezembro somados"; "1,7% do PIB"; "os leilões do Tesouro cancelados por três dias". Os RF ficam como estão (o 1,8 do `fiscal_rf.md` fica registrado aqui).
+        1. Seção 2.3: "foi de ~−US$ 31 bi e ~−US$ 27 bi em 2024 e 2025" atribui a dezembro o que é novembro mais dezembro. Dezembro sozinho deu −29,2 e −19,6 (`cmb_cambio_contratado`, `cc_fin_saldo`); a média de dezembro de 2010–2025, −11,9, está certa. O `cambio_rf.md` (seção 3.2) diz "novembro mais dezembro" e o escrivão trocou. O R$ 5,54 da mesma frase vem do +2,1% do resíduo sazonal e não muda. Conferido também por esta sessão.
+        2. Seção 2.5: "de 0,9% para 1,8% do PIB". O crédito do Tesouro ao BNDES sobre o PIB de 12 meses é 1,746% em ago/26, o que arredonda para 1,7. O 1,8 vem do `fiscal_rf.md` (seção 2, F1), com o F em 1,75.
+        3. Seção 2.5: "com o mercado de títulos fechado por três dias". A fonte (r1-05, r2-01, r2-02) e o `atividade_rf.md` dizem que os leilões do Tesouro ficaram cancelados de 27 a 29/10, com recompras no período. O "fechado" é do escrivão.
+    - **Não está no A** (documento do Copom, citado pelas RF de PM e de externo com a referência, e sem tabela no banco): o condicionante de câmbio de R$ 5,15 da reunião de setembro, o juro neutro de 5,0% do Copom, as frases da ata da 281ª e a premissa de Brent de ~US$ 84 no 2T27.
+    - Três pontos de forma, sem número errado:
+        - a seção 2.1 mede a distância do S&P à máxima em 27/10 (−1,3%) numa frase datada de 23/10 (quando era −2,5%);
+        - o "nenhum par latino mais de 1,95%" de 05/10 só vale com o peso chileno e o colombiano deslocados um pregão, como o F avisa;
+        - a NAIRU de curto prazo é do Questionário Pré-Copom da 279ª reunião, porque a 281ª não a traz.
+- **CDS restaurado no banco (fora do ciclo; o A de 27/10 não muda).**
+    - O que aconteceu: às 11:14 de 30/10, a carga do `cmb_risco_pais` relida do export Bloomberg de 08/09 (o `run()` trunca e recarrega) apagou os 34 pregões provisórios de 09/09 a 26/10.
+    - O que voltou: as 34 linhas, gravadas do backup das 11:14 sem truncar. A sessão do principal rodou a gravação, com autorização do usuário dada lá.
+    - Conferido: 6.423 linhas, fim em 26/10, último valor 137,43, todas iguais ao backup.
+    - Para não repetir: a tabela saiu da carga diária no `calendar_2026.yaml`.
+- **Ciclo 2026-10-27 fechado.**

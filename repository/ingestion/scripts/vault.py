@@ -33,7 +33,9 @@ check: one synthesis note against its clean_md and the vault. Fails (exit 1) on
 
 concept: a concept page's numbers against the sources it links. A line that links synthesis
   notes is checked against their clean_md; a line that links none (Definition, Formal statement)
-  against the clean_md of every note the page links. A mental model linked on the line stands for
+  against the clean_md of every note the page links. The line copom_gestao.py manages (marker
+  "<!-- copom-gestao:") is not compared; links to monetary_policy/central_bank/gestao_* pages are
+  not synthesis notes and so feed no numbers. A mental model linked on the line stands for
   itself (its section numbers), and so does a note with no clean_md (Fleming 1962).
 A pass is necessary, not sufficient: a small integer that appears anywhere in the text passes
 whatever it means in the note. The judgment stays with the agent and the user.
@@ -51,6 +53,7 @@ from settings import topics_on_hold  # noqa: E402
 
 CONCEPTS = OBSIDIAN / "concepts"
 NOT_TOPICS = {"concepts", "ciclos", "escrivao"}
+COPOM_MARK = "<!-- copom-gestao:"   # copom_gestao.py's managed line on a concept page
 SKIP_CLEAN = {"central_bank"}          # subfolders of clean_md/ that are not synthesized per file
 
 FIELDS = ["Type", "Tags", "Source", "Language", "Source file"]
@@ -303,6 +306,8 @@ def concept_numbers(page: Path, idx: dict[str, list[Path]], only: Path | None = 
     years = {y for p in notes for y in YEAR_IN_STEM.findall(p.stem)}
     bad = []
     for n, tok, line in _numbers(text, "", years):
+        if COPOM_MARK in line:
+            continue                     # the managed Copom line (copom_gestao.py): meeting numbers, no claims
         linked = per_line.get(n, [])
         if only is not None and only.resolve() not in linked:
             continue

@@ -17,7 +17,7 @@ All commands run from the project root as `uv run python repository/ingestion/sc
 
 ## Arguments
 
-`$ARGUMENTS` is `<manager> <area>`.
+`$ARGUMENTS` is `<manager> <area>` (full review) or `<manager> <area> --delta` (see Delta mode).
 
 ## Steps
 
@@ -73,6 +73,17 @@ All commands run from the project root as `uv run python repository/ingestion/sc
 
 Every old and new claim of every block gets a verdict. A `note` on anything that is not `kept` or
 `supported`, saying exactly what changed, in one sentence a user can act on.
+
+## Delta mode (`<manager> <area> --delta`)
+
+After a fix, only the blocks the fix touched need judging; the others keep the verdicts of the
+last review. Use `mental.py packet <manager> <area> --delta` instead of `packet`: it prints only
+the blocks whose text or claims changed since the last review, and only the letters their new
+claims cite. Read those letters in full, judge only the printed blocks, and write the same JSON
+format with entries **only for those blocks** (the sha it printed; do not list the others, `done`
+carries their earlier verdicts). Everything else in this file applies unchanged. The writer's
+`evidence` on each new claim is where to start looking in the letter, not a verdict: you still
+judge against the letters.
 
 ## Calibration
 

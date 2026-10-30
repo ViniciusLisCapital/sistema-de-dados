@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Testa a consolidacao de uma rodada do ciclo conjunto (analytics/agent_system/consolidacao.py).
+"""Testa a consolidacao do ciclo conjunto (P1 na abertura, PF* no fechamento) (analytics/agent_system/consolidacao.py).
 
 Roda com:
     uv run python tests/test_consolidacao.py
@@ -7,7 +7,7 @@ Roda com:
 Script com asserts, nao pytest (mesmo padrao de tests/test_modelo_agentes.py). Nao toca no banco
 nem na planilha real nem na pasta real do ciclo: o tracker e uma COPIA com a aba "Exogenas"
 preenchida por uma tutela FICTICIA, e os JSON dos agentes e o P vao para uma pasta temporaria.
-O modelo e o retrato de 2026-10-22 (obsidian/ciclos/2026-10-22/dados/A/modelo_estrutural.json),
+O modelo e o retrato de 2026-10-27 (obsidian/ciclos/2026-10-27/dados/A/modelo_estrutural.json),
 so lido. Cada item erra sem levantar nada se quebrar:
 
 1. o P usa o caminho de quem nao e o principal da exogena, ou faz media de caminhos;
@@ -17,7 +17,15 @@ so lido. Cada item erra sem levantar nada se quebrar:
 4. exogena cujo principal nao escreveu nao fica no padrao do simulador, ou nao e avisada;
 5. o P nao e o modelo.rodar com os mesmos caminhos (central e faixa);
 6. um JSON com chave, trimestre ou probabilidade errados passa;
-7. a aba com zero ou mais de um Principal numa linha, ou com valor desconhecido, passa.
+7. a aba com zero ou mais de um Principal numa linha, ou com valor desconhecido, passa;
+8. P1 e PF leem arquivos diferentes (os dois leem os mesmos <agente>_r1.json);
+9. um <agente>_r1b.json (ruido) e lido, avisado ou levanta, ou muda algo no P1;
+10. caudas validas nao aparecem na tabela e no .json do P, ou uma invalida passa (upside < base,
+    downside > base, so um lado, trimestre sem base, chave desconhecida, trimestres diferentes,
+    valor nao numerico), ou cauda de quem nao e o principal da exogena passa;
+11. o segundo pf: com so a tese mudada nao regrava (ou nao diz que e a versao depois da
+    atualizacao); com um caminho mudado nao levanta ou grava mesmo assim; refazer nao sobrescreve;
+12. rodada "r2" ou "rf" num JSON (acabaram) passa.
 """
 from __future__ import annotations
 
@@ -34,7 +42,7 @@ from analytics.agent_system import modelo
 
 sys.stdout.reconfigure(encoding="utf-8")
 falhas = 0
-CICLO = "2026-10-22"
+CICLO = "2026-10-27"
 
 
 def check(nome, cond, extra=""):
@@ -104,7 +112,7 @@ def tese(var, tris, base=None, larg=0.1):
 
 
 def grava(raiz: Path, agente: str, rodada: str, caminhos: dict, ts: dict, **extra):
-    arq = cs.arquivo_caminhos(CICLO, agente, rodada, raiz)
+    arq = cs.arquivo_caminhos(CICLO, agente, raiz, sufixo=rodada)
     arq.parent.mkdir(parents=True, exist_ok=True)
     d = {"agente": agente, "rodada": rodada, "ciclo": CICLO, "caminhos": caminhos, "tese": ts}
     d.update(extra)
@@ -148,6 +156,11 @@ u, o, dv = cs.juntar({}, {"cambio": {"x": {"1T27": 7.0}}}, jj, {"x": [5.0, 6.0, 
 check("juntar: exogena fora da aba fica no padrao e quem escreveu diverge ('sem papel')",
       "x" not in u and [(d["papel"], d["usado"]) for d in dv] == [("sem papel", 6.0)], (u, dv))
 
+def _foto(d):
+    return {str(f): f.stat().st_mtime_ns for f in d.rglob("*") if f.is_file()}
+
+
+FOTO = _foto(cs.pasta(CICLO))
 with tempfile.TemporaryDirectory() as tmp:
     tmp = Path(tmp)
     raiz = tmp / "ciclos"
@@ -170,13 +183,15 @@ with tempfile.TemporaryDirectory() as tmp:
           tese("selic_fim", H6, base={t: 13.0 for t in H6}, larg=1.0))
     grava(raiz, "cambio", "r1", {"vol": {"4T26": 14.0}, "dxy_em": {"2026T4": 131.0}},
           tese("ptax", H6, base={t: 5.2 for t in H6}, larg=0.15))
+    CAUDAS_EXT = {"upside": {"dxy_em": {"4T26": 131.0, "2027T1": 130.0}},
+                  "downside": {"dxy_em": {"4T26": 127.0, "1T27": 126.0}}}
     grava(raiz, "externo", "r1", {"dxy_em": {"4T26": 129.0, "1T27": 128.0}, "ffr": {"4T26": 3.6},
                                   "icbr_met_usd": {"4T26": 335.0}},
-          tese("dxy_em", H6[:2], base={"4T26": 129.0, "1T27": 128.0}, larg=3))
+          tese("dxy_em", H6[:2], base={"4T26": 129.0, "1T27": 128.0}, larg=3), caudas=CAUDAS_EXT)
     grava(raiz, "inflacao", "r1", {"icbr_agr_usd": {"4T26": 210.0}},
           tese("ipca_12m", H6, base={t: 4.5 for t in H6}, larg=0.4))
 
-    r = cs.consolidar(CICLO, "r1", raiz=raiz, tracker=tk, sim=SIM, faixa=True)
+    r = cs.consolidar(CICLO, "p1", raiz=raiz, tracker=tk, sim=SIM, faixa=True)
     us = r["caminhos_usados"]
 
     # 3. so o principal
@@ -258,10 +273,11 @@ with tempfile.TemporaryDirectory() as tmp:
     md = (raiz / CICLO / "P1.md").read_text(encoding="utf-8")
     js = json.loads((raiz / CICLO / "P1.json").read_text(encoding="utf-8"))
     check("P1.md e P1.json gravados na pasta do ciclo (temporaria)",
-          md.startswith("# P1 — consolidação da rodada 1") and js["p"] == "P1")
-    check("o P1.md traz as quatro secoes",
+          md.startswith("# P1 — consolidação da abertura") and js["p"] == "P1")
+    check("o P1.md traz as cinco secoes",
           all(s in md for s in ("## Avisos", "## 1. Exógenas usadas", "## 2. Saída do modelo",
-                                "## 3. Divergências", "## 4. As teses")))
+                                "## 3. Divergências", "## 4. Caudas das exógenas (do principal)",
+                                "## 5. As teses")))
     check("a linha do rr_10a diz de quem (o principal)",
           "| fiscal (principal) |" in md and "média de " not in md and "(nível" not in md, md[:2000])
     check("a tabela de divergencias tem a linha da PM no CDS, com o papel",
@@ -278,21 +294,94 @@ with tempfile.TemporaryDirectory() as tmp:
           and f"abaixo de {cs._f(lo_, 3)} · 20% | acima de {cs._f(hi_, 3)} · 30% | +0,10 |" in md
           and "worst" not in md.lower() and "best" not in md.lower(), md[md.find("### Câmbio"):][:600])
     check("o JSON do P le de volta com os caminhos usados", js["caminhos_usados"]["fiscal"]["4T26"] == 140.0)
+    check("a tabela de caudas do P1.md: so as do principal, nos trimestres escritos",
+          "| `dxy_em` | externo | 4T26 | 127,00 | 129,00 | 131,00 |" in md
+          and "| `dxy_em` | externo | 1T27 | 126,00 | 128,00 | 130,00 |" in md
+          and "| `dxy_em` | externo | 2T27 |" not in md, md[md.find("## 4."):][:500])
+    check("e as caudas no P1.json, e o P nao as usa (dxy_em usado = a base)",
+          [(c["exogena"], c["trimestre"], c["downside"], c["base"], c["upside"]) for c in js["caudas"]]
+          == [("dxy_em", "4T26", 127.0, 129.0, 131.0), ("dxy_em", "1T27", 126.0, 128.0, 130.0)]
+          and js["contratos"]["externo"]["caudas"]["upside"]["dxy_em"]["1T27"] == 130.0
+          and us["dxy_em"]["4T26"] == 129.0, js["caudas"])
 
-    # 10. o PF*: os mesmos arquivos como report final
-    for a in ("fiscal", "politica_monetaria", "cambio", "externo", "inflacao"):
-        d = json.loads(cs.arquivo_caminhos(CICLO, a, "r1", raiz).read_text(encoding="utf-8"))
-        d["rodada"] = "rf"
-        cs.arquivo_caminhos(CICLO, a, "rf", raiz).write_text(json.dumps(d), encoding="utf-8")
-    rf = cs.consolidar(CICLO, "rf", raiz=raiz, tracker=tk, sim=SIM, faixa=False)
+    # 10. r1b (ruido) e ignorado
+    grava(raiz, "cambio", "r1b", {"vol": {"4T26": 20.0}, "dxy_em": {"4T26": 140.0}},
+          tese("ptax", H6, base={t: 6.0 for t in H6}, larg=0.1))
+    cs.arquivo_caminhos(CICLO, "atividade", raiz, sufixo="r1b").write_text("{nao e json", encoding="utf-8")
+    cs.arquivo_caminhos(CICLO, "cambioo", raiz, sufixo="r1b").write_text("{}", encoding="utf-8")
+    rb = cs.consolidar(CICLO, "p1", raiz=raiz, tracker=tk, sim=SIM, faixa=False, gravar=False)
+    check("cambio_r1b.json com outros caminhos (e r1b quebrado ou de agente desconhecido) nao muda nada no P1: "
+          "nem aviso, nem divergencia, nem levanta",
+          rb["caminhos_usados"] == r["caminhos_usados"] and rb["divergencias"] == r["divergencias"]
+          and rb["avisos"] == r["avisos"] and rb["agentes_lidos"] == r["agentes_lidos"]
+          and all(perto(a, b) for k in rb["modelo"]["endogenas"]
+                  for a, b in zip(rb["modelo"]["endogenas"][k]["central"], r["modelo"]["endogenas"][k]["central"])),
+          (rb["avisos"], rb["caminhos_usados"].get("vol")))
+    check("mas o validar aceita rodada 'r1b' (o agente confere o arquivo de ruido)",
+          cs.validar(json.loads(cs.arquivo_caminhos(CICLO, "cambio", raiz, sufixo="r1b")
+                                .read_text(encoding="utf-8")), CTX, "teste")["rodada"] == "r1b")
+    for ag in ("cambio", "atividade", "cambioo"):
+        cs.arquivo_caminhos(CICLO, ag, raiz, sufixo="r1b").unlink()
+
+    # 10b. o PF*: os MESMOS _r1.json, no fechamento
+    rf = cs.consolidar(CICLO, "pf", raiz=raiz, tracker=tk, sim=SIM, faixa=True)
     md = (raiz / CICLO / "PF.md").read_text(encoding="utf-8")
+    check("P1 e PF leem os mesmos _r1.json: mesmos caminhos usados, contratos e central",
+          rf["caminhos_usados"] == r["caminhos_usados"] and rf["contratos"] == r["contratos"]
+          and all(perto(a, b) for k in rf["modelo"]["endogenas"]
+                  for a, b in zip(rf["modelo"]["endogenas"][k]["central"], r["modelo"]["endogenas"][k]["central"])))
     check("PF.md: cabecalho do PF* e a distribuicao de cada agente ao lado da central conjunta",
-          md.startswith("# PF* — consolidação do report final")
+          md.startswith("# PF* — consolidação do fechamento")
           and "A central conjunta e a distribuição de cada agente" in md
-          and "| Trimestre | Central do agente | Central do PF* |" in md, md[:300])
+          and "| Trimestre | Central do agente | Central do PF* |" in md
+          and "Versão depois da atualização" not in md, md[:300])
     check("e marca quando a central conjunta cai fora da faixa do agente",
           "**fora da faixa**" in md
           and any(x["fora_da_faixa"] for x in rf["teses"]) and not all(x["fora_da_faixa"] for x in rf["teses"]))
+    check("PF.md tambem traz a tabela das caudas das exogenas",
+          "## 4. Caudas das exógenas (do principal)" in md
+          and "| `dxy_em` | externo | 4T26 | 127,00 | 129,00 | 131,00 |" in md)
+
+    # 10c. o segundo pf (a atualizacao)
+    pfj = raiz / CICLO / "PF.json"
+    pfm = raiz / CICLO / "PF.md"
+    arq_c = cs.arquivo_caminhos(CICLO, "cambio", raiz)
+    orig_c = arq_c.read_text(encoding="utf-8")
+    d = json.loads(orig_c)
+    d["tese"] = tese("ptax", H6, base={t: 5.2 for t in H6}, larg=0.30)
+    arq_c.write_text(json.dumps(d), encoding="utf-8")
+    r2 = cs.consolidar(CICLO, "pf", raiz=raiz, tracker=tk, sim=SIM, faixa=True)
+    md = pfm.read_text(encoding="utf-8")
+    js2 = json.loads(pfj.read_text(encoding="utf-8"))
+    fx = js2["contratos"]["cambio"]["tese"]["ptax"]["trimestres"]["4T26"]["faixa"]
+    check("segundo pf com so a tese mudada: passa e regrava PF.md/PF.json (faixa nova), dizendo que e depois da atualizacao",
+          "Versão depois da atualização" in md and perto(fx[0], 4.9) and perto(fx[1], 5.5)
+          and r2["atualizacao"]["anterior"] == rf["gerado_em"], (fx, md[:700]))
+    d["caminhos"]["vol"] = {"4T26": 14.5}
+    arq_c.write_text(json.dumps(d), encoding="utf-8")
+    antes_js, antes_md = pfj.read_text(encoding="utf-8"), pfm.read_text(encoding="utf-8")
+    check("segundo pf com um caminho mudado levanta, listando a exogena e as endogenas que mexeram",
+          levanta(lambda: cs.consolidar(CICLO, "pf", raiz=raiz, tracker=tk, sim=SIM, faixa=True),
+                  "exógena usada `vol`", "endógena `ptax`", "Nada foi gravado") is True)
+    check("e o PF.json e o PF.md ficam como estavam",
+          pfj.read_text(encoding="utf-8") == antes_js and pfm.read_text(encoding="utf-8") == antes_md)
+    rr = cs.consolidar(CICLO, "pf", raiz=raiz, tracker=tk, sim=SIM, faixa=False, refazer=True)
+    js3 = json.loads(pfj.read_text(encoding="utf-8"))
+    check("refazer=True sobrescreve, com o caminho novo, e o md diz que foi de proposito",
+          js3["caminhos_usados"]["vol"]["4T26"] == 14.5 and rr["refeito"]
+          and "Refeito de propósito" in pfm.read_text(encoding="utf-8"))
+    check("o P1 nao passa pela conferencia (so o pf)",
+          cs.consolidar(CICLO, "p1", raiz=raiz, tracker=tk, sim=SIM, faixa=False)["caminhos_usados"]["vol"]["4T26"] == 14.5)
+    arq_c.write_text(orig_c, encoding="utf-8")
+
+    # 10d. cauda de quem nao e o principal: o cambio escreve cauda do dxy_em (principal: externo)
+    d = json.loads(orig_c)
+    d["caudas"] = {"upside": {"dxy_em": {"4T26": 133.0}}, "downside": {"dxy_em": {"4T26": 130.0}}}
+    arq_c.write_text(json.dumps(d), encoding="utf-8")
+    check("cauda de exogena de que o agente nao e o principal levanta, dizendo quem e",
+          levanta(lambda: cs.consolidar(CICLO, "p1", raiz=raiz, tracker=tk, sim=SIM, faixa=False, gravar=False),
+                  "Câmbio escreveu cauda de `dxy_em`", "o principal é externo") is True)
+    arq_c.write_text(orig_c, encoding="utf-8")
 
     # 11. o contrato rejeita o que esta errado
     def com(**mudar):
@@ -337,16 +426,67 @@ with tempfile.TemporaryDirectory() as tmp:
                   "diferente do próprio caminho") is True)
     check("varios erros saem juntos numa mensagem so",
           levanta(com(caminhos={"cds": {"4T26": 1}, "vol": {"4T30": 1}}), "'cds'", "4T30") is True)
-    arq = grava(raiz, "atividade", "r2", {}, tese("hiato", ["4T26"]))
+    # caudas das exogenas: validas passam, cada invalida levanta
+    def cauda(cd, caminhos=None):
+        base = {"agente": "externo", "rodada": "r1", "ciclo": CICLO,
+                "caminhos": caminhos or {"dxy_em": {"4T26": 129.0, "1T27": 128.0}},
+                "caudas": cd, "tese": tese("dxy_em", ["4T26"], base={"4T26": 129.0})}
+        return lambda: cs.validar(base, CTX, "teste")
+
+    ok = cs.validar({"agente": "externo", "rodada": "r1", "ciclo": CICLO,
+                     "caminhos": {"dxy_em": {"4T26": 129.0, "1T27": 128.0}}, "caudas": CAUDAS_EXT,
+                     "tese": tese("dxy_em", ["4T26"], base={"4T26": 129.0})}, CTX, "teste")
+    check("caudas validas passam, normalizadas ('2027T1' vira '1T27') e na ordem da janela",
+          ok["caudas"] == {"upside": {"dxy_em": {"4T26": 131.0, "1T27": 130.0}},
+                           "downside": {"dxy_em": {"4T26": 127.0, "1T27": 126.0}}}, ok["caudas"])
+    check("sem a chave 'caudas' o contrato continua valendo (caudas vazias)",
+          cs.validar({"agente": "cambio", "rodada": "r1", "ciclo": CICLO, "caminhos": {},
+                      "tese": tese("ptax", ["4T26"])}, CTX, "teste")["caudas"] == {"upside": {}, "downside": {}})
+    up, dn = {"dxy_em": {"4T26": 131.0}}, {"dxy_em": {"4T26": 127.0}}
+    check("upside abaixo da base levanta",
+          levanta(cauda({"upside": {"dxy_em": {"4T26": 128.0}}, "downside": dn}), "upside 128.0 abaixo da base") is True)
+    check("downside acima da base levanta",
+          levanta(cauda({"upside": up, "downside": {"dxy_em": {"4T26": 130.0}}}), "downside 130.0 acima da base") is True)
+    check("so um lado levanta, dizendo qual falta",
+          levanta(cauda({"upside": up}), "caudas.downside: falta 'dxy_em'") is True)
+    check("trimestre sem base levanta",
+          levanta(cauda({"upside": {"dxy_em": {"2T27": 131.0}}, "downside": {"dxy_em": {"2T27": 127.0}}}),
+                  "sem caminho base em 2T27") is True)
+    check("cauda de exogena sem caminho base nenhum levanta",
+          levanta(cauda(CAUDAS_EXT, caminhos={"ffr": {"4T26": 3.6}}), "não escreveu o caminho base") is True)
+    check("chave desconhecida (exogena que nao existe) levanta",
+          levanta(cauda({"upside": {"cds": {"4T26": 1}}, "downside": {"cds": {"4T26": 1}}}), "'cds'", "não é exógena") is True)
+    check("lado desconhecido ('sideways') levanta",
+          levanta(cauda({"upside": up, "downside": dn, "sideways": {}}), "chave desconhecida 'sideways'") is True)
+    check("endogena em caudas levanta",
+          levanta(cauda({"upside": {"ptax": {"4T26": 1}}, "downside": {"ptax": {"4T26": 1}}}), "'ptax'", "endógena") is True)
+    check("lados com trimestres diferentes levantam",
+          levanta(cauda({"upside": {"dxy_em": {"4T26": 131.0, "1T27": 130.0}}, "downside": dn}),
+                  "os dois lados têm os mesmos trimestres") is True)
+    check("valor que nao e numero levanta",
+          levanta(cauda({"upside": {"dxy_em": {"4T26": "alto"}}, "downside": dn}), "não é número") is True)
+    check("varias caudas erradas saem juntas numa mensagem so",
+          levanta(cauda({"upside": {"dxy_em": {"4T26": 128.0}}, "downside": {"dxy_em": {"4T26": 130.0}}}),
+                  "upside 128.0", "downside 130.0") is True)
+
+    # rodada: so r1 (r1b so no validar); r2 e rf acabaram
+    for rd in ("r2", "rf"):
+        check(f"rodada {rd!r} num JSON levanta", levanta(com(rodada=rd), "rodada", "inválida") is True)
+    arq = grava(raiz, "atividade", "r1", {}, tese("hiato", ["4T26"]))
     d = json.loads(arq.read_text(encoding="utf-8"))
-    d["rodada"] = "r1"
+    d["rodada"] = "rf"
     arq.write_text(json.dumps(d), encoding="utf-8")
-    check("arquivo cuja rodada nao bate com o nome levanta",
-          levanta(lambda: cs.ler_caminhos(CICLO, "r2", CTX, raiz), "o nome e a pasta dizem") is True)
+    check("arquivo _r1.json com rodada 'rf' dentro levanta na leitura",
+          levanta(lambda: cs.ler_caminhos(CICLO, CTX, raiz), "inválida") is True)
+    d["rodada"] = "r1b"
+    arq.write_text(json.dumps(d), encoding="utf-8")
+    check("arquivo cuja rodada nao bate com o nome (r1b dentro de _r1.json) levanta",
+          levanta(lambda: cs.ler_caminhos(CICLO, CTX, raiz), "o nome e a pasta dizem") is True)
     arq.unlink()
-    grava(raiz, "cambioo", "r2", {}, {})
-    check("arquivo da rodada com agente desconhecido no nome levanta",
-          levanta(lambda: cs.ler_caminhos(CICLO, "r2", CTX, raiz), "agente desconhecido") is True)
+    grava(raiz, "cambioo", "r1", {}, {})
+    check("arquivo _r1.json com agente desconhecido no nome levanta",
+          levanta(lambda: cs.ler_caminhos(CICLO, CTX, raiz), "agente desconhecido") is True)
+    cs.arquivo_caminhos(CICLO, "cambioo", raiz).unlink()
 
     # 12. a aba mal preenchida
     (tmp / "vazia").mkdir()
@@ -355,7 +495,7 @@ with tempfile.TemporaryDirectory() as tmp:
           levanta(lambda: cs.ler_tutela(vazia), "Exógenas", "linha 3 (meta_12m)", "0 agentes Principal",
                   "exatamente um") is True)
     check("e a consolidacao tambem",
-          levanta(lambda: cs.consolidar(CICLO, "r1", raiz=raiz, tracker=vazia, sim=SIM, faixa=False),
+          levanta(lambda: cs.consolidar(CICLO, "p1", raiz=raiz, tracker=vazia, sim=SIM, faixa=False),
                   "0 agentes Principal") is True)
     (tmp / "dois").mkdir()
     dois = planilha(tmp / "dois", TUTELA)
@@ -388,9 +528,8 @@ with tempfile.TemporaryDirectory() as tmp:
                                                          "fiscal": "subordinado"})
 
     # 13. a pasta real do ciclo nao foi tocada
-    real = cs.pasta(CICLO)
-    check("nada gravado em obsidian/ciclos/2026-10-22/",
-          not (real / "P1.md").exists() and not (real / "caminhos").exists())
+    check("nada criado nem alterado em obsidian/ciclos/2026-10-27/ (a pasta real)",
+          _foto(cs.pasta(CICLO)) == FOTO)
 
 print()
 print("tudo ok" if falhas == 0 else f"{falhas} falha(s)")

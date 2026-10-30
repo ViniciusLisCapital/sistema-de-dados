@@ -47,10 +47,11 @@ Cada cobrança reabre o report final do agente só no trecho citado: ele respond
 - No relatório: seção 4, mesmo parágrafo de C4, preenchido.
 - Resposta: `inflacao_rf.md`, seção 4, IN-E7: na direção não divergem; a diferença é onde a decisão mora (premissa da base no fiscal, fora da central e sem tamanho na inflação); decide a renovação em lei ou MP, com valor, até dezembro. É o mesmo fato que o fiscal aponta.
 
-## C6 · aberta
+## C6 · respondida
 - Para: fiscal (`fiscal_rf.md`, seção 4, Divergências, item "Com a inflação, sobre a subvenção")
 - Trecho: "Se 2026 terminar sem ele, o degrau de janeiro passa à base da inflação e a minha base tira o custo."
 - Defeito: 8.8, contradição entre agentes: premissa sobre a área da inflação diferente do que a inflação escreveu. No IN-E7 reescrito, a inflação diz: "se não vier, o fim em janeiro entra como alta no 1T27, dentro dos +5% de combustíveis do upside", isto é, na cauda e não na base.
 - Falta: sem o ato legal até 31/12/2026, em que parte da distribuição da inflação o degrau de janeiro entra, segundo o report da inflação, e o que isso muda na sua frase?
 - Por que o leitor precisa: a seção 4 diz o que acontece com cada posição se o ato não sair.
 - No relatório: texto mantido como no RF da inflação, dona da área (seção 4 e linha "até 31/12/2026" da seção 5 dizem "cauda de alta da inflação"); sem placeholder.
+- Resposta: `fiscal_rf.md`, seção 4, Divergências, item "Com a inflação, sobre a subvenção", sub-item "O fato": sem o ato legal até 31/12/2026, o degrau de janeiro não passa à base da inflação; fica na cauda de alta dela, como alta no 1T27 dentro dos +5% de combustíveis do upside (IN-E7), porque a central não vê combustíveis. Do lado fiscal muda só a base, que tira o custo do primário de 2027. Nenhum caminho, faixa ou probabilidade muda; o relatório já dizia "cauda de alta da inflação" e fica como está. (2026-10-30, agente fiscal novo, sem o contexto da rodada, só com os três trechos; ~105k)

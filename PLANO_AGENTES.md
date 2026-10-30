@@ -21,11 +21,11 @@ As frentes estão na ordem do que mais precisa do usuário para o que menos.
 
 | Frente | O quê | Chat | Quanto precisa do usuário | Status |
 |---|---|---|---|---|
-| A | Desenho do ciclo e do moderador | A | **muito**: conversas de desenho e decisões em janela, do formato do ciclo ao papel do moderador | a começar |
-| B | Agentes de mercado de trabalho e crédito | B | **muito**: dois mapas conceituais aprovados parte a parte, fronteiras com atividade, PM e fiscal, lista de dados | a começar |
-| C | Modelo Estrutural, a partir do feedback dos agentes | C | **médio**: ler o feedback consolidado, escolher o que mudar, aprovar o resultado da reestimação | a começar |
-| D | Conhecimento: camada 1 de literatura e de modelos mentais | D | **pouco**: a escolha das gestoras (uma janela) e a camada 1 dos dois novos, com o julgamento delegado como em 2026-10-29 | a começar |
-| E | Engenharia do ciclo | E | **pouco**: a regra do corte do F por divulgação | a começar |
+| A | Desenho do ciclo e do moderador | A | **muito**: conversas de desenho e decisões em janela, do formato do ciclo ao papel do moderador | **feito** (2026-10-30: A1–A3; decisões em SISTEMA III.III.viii) |
+| B | Agentes de mercado de trabalho e crédito | B | **muito**: dois mapas conceituais aprovados parte a parte, fronteiras com atividade, PM e fiscal, lista de dados | fronteiras e perguntas decididas (SISTEMA III.III.ix); mapas em rascunho; a tese espera C |
+| C | Modelo Estrutural, a partir do feedback dos agentes | C | **médio**: ler o feedback consolidado, escolher o que mudar, aprovar o resultado da reestimação | C1 feito (feedback dos sete, testes de âncora e hiato, PDF); decisões adiadas pelo usuário para antes do ciclo 2 |
+| D | Conhecimento: camada 1 de literatura e de modelos mentais | D | **pouco**: a escolha das gestoras (uma janela) e a camada 1 dos dois novos, com o julgamento delegado como em 2026-10-29 | D1 em curso: Verde-inflação feito (~2,8M); expectativas descartado; Kapitalo-externo e Kinea-fiscal/atividade a seguir |
+| E | Engenharia do ciclo | E | **pouco**: a regra do corte do F por divulgação | E1 feito (ciclo 10-27 fechado; sem regra de corte, decisão do usuário); E2 parte A em curso |
 | F | O ciclo 2 | F | **no fim**: a data, a base atualizada, a revisão da conversa, dos P e do relatório | espera A–E |
 | P | Coordenação | principal | o ponto de contato: abre as ondas, integra as decisões | em curso |
 

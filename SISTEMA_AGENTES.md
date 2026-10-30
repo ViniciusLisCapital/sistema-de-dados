@@ -121,6 +121,7 @@
         - Decidido (2026-10-21): por enquanto só a Verde, com as cartas do ciclo de aperto de 2021 e 2022 (~24 cartas), para ver que modelo ela aplicou naquele ciclo. Kinea, Kapitalo e outras janelas vão para a fila de PM.
         - Feito (2026-10-21): `verde_mp_mental_models.md`, 24 cartas em 3 rodadas, todas aprovadas pelo revisor (commits 50c1a1f, ce5d7e6, 14d91ac). A estrutura (4 blocos, 14 seções) ainda não foi revista pelo usuário.
     - viii. Modelos mentais do BC: uma linha histórica (o que não muda com o presidente) e uma da gestão atual. (a discutir; estoque até ser promovido, I.III.xvi)
+        - Decidido (usuário, 2026-10-30): um modelo mental **por gestão do BC**, começando pela "Gestão Galípolo" (desde 2025-01-01). Atas e comunicados já são sínteses: não passam pelo `/mental`, entram no vault com tags e links ao mapa de conhecimento. Só os RPMs são processados no modelo mental da gestão. Por ora, só a incorporação das atas e comunicados (frente D); os RPMs ficam para depois.
     - ix. Síntese trimestral de comunicado + ata + RPM. (a discutir; o usuário marcou como discussão importante, adiada em 2026-10-20. Hoje 261 atas, 234 comunicados e 12 RPMs ficam fora do agente do vault. Na camada 1 do agente de PM (I.III.xvi): todos os comunicados, atas e RPMs publicados desde o início do mandato do Galípolo (2025-01-01) e antes da data do ciclo; hoje 14 comunicados e 14 atas (reuniões 268 a 281) e 7 RPMs (mar/2025 a set/2026). Decidido 2026-10-21; a data de início muda quando mudar o presidente do BC.)
 
 
@@ -169,7 +170,7 @@
             - Política monetária (decidido 2026-10-21): a variável é a meta Selic no fechamento de cada um dos seis trimestres (a decisão da última reunião dentro dele). Os dois primeiros trimestres saem também reunião a reunião, com a probabilidade de cada passo (manter, −25, −50 pb…); os seguintes no formato padrão. A central do modelo vem como Selic média do trimestre; o fechamento sai de uma conta fixa no `modelo.py`, a média deste trimestre e a do seguinte (erro médio de 0,12 p.p. contra a Selic real, 2006–2026), mecânica e não tempero. O caminho reunião a reunião dos dois primeiros trimestres é julgamento do agente, com a curva DI e a Focus, e forma a distribuição em volta da central. **A central é a do modelo em todos os trimestres.** Depois do primeiro teste solo chegou a valer uma exceção nos dois primeiros trimestres, desfeita no mesmo dia: ela partia de um passo máximo de 25 p.b. por reunião que o agente afirmou de memória e o ciclo de 2021–2022 desmente; e o corte do modelo tem leitura econômica (a NTN-B de 10 anos cai com o prêmio fiscal, o que precifica consolidação e menos demanda, mapa 2.5). **A revisar quando o plano terminar** (decisão do usuário, 2026-10-21): reestimar a regra de juros no fechamento seria o mais correto. Placar por trimestre e por reunião. Worst = Selic acima da central. O Fed Funds não é variável de tese: entra como caminho exógeno. Perguntas centrais (mapa de PM, Parte 1), refeitas no mesmo dia depois da revisão do primeiro report: o agente não descreve o Copom, confronta o que o Copom vai fazer (Q1), o que deveria fazer pelos dados (Q2) e o que o mercado precifica, com a sinalização do Copom como evidência (Q3); Q4 é a tese, e a distância entre Q1 e Q2 é risco.
         - Placar: para cada trimestre que fechou desde o último ciclo, o agente diz em que faixa a variável caiu.
         - Report e relatório em português; termos técnicos consagrados em inglês são permitidos (forward guidance, carry etc.).
-    - ii. Fluxo e registro da interação:
+    - ii. Fluxo e registro da interação (**o fluxo em rodadas foi substituído em 2026-10-30 pelo de III.III.viii**; o registro continua valendo):
         - Fluxo (desenho do usuário, 2026-10-02; substitui o esboço de 2026-10-01, em que um agente escrevia depois do outro):
             - Rodada 1: cada agente escreve o seu report. O Modelo Estrutural consolida os reports da rodada em P1.
             - Rodada 2: cada agente lê os reports de todos e o P1 e escreve de novo. O modelo consolida em P2.
@@ -199,7 +200,31 @@
         - Atividade: a tese é o hiato do BC por trimestre, com uma linha companheira de PIB interanual derivada mecanicamente (hiato do modelo + potencial implícito no hiato do BC). O placar do hiato é o primeiro RPM depois do PIB do IBGE daquele trimestre (a edição do fechamento do trimestre seguinte; decidido no mesmo dia, depois de a edição do próprio fechamento ter sido escolhida e o viés de revisão aparecer). Ideia do usuário para depois: um modelo que regride só a parte consolidada do hiato do BC (até dois ou três anos atrás, a de menor revisão esperada) contra PIB, desemprego, indústria e outros, e usa esses coeficientes para a frente. Ideia do usuário para depois: decompor o hiato em componentes (PIB, desemprego e outros), e então o hiato passaria a ser de mais de um agente.
         - Fiscal: a política fiscal tem duas discussões, (i) contábil (tamanho e composição da dívida, estrutura do orçamento, propostas do governo, medidas, resultados primário e nominal) e (ii) o impacto das medidas fiscais sobre a atividade e a inflação (crescimento das despesas, impulso, demanda do governo no PIB, a postura da política fiscal). As duas ficam registradas no mapa; o interesse agora é a (ii). As metas da regra fiscal não estão no banco: no 1º ciclo o agente declara a lacuna e compara com a Focus; depois, uma tabela declarativa no molde da `inflc_meta`.
         - Externo: um agente só, com três blocos obrigatórios em todo report, cada um com seção própria (política dos EUA, risco e dólar, commodities). A separação em dois agentes (EUA/condições globais × commodities) se decide pelo log do 1º ciclo. Cada exógena é medida na convenção em que o modelo a usa (`modelo.CONVENCAO`), e as teses vêm em três blocos de cenário.
-        - Expectativas: a tese é a Focus IPCA 12 meses, medida pela média do trimestre (convenção do modelo). Q1 compara o nível de desancoragem com o histórico; Q2 lê as aberturas das expectativas de inflação e de PIB. O usuário registrou que ainda tem dúvidas sobre este agente.
+        - Expectativas: a tese é a Focus IPCA 12 meses, medida pela média do trimestre (convenção do modelo). Q1 compara o nível de desancoragem com o histórico; Q2 lê as aberturas das expectativas de inflação e de PIB. O usuário registrou que ainda tem dúvidas sobre este agente. **Retirado em 2026-10-30 (III.III.x).**
+    - viii. O ciclo a partir do ciclo 2 (decidido 2026-10-30, Plano 2, frente A; respostas literais em `coordenacao/A_ciclo.md`):
+        - Fluxo (desenho do usuário): cada agente lê o relatório do ciclo anterior e o próprio R1 anterior → escreve o R1 e a demanda web (D1) → o moderador consolida as D1 e despacha o agente web → cada agente recebe as notícias e as perguntas que os outros lhe fizeram e finaliza o R1 → conversa de convergência conduzida pelo moderador (nova demanda web é consolidada, a conversa pausa e o web é despachado de novo) → atualização curta do R1 → o escrivão formata e organiza os R1 num relatório só. Sem rodada 2 e sem report final por agente.
+        - O R1 é uma atualização completa: o que mudou e o placar; a tese de todos os trimestres, antes → agora; a argumentação só onde mudou, o mantido em uma linha; caminhos (JSON) e temperos em tabela, ficha só para o novo ou mudado; pedidos (D1 e perguntas aos outros); "Sobre o modelo". Os dois agentes novos escrevem R1 completo no ciclo 2. No ciclo 2, o "R1 anterior" dos sete é o RF de 2026-10-27.
+        - Modelo Estrutural: roda por padrão com os caminhos do R1 final (a mesa comum da conversa) e quando a convergência fecha (a central do relatório). Durante a conversa agentes e moderador podem rodá-lo para provar um ponto ou estressar uma premissa; isso não muda a central.
+        - Depois da convergência vale o combinado: a atualização curta do R1 muda tese, probabilidades e texto, não premissa; mudança de caminho espera o próximo ciclo.
+        - Moderador: agente próprio, Opus (`.claude/agents/moderador.md`). É um provocador e a central da lógica: questiona premissas, estressa cenários até o limite, procura cenários que não batem entre si e riscos não discutidos, e pode recomendar o lado com mais fundamento, inclusive o subordinado contra o dono. Pesa cada argumento em premissas → conclusão e não deixa passar argumento "porque sim". Leva a mensagem um a um (cada lado recebe só o argumento do outro e a pergunta que decide). Chama outra área como **testemunha** quando ela traz evidência da própria área; testemunha sem expertise na exógena não opina sobre ela. Lê os R1 finais, o P da abertura, o relatório e a ata anteriores e os mapas por trecho; é avaliado pela ata literal.
+        - Fim de um assunto: o dono da premissa decide em até duas voltas; sem acordo, "divergência registrada", com o fato que a decidiria. O que só o usuário resolve vai à seção "Para o usuário" da ata, sem parar a conversa. No ciclo 2 o usuário vê a pauta antes e pode acrescentar ou cortar; depois, só na ata.
+        - Futuro (registrado pelo usuário): o moderador vira **economista-chefe**, que modera e também decide divergências; e recebe uma base de eventos históricos de todas as variáveis, para imaginar cenários que os agentes não discutiram.
+        - Relatório: a estrutura de IV.vii fica, sem teto de tamanho. Regra nova do escrivão: o mesmo fato é dito uma vez, onde pesa mais, e as outras seções só o citam.
+        - "O que derrubaria a tese": 2–3 itens por tese, cada um com o que observar, em que direção, até quando e o que muda (qual cauda, quanto de probabilidade); o moderador testa cada um na conversa.
+        - Caudas de exógena alheia: o agente usa os caminhos de upside e downside do dono, que passam a ir no arquivo de caminhos.
+        - Câmbio e juro: o câmbio roda o cenário com a Selic do modelo, a da curva e a da Focus no R1; diferença grande vira pergunta à PM, respondida no R1 final.
+        - Ruído: no ciclo 2, o R1 de câmbio e PM roda duas vezes (~0,6M). Teto de custo do ciclo 2: 10M; ao chegar lá, a sessão para e pergunta ao usuário.
+        - Dados: nenhuma regra de corte por data; o ciclo usa tudo o que está no banco no momento da extração (frente E, 2026-10-30).
+        - Literatura (usuário, 2026-10-30): de agora em diante todo ciclo e todo agente trabalham **com literatura** (o retrato da camada 1). O ciclo 2026-10-27 foi sem literatura de propósito, para ficar como benchmark; o modo `--sem-literatura` fica só para refazer esse benchmark.
+    - ix. Mercado de trabalho e crédito (decidido 2026-10-30, frente B; `coordenacao/B_novos_agentes.md`):
+        - Fronteiras: o mercado de trabalho fica com as quatro `mt_*` e entrega a folga do trabalho (desocupação contra NAIRU, salário contra produtividade) a atividade, inflação e PM; o hiato continua da atividade; o trabalho dos EUA continua com o externo. O crédito conclui sobre as condições (taxas, spreads, concessões, oferta e demanda, inadimplência, endividamento) e sobre quanto da Selic chega ao crédito; a PM conclui sobre postura e eficácia. No parafiscal o fiscal decide (aportes, tamanho do estímulo) e o crédito mede (direcionado, bancos públicos, efeito na transmissão). O impulso de crédito é do crédito; a atividade conclui o efeito na demanda.
+        - Perguntas centrais: mercado de trabalho com cinco (folga; o que move emprego e renda; os setores mais cíclicos e a fase do ciclo, pedido do usuário; salários contra produtividade; cenário); crédito com seis (aperta ou afrouxa; de que é feito o saldo e quem puxa, pedido do usuário; a Selic chega ao crédito; impulso; endividamento e inadimplência como limite; cenário).
+        - A variável da tese espera os testes do Modelo Estrutural (frente C): o teste do hiato mostrou a desocupação como o que mais move o hiato estimado, então a NAIRU é pergunta do mercado de trabalho, entre ou não algo no modelo; crédito na IS está parado até o hiato.
+    - x. O agente de expectativas sai (decidido pelo usuário, 2026-10-30): ele não tem assunto próprio, lê o que o mercado espera das variáveis dos outros; o único tema dele, a ancoragem da inflação esperada na meta, é a pergunta de credibilidade do Copom. O que era dele vai ao dono natural:
+        - à PM: a Focus de IPCA, a ancoragem na meta, a inflação implícita na curva (a curva já era dado dela) e a variável de tese (Focus IPCA 12 meses, endógena da equação de expectativas do modelo); a Focus de Selic; o QPC (neutro, hiato e NAIRU do mercado), que os outros consultam;
+        - à atividade: a Focus de PIB; ao mercado de trabalho: a Focus de desocupação; ao câmbio: a Focus de câmbio;
+        - a literatura da camada 1 dele vai aos novos donos (frente D); o modelo mental dele já tinha sido descartado.
+        - O ciclo 2 passa a ter **oito** agentes. A lista V.VII fica como registro até a redistribuição entrar nas listas dos novos donos.
 
 
 # (IV) Decisões pendentes
@@ -769,6 +794,7 @@
 *Sem TWA (crédito e mercado de trabalho do Brasil não mudam a leitura externa) e sem exógeno (o CDS é do fiscal). Fora da lista (consulta livre, sem uso previsto): `inflc_cpi_dim`, `inflc_cpi_pesos`, `inflc_pce_dim`, `mt_ces_dim`, `mt_jolts_dim` (hierarquias e pesos, que o F usa e o agente não lê), `mt_produtividade` (produtividade e custo unitário do trabalho, profundidade que a forma mínima dispensa) e `cmb_reer` (do câmbio). `comm_icbr` (em reais) é da inflação e `clima_oni` fica fora de todas as listas.*
 
 ## (V.VII) Agente de expectativas
+*Agente retirado em 2026-10-30 (III.III.x); as tabelas desta lista estão sendo redistribuídas aos novos donos.*
 *Lista aprovada pelo usuário em 2026-10-22 (janela de aprovação do mapa). Escrita pelo subagente do agente.*
 
 ### i. Endógeno
@@ -805,5 +831,129 @@
 
 ### v. Endógeno de fiscal (consulta; a posição vem pela saída XS8 do mapa de expectativas)
     - `cmb_risco_pais`: CDS de 5 anos do Brasil. O prêmio de risco soberano, termômetro da dúvida fiscal que chega primeiro aos horizontes longos (canal 2.3); a carga é manual, conferir a data do último dado.
+
+## (V.VIII) Agente de mercado de trabalho
+*Aprovada pelo usuário em 2026-10-30 (`coordenacao/B_novos_agentes.md`, Decisões), a partir da proposta do mapa (`obsidian/labor_market/labor_market_conceptual_map.md`, Partes 1–4). Fronteiras decididas pelo usuário em 2026-10-30 (III.III.ix): as quatro `mt_*` saem da atividade; o hiato fica com a atividade; o trabalho dos EUA fica com o externo; o crédito é do agente de crédito, que ainda não existe. Os números entre parênteses ao fim de cada item são os canais do mapa. Nenhuma tabela TWA nem exógena.*
+
+### i. Endógeno
+    - `mt_pnad`: PNAD Contínua mensal (trimestre móvel), Brasil: desocupação, participação, nível de ocupação, subutilização (composta, por horas, força potencial, desalentados), informalidade, ocupação e rendimento por posição (com e sem carteira, conta própria com e sem CNPJ, setor público) e por atividade, rendimento habitual e efetivo, massa real. É a base da folga (T1), do emprego e da renda (T2) e do corte setorial (T3) (2.1, 2.2, 2.4, 2.5, 2.6). Sai da atividade.
+
+    - `mt_desocupacao_retro`: desocupação dessazonalizada (MM3M) do BC, retropolada desde 2004, do anexo do RPM. É a série que o modelo agregado do BC usa e a candidata da variável da tese na alternativa (a); anda só a cada RPM (2.1, tese). Sai da atividade.
+
+    - `mt_caged`: estoque de emprego formal celetista do BC, total e 13 setores, desde 1992. O sinal mensal do ciclo e a série longa para medir com um G quais setores viram primeiro; o BC reancora o nível para trás e o último mês pode ser provisório (coluna `fonte`) (2.3, 2.4, 2.6). Sai da atividade.
+
+    - `mt_caged_setor`: admissões, desligamentos e saldo do Novo CAGED por seção CNAE (22), desde 2020. Admissões contra desligamentos por setor é a leitura da fase do ciclo (T3) (2.6). Sai da atividade.
+
+    - `mt_pnad_trimestral`: PNAD trimestral, Brasil: horas habituais e efetivas por posição, rendimento por grupo de ocupação e por atividade, desocupação e subutilização por idade, instrução, sexo e cor. É a única série de horas trabalhadas, sem a qual não há produtividade por hora (T4, 2.7); a desocupação dos jovens é o corte mais cíclico (2.2, 2.6). Trimestral e com um trimestre a mais de atraso que a mensal.
+
+    - `mt_caged_uf`: saldo, admissões e desligamentos do Novo CAGED por UF, desde 2020. É o único corte regional do banco (não há PNAD por UF): diz se uma desaceleração está concentrada em estados agrícolas ou industriais (T3, 2.6). Leitura enxuta.
+
+    - `mt_caged_salario`: admissões, desligamentos e saldo do Novo CAGED por faixa de salário em múltiplos do salário mínimo, desde 2020. Mostra se a contratação está na base da distribuição, onde o salário mínimo morde (T4, 2.6, 2.9). Não traz salário médio; as faixas saltam a cada janeiro com o reajuste do mínimo. Leitura enxuta.
+
+### ii. Endógeno de atividade (consulta; a posição vem pelas saídas MT-AT1–MT-AT2)
+    - `pm_hiato_produto`: hiato do produto do BC na edição corrente do RPM. A outra leitura da mesma folga: hiato e desocupação que discordam dizem que uma das duas está errada (T1, 2.1, 2.3, 2.8).
+
+    - `atv_pib`: PIB trimestral em volume, com o valor adicionado por setor (agropecuária, indústria de transformação, construção, comércio, transporte, serviços de informação, financeiros, administração pública…). Numerador da produtividade, total e por setor, contra a ocupação da PNAD (T4, 2.7) e o produto de cada setor contra o emprego dele (T3, 2.6).
+
+    - `atv_pib_taxas`: crescimento oficial do PIB. A regra de Okun e o crescimento da produtividade (2.3, 2.7).
+
+    - `atv_ibcbr`: IBC-Br, total e por setor. O ciclo mensal contra o emprego mensal (2.3, 2.6).
+
+    - `atv_pim`: produção industrial por seção. A produção da indústria contra o emprego na indústria (2.6).
+
+    - `atv_pmc`: volume do varejo por segmento. O comércio, setor sensível ao crédito, contra o emprego no comércio (2.6).
+
+    - `atv_pms`: volume de serviços por segmento. O maior empregador, contra o emprego em serviços (2.6, 2.8).
+
+### iii. Endógeno de inflação (consulta; MT-IN1–MT-IN2)
+    - `inflc_agregados`: IPCA, serviços e serviços subjacentes. Deflator do rendimento e da massa (2.5) e o lado dos preços da T4: se a pressão salarial aparece em serviços (2.7, 2.8).
+
+### iv. Endógeno de expectativas (consulta; MT-EP1)
+    - `expc_focus_periodo` (desocupação): mediana da Focus para a taxa de desocupação, anual e trimestral. O consenso, para separar surpresa de convergência (T5, 2.1).
+
+    - `expc_qpc`: Questionário Pré-Copom, blocos NAIRU e hiato. A NAIRU do mercado é a referência da T1, já que o banco não tem NAIRU (2.1).
+
+### v. Endógeno de fiscal (consulta; MT-FS1–MT-FS2)
+    - `fisc_rtn`: resultado do governo central por rubrica. Bolsa Família, BPC, seguro-desemprego, abono e pessoal: transferências que mudam renda e participação fora do mercado de trabalho, e a folha pública (2.2, 2.9).
+
+### vi. Endógeno de crédito (consulta; MT-CR1; o agente de crédito ainda não existe, e até lá o agente declara as premissas)
+    - `cred_ptc`: oferta e demanda de crédito na leitura dos bancos, por segmento (inclusive micro, pequenas e médias). A oferta às pequenas empresas: quando ela trava, as demissões caem primeiro nos setores de muitas pequenas empresas, comércio e serviços (nota do 2.6; juro e crédito chegam ao emprego agregado pelo crescimento, 2.3, decisão do usuário 30/10).
+
+*Fora da lista (consulta livre, sem uso previsto): `pm_hiato_produto_vintages` e `atv_pib_valores_correntes` (do placar e da composição da atividade), `atv_pim_uso`, `atv_renda_poupanca`, os outros cortes de crédito, `pm_copom_reuniao`, `br_interest_rate` (juro e crédito chegam ao emprego pelo crescimento, que vem da atividade; decisão do usuário, 30/10). `mt_jolts`, `mt_ces`, `mt_cps` e `mt_produtividade` (EUA) ficam com o externo.*
+
+*Não está no banco (lacunas do tracker, aba Quant - Labor Market, mais as achadas no mapa): NAIRU calculada; salário mínimo; vagas (curva de Beveridge); PNAD por UF; produtividade e custo unitário do trabalho (viram G sobre `atv_pib` e a PNAD); INPC (o índice do reajuste do mínimo); taxa de sindicalização. O agente declara a lacuna, nunca escreve o valor de memória. A linha do tracker que diz que `mt_pnad` só cobre 2024 em diante está velha: a tabela vai de 2012-03 a 2026-09.*
+
+## (V.IX) Agente de crédito
+*Aprovada pelo usuário em 2026-10-30 (`coordenacao/B_novos_agentes.md`, Decisões), a partir da proposta do mapa (`obsidian/credit/credit_conceptual_map.md`, Partes 1–4). Fronteiras decididas pelo usuário em 2026-10-30 (III.III.ix): o crédito fica com todas as `cred_*` (as 11 que eram TWA na PM, na atividade e no fiscal, mais porte, atividade econômica e tipo de cliente); conclui sobre as condições e quanto da Selic chega a elas (a PM, sobre a postura); mede o direcionado e os bancos públicos (o fiscal decide o parafiscal); é dono do impulso de crédito (a atividade conclui o efeito no hiato); consulta o mercado de trabalho sem concluir. Os números entre parênteses ao fim de cada item são os canais do mapa. Nenhuma tabela TWA nem exógena.*
+
+### i. Endógeno
+    - `cred_credito_resumo`: saldo, concessões (com e sem ajuste sazonal), taxa de juros, spread, ICC, inadimplência e % do PIB, por recurso (total, livre, direcionado) × segmento (total, PF, PJ), mais o corte não rotativo; 84 séries, a maioria desde 2011-03, até 2026-09. É a tabela central: condições (preço contra quantidade, 2.1), a decomposição livre × direcionado e PF × PJ (2.2), o repasse (2.5), a fatia que a Selic não alcança (2.6), o impulso pelo estoque (2.7), a inadimplência (2.9) e a candidata (b) da tese (concessões reais). Sai de TWA na PM, na atividade e no fiscal.
+
+    - `cred_modalidade_livre_pf`: crédito livre à PF por modalidade (consignado por origem, pessoal não consignado, veículos, cartão à vista, parcelado e rotativo, cheque especial, composição de dívidas), saldo, concessão, taxa e inadimplência, desde 1994 (saldo) e 2011 (demais), até 2026-09. O que o crédito às famílias financia e onde aparece o aperto (rotativo e cheque especial como sinal de estresse) (2.3, 2.5, 2.8, 2.9). Sai de TWA na PM e na atividade.
+
+    - `cred_modalidade_livre_pj`: crédito livre à PJ por modalidade (capital de giro por prazo, desconto de duplicatas e recebíveis, conta garantida, ACC, financiamento de exportação e importação, cartão, cheque especial), mesmas métricas e cobertura. Capital de giro e comércio exterior: produção, liquidez das empresas e a parte do saldo atrelada ao dólar (2.3, 2.5, 2.9). Sai de TWA na PM e na atividade.
+
+    - `cred_modalidade_direcionado_pf`: direcionado à PF (imobiliário e rural, a taxas de mercado e reguladas; BNDES; microcrédito), mesmas métricas, desde 2007-03. A metade da política no lado das famílias (2.2, 2.6). Sai de TWA na PM e no fiscal.
+
+    - `cred_modalidade_direcionado_pj`: direcionado à PJ (BNDES por finalidade — capital de giro, investimento, agroindustrial —, rural e imobiliário a taxas de mercado e reguladas, programas para MPME), mesmas métricas, desde 2007-03. O financiamento do investimento e o parafiscal medido pelo lado do empréstimo (2.2, 2.3, 2.6). Sai de TWA na PM, na atividade e no fiscal.
+
+    - `cred_credito_controle_capital`: saldo, inadimplência e provisões por controle do banco (públicos, privados nacionais, estrangeiros), desde 1988. Mercado contra política pelo lado de quem empresta; a série longa para medir com um G se os bancos públicos emprestam contra o ciclo (2.2, 2.6, 2.9). Sai de TWA na PM e no fiscal; as provisões, que nenhuma lista usava, entram.
+
+    - `cred_credito_porte`: saldo, inadimplência e saldo de maior risco das empresas por porte (MPME e grandes), desde 2012. A pequena empresa sente o aperto de oferta primeiro e não tem o mercado de capitais como saída; responde à MT-CR1 do mercado de trabalho. Quebra metodológica no saldo de maior risco (até 2024-12 e desde 2025-01, sem sobreposição) (2.3, 2.7, 2.9).
+
+    - `cred_credito_atividade_economica`: saldo das empresas por atividade (agropecuária, ~17 subsetores da indústria, ~15 de serviços), 38 séries, desde 2012. Que setores tomam crédito e a decomposição do impulso por atividade (2.3, 2.7). Leitura enxuta.
+
+    - `cred_credito_tipo_cliente`: saldo por tipo de cliente (setor privado PF e PJ, setor público federal e estadual-municipal), desde 1988. A fatia do saldo bancário que não é família nem empresa, crédito a governos subnacionais incluído (2.3). Leitura enxuta.
+
+    - `cred_credito_amplo`: crédito ao setor não financeiro (governo, empresas, famílias) por instrumento: SFN, outras instituições, fundos públicos, títulos domésticos e securitização, dívida externa nos mercados interno e externo; 17 séries desde 2013. Separa substituição (empresa grande indo ao mercado) de aperto, e traz a dívida externa que anda com o câmbio (2.4). Universo diferente do crédito do SFN: não reconcilia. Sai de TWA na PM e na atividade.
+
+    - `cred_ptc`: Pesquisa Trimestral de Condições de Crédito, oferta e demanda observadas e esperadas, em grandes empresas, MPME, PF consumo e PF habitacional, desde 2011-T2, até 2026-04 (trimestral). A leitura dos próprios bancos de oferta contra demanda e a surpresa contra o que eles esperavam (2.1). Escala de −2 a +2 (média não ponderada das respostas); painéis pequenos e de tamanhos diferentes. Sai de TWA na PM e na atividade.
+
+    - `cred_fluxo_financeiro`: fluxo financeiro do crédito bancário (concessões − pagamentos), acumulado em 12 meses, % do PIB, total, PF e PJ, do anexo do RPM (não é SGS), desde 2015-01. É a fonte do impulso no conceito do BC, `fluxo(t) − fluxo(t−12)`, e a candidata (a) da tese (2.7). **Parada em 2026-04**: o RPM de set/2026 saiu sem o gráfico, e a carga recarrega a última edição que o publicou (jun/2026); conferir a data a cada ciclo e, enquanto parada, usar o impulso pelo estoque (item 1) e dizer isso. Sai de TWA na PM e na atividade.
+
+    - `cred_credito_familias`: endividamento das famílias (sobre a renda de 12 meses, com e sem imobiliário) e comprometimento de renda (serviço total, sem imobiliário, só juros), desde 2005, até 2026-08 (um mês atrás das outras). O limite das famílias (C5, 2.8). Sai de TWA na PM e na atividade.
+
+    - `cred_inadimplencia_pj`: inadimplência das empresas acima de 90 dias, atraso de 15 a 90 dias, taxa de juros e concessões PJ, com a Selic ao lado, desde 2011 (Selic desde 1986). O ciclo de inadimplência das empresas e o candidato a sinal antecedente, a medir com um G (2.5, 2.9). A Selic que vem nesta tabela é variável da PM: só leitura. Sai de TWA na PM.
+
+### ii. Endógeno de política monetária (consulta; a posição vem pelas saídas CR-PM1–CR-PM2)
+    - `pm_copom_reuniao`: Selic decidida por reunião. O referencial do repasse ao crédito pós-fixado e do custo do estoque (2.5, 2.8).
+
+    - `br_interest_rate`: curva DI (pré) nos vértices de 1 e 2 anos e a Selic. O custo de captação contra o qual o crédito prefixado é precificado: o repasse se lê contra a curva no prazo do empréstimo, não só contra a Selic (2.1, 2.5).
+
+### iii. Endógeno de atividade (consulta; CR-AT1–CR-AT2)
+    - `pm_hiato_produto`: hiato do BC na edição corrente do RPM. A demanda por crédito e a inadimplência seguem o ciclo (2.7, 2.9).
+
+    - `atv_pib_mensal`: PIB nominal mensal e de 12 meses. Denominador do impulso pelo estoque e de todo % do PIB; o impulso só vai até onde ele vai (2.7).
+
+    - `atv_pib`: PIB trimestral, consumo das famílias e FBCF. O que o crédito financia, para conferir a composição (C2) e se o impulso chega ao gasto (2.3, 2.7).
+
+    - `atv_pmc`: volume do varejo, veículos e móveis e eletrodomésticos. O consumo financiado a crédito (2.3).
+
+    - `atv_pim_uso`: produção industrial por categoria de uso, duráveis e bens de capital. Os bens que o crédito às famílias e o crédito ao investimento financiam (2.3).
+
+### iv. Endógeno de inflação (consulta; CR-IN1)
+    - `inflc_agregados`: IPCA. Deflator das concessões e do saldo (tese (b)) e do juro real do crédito (2.1, 2.5, 2.8).
+
+### v. Endógeno de mercado de trabalho (consulta; CR-MT1)
+    - `mt_pnad`: ocupação, informalidade, rendimento real habitual e massa salarial real. A renda que sustenta o serviço da dívida e o consignado (2.8, 2.9).
+
+    - `mt_caged`: estoque de emprego formal. O emprego formal, ao qual o consignado privado está atado, e o sinal mensal da inadimplência das famílias (2.8, 2.9).
+
+### vi. Endógeno de fiscal (consulta; CR-FS1–CR-FS2)
+    - `fisc_dlsp_fatores`: créditos do Tesouro às instituições financeiras oficiais (BNDES e outras). A decisão parafiscal, do fiscal, contra a qual o crescimento do direcionado é lido (2.2, 2.6).
+
+    - `fisc_rtn`: só as equalizações e subsídios ao crédito (custeio e investimento rural, Pronaf, Proex, fundos regionais, FIES, habitação de interesse social). O custo fiscal dos programas de crédito direcionado (2.6). Leitura enxuta.
+
+### vii. Endógeno de expectativas (consulta; CR-EP1)
+    - `expc_focus_periodo` (Selic): mediana da Focus para a Selic por ano. O juro esperado que precifica o crédito prefixado (2.5).
+
+    - `expc_focus_periodo` (IPCA): mediana da Focus para o IPCA por ano. O juro real ex-ante do crédito (2.5).
+
+### viii. Endógeno de câmbio (consulta; CR-CB1)
+    - `cmb_ptax`: câmbio diário. Reavalia em reais o crédito atrelado ao dólar (ACC, repasse externo) e a dívida externa das empresas, o que o impulso pelo estoque conta como crédito (2.3, 2.4, 2.7).
+
+*Fora da lista (consulta livre, sem uso previsto): `br_di_grade` (a curva completa; os vértices de 1 e 2 anos bastam), `pm_copom_projecoes`, `expc_qpc` (não pergunta de crédito), `atv_ibcbr`, `atv_pms`, `mt_caged_setor`, `fisc_nfsp`, `cmb_risco_pais`, as tabelas do externo (as condições globais chegam ao crédito pela curva, pelo câmbio e pela dívida externa da `cred_credito_amplo`).*
+
+*Não está no banco (lacunas; não há aba de crédito no tracker): o impulso de crédito publicado como série (o BC o publicou em boxe duas vezes); o fluxo financeiro desde set/2026; a decomposição do spread (custo de captação, inadimplência esperada, compulsório e impostos, margem), que o BC publica no Relatório de Economia Bancária; o Relatório de Estabilidade Financeira (capital e testes de estresse dos bancos); as regras e os tetos (consignado, rotativo), os programas e o compulsório, com datas; o saldo de crédito por vintage de concessão; a captação da poupança. O agente declara a lacuna, nunca escreve o valor de memória.*
 
 *Fim das listas por agente.*

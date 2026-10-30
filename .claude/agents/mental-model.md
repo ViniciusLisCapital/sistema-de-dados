@@ -35,7 +35,7 @@ The process and its decisions: `repository/mental_model/MENTAL_MODELS.md`.
 
 ## Arguments
 
-`$ARGUMENTS` is `<manager> <area> [letter ...] [--n N]` — `verde exchange_rate`, `goldman_sachs
+`$ARGUMENTS` is `<manager> <area> [letter ...] [--n N]`, or `<manager> <area> --fix` (see Fix mode) — `verde exchange_rate`, `goldman_sachs
 exchange_rate --n 3`, `kinea monetary_policy`.
 
 - Start with `mental.py --list`. Without a manager and an area, return that list and stop: say
@@ -49,10 +49,8 @@ exchange_rate --n 3`, `kinea monetary_policy`.
   document is in a state you can bring to a pass, do it (claims included) and return; if not,
   `abort` and say so.
 - **You do not run `done`.** The run is recorded only after the reviewer, by the `/mental` command.
-- **When you are resumed with the reviewer's findings**, each one names a block and a claim. Fix the
-  document (and the claims, if a claim was mis-stated), run `check` again, and return the same
-  report with a line per finding saying what you changed. If you think a finding is wrong, do not
-  change the text to please it: say why, and the user decides.
+- **`--fix`**: Fix mode, below. Findings are never fixed by resuming a writer: a fresh, lean agent
+  does it.
 
 ## The area
 
@@ -69,6 +67,8 @@ monetary-policy material. The same letter feeds several areas, each document on 
 | inflation | prices | expectations, inertia and indexation, pass-through, labor and services, food and energy shocks |
 | economic_activity | growth and the cycle | output gap, demand components, credit and fiscal impulse, external demand |
 | labor_market | employment and wages | slack, participation, wage dynamics, the labor market as a policy signal |
+| external | the global environment as it reaches Brazil | Fed and US rates, the global dollar, risk appetite, commodities, the peers' policy cycle |
+| expectations (no document yet; Verde's dropped 2026-10-30) | inflation expectations and their anchoring | Focus and surveys, the curve's implied inflation, dispersion and revisions, credibility of the target |
 
 Position and sizing logic (how the manager expresses a view: instrument choice, relative value,
 options, stop discipline) belongs to the area whose variable the position is on.
@@ -224,10 +224,11 @@ write here, in `repository/mental_model/ledger/.<document>.claims.json` (`begin`
     },
     "new": {
       "N1": {"claim": "From June 2026 the Fed chair's inflation-focused communication reinforces the regime without new activity data.",
-             "letter": "Verde-REL-2026_06"}
+             "letter": "Verde-REL-2026_06",
+             "evidence": "<the sentence of that letter that supports the claim, word for word>"}
     }
   },
-  "4.12": {"new": {"N1": {"claim": "...", "letter": "Verde-REL-2026_07"}}}
+  "4.12": {"new": {"N1": {"claim": "...", "letter": "Verde-REL-2026_07", "evidence": "..."}}}
 }
 ```
 
@@ -237,10 +238,39 @@ write here, in `repository/mental_model/ledger/.<document>.claims.json` (`begin`
   claim, in the document's language or in English. Leaving one out does not hide it: the reviewer
   reads the old text too and lists what your claims missed, and that blocks the run.
 - **`new`: every statement the new text makes that the old did not**, each tied to the letter of
-  this run it comes from.
+  this run it comes from, with `evidence`: **the sentence of that letter that supports the claim,
+  copied word for word** (3+ words; `check` looks for it in the run's letters and fails if it is
+  not there). If you cannot find a sentence that states the claim, the claim is yours, not the
+  letter's: cut or narrow it in the document. The reviewer starts from your evidence but still
+  judges against the letters.
 
 `check` fails until the file covers exactly the changed and added blocks. A pass is necessary, not
 sufficient: the judgment about what is a framework stays yours.
+
+**Last step before handing in, a self-audit.** For every new statement (every `N`), ask of its
+evidence sentence: does the letter state THIS causal link, THIS motive, THIS generalization, THIS
+scope? Every flagged statement of the first runs was one of these four: a link between two facts
+the letter only places side by side, a reason the letter does not give, a rule drawn from one case,
+a Brazil/US or market/book scope swapped. If the evidence says less than the claim, cut the
+excess from the document (and the claim) or narrow it to what the sentence says. Then `check`
+once more.
+
+## Fix mode (`<manager> <area> --fix`)
+
+You were launched fresh to fix what the reviewer flagged; you did not write the document and you
+carry no earlier context. Do not run `begin` and do not read the whole document or all the letters.
+
+1. `mental.py findings <manager> <area>`. It prints, in full, every blocking item (block, claim id,
+   statement, verdict, the reviewer's note), the current text of each flagged block and the letters
+   its new claims cite.
+2. Read only the flagged blocks and, in full, the letters `findings` lists.
+3. Change only what the findings name, in the document and in the claims file (the claim, its
+   evidence, a statement added to `old`/`new` if a finding says one was left out). Cut or narrow
+   what the letter does not state; do not add. Touch no other block and no other sentence of a
+   flagged block: the next review looks only at the blocks you change.
+4. `mental.py check <manager> <area>` until it passes.
+5. Return one line per finding: the block and id, what you changed (or, if you think the finding is
+   wrong, why you did not change it: the user decides). Nothing else.
 
 ## Never
 

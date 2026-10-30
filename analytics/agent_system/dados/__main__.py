@@ -31,7 +31,9 @@ AGENTES = {"cambio": "analytics.agent_system.dados.cambio",
            "atividade": "analytics.agent_system.dados.atividade",
            "fiscal": "analytics.agent_system.dados.fiscal",
            "externo": "analytics.agent_system.dados.externo",
-           "expectativas": "analytics.agent_system.dados.expectativas"}
+           "expectativas": "analytics.agent_system.dados.expectativas",
+           "mercado_trabalho": "analytics.agent_system.dados.mercado_trabalho",
+           "credito": "analytics.agent_system.dados.credito"}
 
 
 def conferir_consultas() -> None:

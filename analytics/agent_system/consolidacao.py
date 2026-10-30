@@ -1,27 +1,38 @@
 """
-A consolidação de uma rodada do ciclo conjunto: os caminhos dos agentes viram P1, P2 ou PF*
-(SISTEMA_AGENTES.md III.III.ii, IV.ii e IV.vi, decisões de 2026-10-22; PLANO_AGENTES.md Fase 9).
+A consolidação do ciclo conjunto: os caminhos dos agentes viram P1 (a abertura) ou PF* (o
+fechamento) (SISTEMA_AGENTES.md III.III.ii, IV.ii e IV.vi; PLANO_AGENTES.md Fase 9; ciclo
+redesenhado em 2026-10-30: sem rodada 2 e sem report final por agente).
 
-    uv run python -m analytics.agent_system.consolidacao --ciclo 2026-10-22 --rodada r1
-    uv run python -m analytics.agent_system.consolidacao --ciclo 2026-10-22 --rodada rf --sem-faixa
+    uv run python -m analytics.agent_system.consolidacao --ciclo 2026-10-30 --etapa p1
+    uv run python -m analytics.agent_system.consolidacao --ciclo 2026-10-30 --etapa pf --sem-faixa
+    uv run python -m analytics.agent_system.consolidacao --ciclo 2026-10-30 --etapa pf --refazer
 
-Lê `obsidian/ciclos/<ciclo>/caminhos/<agente>_<rodada>.json` (um por agente, gravado por ele) e
-a tutela de cada exógena da aba "Exógenas" do `repository/agent_mapping/data_tracker.xlsx`;
-roda o Modelo Estrutural uma vez (`modelo.rodar`, sem multiplicadores) e grava
-`obsidian/ciclos/<ciclo>/P1.md` (r1), `P2.md` (r2) ou `PF.md` (rf), com um `.json` ao lado.
+Lê `obsidian/ciclos/<ciclo>/caminhos/<agente>_r1.json` (UM por agente, gravado por ele) e a tutela
+de cada exógena da aba "Exógenas" do `repository/agent_mapping/data_tracker.xlsx`; roda o Modelo
+Estrutural uma vez (`modelo.rodar`, sem multiplicadores) e grava `obsidian/ciclos/<ciclo>/P1.md`
+(etapa p1) ou `PF.md` (etapa pf), com um `.json` ao lado. As duas etapas leem os MESMOS arquivos:
+o agente grava o dele no R1, pode atualizá-lo durante a conversa moderada e o congela quando a
+conversa fecha. `p1` roda depois do R1 final; `pf`, no fechamento (PF*) e DE NOVO depois da
+"atualização" curta de cada agente.
 
-O CONTRATO — o JSON que cada agente grava em cada rodada
+Ciclo fechado não se reconsolida: os P dele ficam como estão (não há mais P2 nem rf).
+
+O CONTRATO — o JSON que cada agente grava (um só, no R1)
 ---------------------------------------------------------
 
     {
       "agente": "cambio",                       # um de AGENTES
-      "rodada": "r1",                           # r1 | r2 | rf; igual ao nome do arquivo
+      "rodada": "r1",                           # sempre r1; igual ao sufixo do nome do arquivo
       "ciclo": "2026-10-22",                    # igual à pasta do ciclo
       "caminhos": {                             # só o cenário BASE, só as exógenas que o agente
         "vol": {"4T26": 13.5, "1T27": 13.0}     # quer escrever; chaves de modelo.exogenas(sim),
       },                                        # na convenção de modelo.CONVENCAO; trimestre
                                                 # "4T26" ou "2026T4", dentro da janela do modelo;
                                                 # depois do último dado, o valor é segurado
+      "caudas": {                               # OPCIONAL: as caudas das exógenas de que o agente
+        "upside":   {"vol": {"4T26": 15.0}},    # é o PRINCIPAL. O P usa só a base (`caminhos`);
+        "downside": {"vol": {"4T26": 12.0}}     # as caudas são lidas pelos agentes sem papel nela
+      },
       "tese": {                                 # a distribuição, por variável e trimestre
         "ptax": {                               # variável do modelo que é do agente (ENDOGENA_DONO),
           "trimestres": {                       # uma exógena (fiscal e externo) ou uma variável
@@ -34,15 +45,24 @@ O CONTRATO — o JSON que cada agente grava em cada rodada
       "nota": "opcional, texto livre"
     }
 
-  - As caudas são de POSIÇÃO (SISTEMA III.III.i, decidido 2026-10-22):
+  - Só `"rodada": "r1"` vale na consolidação. `validar` aceita também `"r1b"`, para o agente
+    conferir o arquivo de ruído dele; os `<agente>_r1b.json` (o segundo R1 do câmbio e da PM no
+    ciclo 2) a consolidação IGNORA por completo: não lê, não avisa, não levanta. `"r2"`, `"rf"`
+    ou qualquer outro valor levantam.
+  - As caudas da TESE são de POSIÇÃO (SISTEMA III.III.i, decidido 2026-10-22):
     `p_upside` é a probabilidade de a variável fechar ACIMA da faixa (> faixa[1]), `p_downside`
     a de fechar ABAIXO dela (< faixa[0]). Nenhuma das duas é "a ruim": se uma cauda é boa ou
     ruim para o Brasil, o report diz em texto. Assimetria = (p_upside − p_downside) / 100.
   - Em cada trimestre: faixa[0] ≤ central ≤ faixa[1]; cada probabilidade entre 0 e 100, e as
     três (p_faixa, p_upside, p_downside) somam 100.
-  - Quem tem variável no modelo escreve como central a do modelo (na rodada 1, a do G dele; da
-    rodada 2 em diante, a do P anterior). Quem não tem (fiscal, externo) escreve a tese sobre a
-    exógena de que é o principal, e a central é o próprio caminho base: o validador confere que é.
+  - Quem tem variável no modelo escreve como central a do modelo (a do G dele). Quem não tem
+    (fiscal, externo) escreve a tese sobre a exógena de que é o principal, e a central é o
+    próprio caminho base: o validador confere que é.
+  - `caudas` (chave opcional): {"upside": {exógena: {tri: v}}, "downside": {...}}, também de
+    POSIÇÃO: em todo trimestre escrito, upside ≥ base ≥ downside. As chaves são exógenas do
+    modelo, na janela e na convenção dele; cada exógena traz os dois lados, nos mesmos
+    trimestres, e o agente escreveu o caminho base dela nesses trimestres (em `caminhos`). Quem
+    não é o principal da exógena não escreve cauda dela (`consolidar` levanta, dizendo quem é).
   - Chave, trimestre ou campo desconhecido levanta, com a lista de tudo o que está errado.
 
 A CONTA
@@ -59,11 +79,20 @@ A CONTA
   - Divergência: todo agente que escreveu um caminho para uma exógena e cujo valor difere do
     usado num trimestre que ele escreveu entra na lista (agente, papel, exógena, trimestre, o
     valor dele, o usado, a diferença). O papel é "subordinado" ou "sem papel" (quem não tem papel
-    na exógena). O P não o usa; a divergência é respondida na rodada seguinte (SISTEMA IV.ii).
+    na exógena). O P não o usa; a divergência é respondida na conversa moderada (SISTEMA IV.ii).
   - Sem multiplicadores: o multiplicador fica no tempero de cada agente.
-  - PF*: a central da rodada conjunta (dos caminhos dos reports finais) ao lado da distribuição de
-    cada agente, como ele a escreveu. A faixa NÃO é deslocada para a central conjunta: a tabela
-    mostra a diferença e marca quando a central conjunta cai fora da faixa do agente.
+  - Caudas das exógenas: as do principal, nos trimestres que ele escreveu (não são seguradas),
+    numa tabela do P e em `caudas` do `.json`. O P não as usa no modelo.
+  - PF*: a central do fechamento (dos caminhos congelados) ao lado da distribuição de cada agente,
+    como ele a escreveu. A faixa NÃO é deslocada para a central conjunta: a tabela mostra a
+    diferença e marca quando a central conjunta cai fora da faixa do agente.
+  - Segundo `pf` (a atualização): se já existe `PF.json` na pasta, os caminhos usados e a central
+    conjunta de toda endógena, em todo trimestre, têm de ser IGUAIS aos gravados (tolerância
+    1e-9; a faixa do posterior também, pois `modelo.rodar` é determinístico: os desenhos estão
+    gravados). Se não forem, levanta com as diferenças e não grava nada: depois do fechamento o
+    agente mexe só na `tese`, não nos `caminhos`. Se forem, regrava `PF.md`/`PF.json` com as teses
+    atualizadas, e o md diz que é a versão depois da atualização. `refazer=True` (`--refazer`)
+    pula a conferência, para um refazer deliberado.
 
 O vínculo agente ↔ variável é dado, em dois lugares só: a aba "Exógenas" (as exógenas) e
 `ENDOGENA_DONO` abaixo (as endógenas, SISTEMA IV.ii, 2026-10-22).
@@ -82,7 +111,8 @@ from pathlib import Path
 from analytics.agent_system import modelo
 from analytics.agent_system.dados import motor
 
-# Os sete agentes do primeiro batch e o cabeçalho da coluna de cada um na aba "Exógenas".
+# Os agentes do ciclo e o cabeçalho da coluna de cada um na aba "Exógenas" (o mercado de trabalho
+# e o crédito entraram em 2026-10-30).
 AGENTES = {
     "cambio": "Câmbio",
     "politica_monetaria": "Política monetária",
@@ -91,6 +121,8 @@ AGENTES = {
     "fiscal": "Fiscal",
     "externo": "Externo",
     "expectativas": "Expectativas",
+    "mercado_trabalho": "Mercado de trabalho",
+    "credito": "Crédito",
 }
 
 # Endógena do modelo (a chave de modelo.SAIDAS) -> o agente da área (SISTEMA IV.ii, 2026-10-22).
@@ -112,12 +144,17 @@ ENDOGENA_DONO = {
     "hiato": "atividade",
 }
 
-RODADAS = {"r1": ("P1", "da rodada 1"), "r2": ("P2", "da rodada 2"), "rf": ("PF", "do report final")}
+# etapa -> (nome do P, "de quando"); as duas leem os mesmos <agente>_r1.json
+ETAPAS = {"p1": ("P1", "da abertura"), "pf": ("PF", "do fechamento")}
+RODADA = "r1"            # a única `rodada` que a consolidação lê; "r1b" só passa em `validar`
+_RODADAS_VALIDAR = (RODADA, "r1b")
+_LADOS = ("upside", "downside")
+_TOL_PF = 1e-9           # o segundo pf tem de reproduzir o primeiro até aqui
 TRACKER = motor.RAIZ / "repository" / "agent_mapping" / "data_tracker.xlsx"
 ABA = "Exógenas"
 HORIZONTE = 6            # os seis trimestres da tese, a partir do primeiro projetado
 _TOL = 1e-6              # valores iguais até aqui não divergem
-_CAMPOS = {"agente", "rodada", "ciclo", "caminhos", "tese", "nota"}
+_CAMPOS = {"agente", "rodada", "ciclo", "caminhos", "caudas", "tese", "nota"}
 _CAMPOS_VAR = {"trimestres", "nome", "unidade", "nota"}
 _CAMPOS_TRI = {"central", "faixa", "p_faixa", "p_upside", "p_downside"}
 
@@ -244,6 +281,83 @@ def expandir(valores: dict, janela: list[str]) -> list[float | None]:
 
 
 # ── o contrato ────────────────────────────────────────────────────────────────
+def _validar_caudas(cd, caminhos: dict, ctx: dict, e) -> dict:
+    """`caudas` conferidas e normalizadas: {"upside": {exo: {tri: v}}, "downside": {...}} (vazio
+    se a chave não existe). Os erros vão para `e` (a lista de `validar`)."""
+    jan = ctx["janela"]
+    out: dict = {"upside": {}, "downside": {}}
+    if cd is None:
+        return out
+    if not isinstance(cd, dict):
+        e("'caudas' tem de ser {\"upside\": {exógena: {tri: valor}}, \"downside\": {...}}")
+        return out
+    for c in sorted(set(cd) - set(_LADOS)):
+        e(f"caudas: chave desconhecida {c!r} (valem: {', '.join(_LADOS)})")
+    bruto = {}
+    for lado in _LADOS:
+        v = cd.get(lado, {})
+        if not isinstance(v, dict):
+            e(f"caudas.{lado}: tem de ser {{exógena: {{trimestre: valor}}}}")
+            v = {}
+        bruto[lado] = v
+    for k in dict.fromkeys([*bruto["upside"], *bruto["downside"]]):
+        if k not in ctx["exogenas"]:
+            dica = (" é endógena: o modelo a resolve" if k in ENDOGENA_DONO
+                    else " não é exógena do modelo")
+            e(f"caudas: {k!r}{dica} (as exógenas: {', '.join(ctx['exogenas'])})")
+            continue
+        lados = {}
+        for lado in _LADOS:
+            vals = bruto[lado].get(k)
+            if vals is None:
+                e(f"caudas.{lado}: falta {k!r}; cada exógena traz os dois lados, upside e downside")
+                continue
+            if not isinstance(vals, dict) or not vals:
+                e(f"caudas.{lado}.{k}: tem de ser {{trimestre: valor}}, não vazio")
+                continue
+            norm = {}
+            for t, v in vals.items():
+                try:
+                    tn = _tri(t, jan)
+                except ValueError as err:
+                    e(f"caudas.{lado}.{k}: {err}")
+                    continue
+                if not _num(v):
+                    e(f"caudas.{lado}.{k}.{t}: valor {v!r} não é número")
+                    continue
+                if tn in norm:
+                    e(f"caudas.{lado}.{k}: {tn} aparece duas vezes")
+                norm[tn] = float(v)
+            lados[lado] = norm
+        if len(lados) < 2:
+            continue
+        up, dn = lados["upside"], lados["downside"]
+        if set(up) != set(dn):
+            e(f"caudas.{k}: upside tem {sorted(up, key=jan.index)} e downside "
+              f"{sorted(dn, key=jan.index)}; os dois lados têm os mesmos trimestres")
+        base = caminhos.get(k)
+        if not base:
+            e(f"caudas.{k}: o agente não escreveu o caminho base de {k!r} em 'caminhos'")
+        for t in jan:
+            if t not in up or t not in dn:
+                continue
+            if not base:
+                break
+            if t not in base:
+                e(f"caudas.{k}.{t}: sem caminho base em {t} (a cauda é escrita nos trimestres "
+                  "em que o agente escreveu a base)")
+                continue
+            b, u, d = base[t], up[t], dn[t]
+            tol = _TOL * max(1.0, abs(b))
+            if u < b - tol:
+                e(f"caudas.{k}.{t}: upside {u} abaixo da base {b} (vale upside ≥ base ≥ downside)")
+            if d > b + tol:
+                e(f"caudas.{k}.{t}: downside {d} acima da base {b} (vale upside ≥ base ≥ downside)")
+        out["upside"][k] = {t: up[t] for t in jan if t in up}
+        out["downside"][k] = {t: dn[t] for t in jan if t in dn}
+    return out
+
+
 def validar(dados, ctx: dict, onde: str = "") -> dict:
     """O JSON de um agente, conferido e normalizado (trimestres como '4T26', números como float).
     Junta TODOS os erros numa mensagem só."""
@@ -256,8 +370,9 @@ def validar(dados, ctx: dict, onde: str = "") -> dict:
     ag = dados.get("agente")
     if ag not in AGENTES:
         e(f"agente {ag!r} desconhecido (valem: {', '.join(AGENTES)})")
-    if dados.get("rodada") not in RODADAS:
-        e(f"rodada {dados.get('rodada')!r} desconhecida (valem: {', '.join(RODADAS)})")
+    if dados.get("rodada") not in _RODADAS_VALIDAR:
+        e(f"rodada {dados.get('rodada')!r} inválida (vale {RODADA!r}; {_RODADAS_VALIDAR[1]!r} só "
+          "para o arquivo de ruído; não há mais rodada 2 nem rf)")
 
     caminhos: dict = {}
     cam = dados.get("caminhos")
@@ -287,6 +402,8 @@ def validar(dados, ctx: dict, onde: str = "") -> dict:
                 e(f"caminhos.{k}: {tn} aparece duas vezes")
             caminhos[k][tn] = float(v)
         caminhos[k] = {t: caminhos[k][t] for t in jan if t in caminhos[k]}
+
+    caudas = _validar_caudas(dados.get("caudas"), caminhos, ctx, e)
 
     tese: dict = {}
     ts = dados.get("tese")
@@ -372,30 +489,30 @@ def validar(dados, ctx: dict, onde: str = "") -> dict:
     if erros:
         raise ValueError(f"{onde}: contrato inválido:\n  - " + "\n  - ".join(erros))
     return {"agente": ag, "rodada": dados["rodada"], "ciclo": str(dados.get("ciclo")),
-            "caminhos": caminhos, "tese": tese, "nota": dados.get("nota")}
+            "caminhos": caminhos, "caudas": caudas, "tese": tese, "nota": dados.get("nota")}
 
 
 def pasta(ciclo, raiz: Path | None = None) -> Path:
     return Path(raiz or motor.CICLOS) / str(ciclo)
 
 
-def arquivo_caminhos(ciclo, agente: str, rodada: str, raiz: Path | None = None) -> Path:
-    return pasta(ciclo, raiz) / "caminhos" / f"{agente}_{rodada}.json"
+def arquivo_caminhos(ciclo, agente: str, raiz: Path | None = None, sufixo: str = RODADA) -> Path:
+    """`caminhos/<agente>_<sufixo>.json`; o sufixo é "r1" (o que a consolidação lê) ou "r1b"."""
+    return pasta(ciclo, raiz) / "caminhos" / f"{agente}_{sufixo}.json"
 
 
-def ler_caminhos(ciclo, rodada: str, ctx: dict, raiz: Path | None = None) -> tuple[dict, list]:
-    """({agente: JSON validado}, [agentes sem arquivo]). Levanta num arquivo da rodada com nome
-    de agente desconhecido, ou cujo agente, rodada ou ciclo não batam com o nome e a pasta."""
-    if rodada not in RODADAS:
-        raise ValueError(f"rodada {rodada!r} desconhecida (valem: {', '.join(RODADAS)})")
+def ler_caminhos(ciclo, ctx: dict, raiz: Path | None = None) -> tuple[dict, list]:
+    """({agente: JSON validado}, [agentes sem arquivo]), dos `<agente>_r1.json`. Os `_r1b.json`
+    não são lidos, nem listados. Levanta num arquivo r1 com nome de agente desconhecido, ou cujo
+    agente, rodada ou ciclo não batam com o nome e a pasta (a rodada tem de ser "r1")."""
     d = pasta(ciclo, raiz) / "caminhos"
-    for arq in sorted(d.glob(f"*_{rodada}.json")) if d.exists() else []:
-        if arq.stem[: -len(rodada) - 1] not in AGENTES:
+    for arq in sorted(d.glob(f"*_{RODADA}.json")) if d.exists() else []:
+        if arq.stem[: -len(RODADA) - 1] not in AGENTES:
             raise ValueError(f"{arq}: agente desconhecido no nome do arquivo (valem: "
                              f"{', '.join(AGENTES)})")
     lidos, faltam = {}, []
     for ag in AGENTES:
-        arq = arquivo_caminhos(ciclo, ag, rodada, raiz)
+        arq = arquivo_caminhos(ciclo, ag, raiz)
         if not arq.exists():
             faltam.append(ag)
             continue
@@ -404,9 +521,9 @@ def ler_caminhos(ciclo, rodada: str, ctx: dict, raiz: Path | None = None) -> tup
         except json.JSONDecodeError as err:
             raise ValueError(f"{arq}: não é JSON válido ({err})") from None
         v = validar(bruto, ctx, onde=str(arq))
-        if (v["agente"], v["rodada"], v["ciclo"]) != (ag, rodada, str(ciclo)):
+        if (v["agente"], v["rodada"], v["ciclo"]) != (ag, RODADA, str(ciclo)):
             raise ValueError(f"{arq}: o arquivo diz agente={v['agente']!r}, rodada={v['rodada']!r}, "
-                             f"ciclo={v['ciclo']!r}; o nome e a pasta dizem {ag!r}, {rodada!r}, "
+                             f"ciclo={v['ciclo']!r}; o nome e a pasta dizem {ag!r}, {RODADA!r}, "
                              f"{str(ciclo)!r}")
         lidos[ag] = v
     return lidos, faltam
@@ -526,8 +643,8 @@ def _teses(lidos: dict, res: dict, ctx: dict, usados: dict) -> list[dict]:
 
 
 def _md(r: dict, ctx: dict, res: dict, lidos: dict) -> str:
-    P, nome_rod = RODADAS[r["rodada"]]
-    pf = r["rodada"] == "rf"
+    P, nome_rod = ETAPAS[r["etapa"]]
+    pf = r["etapa"] == "pf"
     rot = "PF*" if pf else P
     jan = ctx["janela"]
     hz = jan[:HORIZONTE]
@@ -537,10 +654,18 @@ def _md(r: dict, ctx: dict, res: dict, lidos: dict) -> str:
         f"principal dela (aba {ABA!r} do `data_tracker.xlsx`; os subordinados dão insumos e "
         "argumentam, a decisão é do principal), sem "
         "multiplicadores: o multiplicador fica no tempero de cada agente."
-        + (" Da rodada seguinte em diante, a central de quem tem variável no modelo é a deste "
-           "arquivo." if not pf else
-           " A central do PF* é a desta rodada conjunta, feita dos caminhos dos reports finais; a "
-           "distribuição em volta dela é a de cada agente (seção 4)."))
+        + (" Os caminhos são os `_r1.json` de cada agente na abertura; o que diverge é "
+           "discutido na conversa moderada." if not pf else
+           " A central do PF* é a deste fechamento, feita dos caminhos congelados dos `_r1.json`; a "
+           "distribuição em volta dela é a de cada agente (seção 5)."))
+    if r.get("atualizacao"):
+        out += ["", "**Versão depois da atualização dos agentes.** Os caminhos usados e a central "
+                "conjunta de toda endógena são idênticos aos do PF* anterior (gerado em "
+                f"{r['atualizacao']['anterior']}); o que mudou são as teses (faixas e "
+                "probabilidades)."]
+    elif r.get("refeito"):
+        out += ["", "**Refeito de propósito** (`--refazer`): a conferência contra o PF.json "
+                "anterior foi pulada."]
     out += ["", f"Lidos: {', '.join(AGENTES[a] for a in lidos) or 'nenhum'}"
             + (f" · sem arquivo: {', '.join(AGENTES[a] for a in r['agentes_faltando'])}"
                if r["agentes_faltando"] else "")
@@ -574,7 +699,7 @@ def _md(r: dict, ctx: dict, res: dict, lidos: dict) -> str:
     out += ["", "## 3. Divergências", "",
             "Quem escreveu, para uma exógena, um caminho diferente do usado (o do principal): um "
             "subordinado, ou um agente sem papel nela. O P usa o do principal; a divergência é "
-            "respondida na rodada seguinte: o principal mantém ou muda o caminho, e diz por quê.", ""]
+            "respondida na conversa moderada: o principal mantém ou muda o caminho, e diz por quê.", ""]
     if r["divergencias"]:
         out += ["| Agente | Exógena | Papel do agente | Trimestre | Valor do agente | Usado | "
                 "Diferença | Usado de |", "|---|---|---|---|---|---|---|---|"]
@@ -586,17 +711,31 @@ def _md(r: dict, ctx: dict, res: dict, lidos: dict) -> str:
     else:
         out.append("Nenhuma.")
 
-    out += ["", "## 4. " + ("A central conjunta e a distribuição de cada agente" if pf
-                             else "As teses da rodada ao lado do P"), ""]
+    out += ["", "## 4. Caudas das exógenas (do principal)", "",
+            "O upside e o downside que o agente PRINCIPAL de cada exógena escreveu, ao lado do "
+            "caminho base. O P usa só a base; as caudas são para os agentes sem papel nela. Saem "
+            "só os trimestres que o principal escreveu (as caudas não são seguradas depois do "
+            "último), e a janela inteira está em `caudas` do `.json`.", ""]
+    if r["caudas"]:
+        out += ["| Exógena | Principal | Trimestre | Downside | Base | Upside |",
+                "|---|---|---|---|---|---|"]
+        for c in r["caudas"]:
+            out.append(f"| `{c['exogena']}` | {c['principal']} | {c['trimestre']} | "
+                       f"{_f(c['downside'], 2)} | {_f(c['base'], 2)} | {_f(c['upside'], 2)} |")
+    else:
+        out.append("Nenhuma.")
+
+    out += ["", "## 5. " + ("A central conjunta e a distribuição de cada agente" if pf
+                             else "As teses ao lado do P"), ""]
     if pf:
-        out.append("A faixa e as probabilidades são as do report final de cada agente, escritas "
+        out.append("A faixa e as probabilidades são as da tese de cada agente, escritas "
                    "em volta da central que ele tinha. Elas não foram deslocadas para a central "
                    "conjunta: a coluna da diferença diz quanto as duas se separam, e a marca "
                    "**fora da faixa** diz quando a central conjunta saiu da faixa do agente.")
     else:
-        out.append("A central do report de cada agente ao lado da do P. Para quem tem variável no "
-                   "modelo, a central da próxima rodada é a do P; a distância entre as duas mostra "
-                   "o quanto os caminhos dos outros agentes moveram a variável.")
+        out.append("A central da tese de cada agente ao lado da do P. Para quem tem variável no "
+                   "modelo, a distância entre as duas mostra o quanto os caminhos dos outros "
+                   "agentes moveram a variável.")
     cp = "Central do PF*" if pf else f"Central do {P}"
     por_var: dict = {}
     for ln in r["teses"]:
@@ -625,45 +764,126 @@ def _md(r: dict, ctx: dict, res: dict, lidos: dict) -> str:
     return "\n".join(out) + "\n"
 
 
-def consolidar(ciclo, rodada: str, raiz: Path | None = None, tracker: Path | str = TRACKER,
-               sim: dict | None = None, faixa: bool = True, gravar: bool = True) -> dict:
-    """Lê os caminhos da rodada e a tutela, roda o modelo e grava <P>.md e <P>.json na pasta do
-    ciclo. Devolve o conteúdo do JSON, com "modelo" (o resultado de `modelo.rodar`) e "arquivos".
+def _caudas_linhas(lidos: dict, papeis: dict, janela: list[str]) -> list[dict]:
+    """As caudas (de quem é o principal, nos trimestres que ele escreveu) em linhas. Levanta se
+    um agente escreveu cauda de exógena de que não é o principal."""
+    erros, linhas = [], []
+    for a, c in lidos.items():
+        for k in c["caudas"]["upside"]:
+            princ = next((x for x, p in papeis.get(k, {}).items() if p == PRINCIPAL), None)
+            if princ != a:
+                erros.append(f"{AGENTES[a]} escreveu cauda de `{k}`, de que não é o principal "
+                             + (f"(o principal é {princ})" if princ
+                                else "(a exógena não tem principal na aba)"))
+                continue
+            for t in janela:
+                if t in c["caudas"]["upside"][k]:
+                    linhas.append({"exogena": k, "principal": a, "trimestre": t,
+                                   "downside": c["caudas"]["downside"][k][t],
+                                   "base": c["caminhos"][k][t], "upside": c["caudas"]["upside"][k][t]})
+    if erros:
+        raise ValueError("caudas de quem não é o principal da exógena:\n  - " + "\n  - ".join(erros))
+    return linhas
 
-    `raiz` troca a pasta dos ciclos (testes); `sim` dá o retrato do simulador já carregado (por
-    padrão, `modelo.carregar(ciclo)`, que lê de obsidian/ciclos/<ciclo>/dados/A/)."""
-    if rodada not in RODADAS:
-        raise ValueError(f"rodada {rodada!r} desconhecida (valem: {', '.join(RODADAS)})")
+
+def _difere(a, b) -> bool:
+    return abs(a - b) > _TOL_PF * max(1.0, abs(b))
+
+
+def _diferencas_pf(anterior: dict, r: dict) -> list[str]:
+    """O que mudou entre o PF.json gravado e o recém-calculado: os caminhos usados e a central
+    (e a faixa, quando as duas rodadas a têm) de toda endógena, em todo trimestre."""
+    out = []
+    ua, un = anterior.get("caminhos_usados"), r["caminhos_usados"]
+    if not isinstance(ua, dict) or not isinstance(anterior.get("modelo", {}).get("endogenas"), dict):
+        return ["o PF.json gravado não tem caminhos_usados e endógenas (formato antigo?)"]
+    for k in dict.fromkeys([*ua, *un]):
+        for t in dict.fromkeys([*ua.get(k, {}), *un.get(k, {})]):
+            va, vn = ua.get(k, {}).get(t), un.get(k, {}).get(t)
+            if va is None or vn is None or _difere(vn, va):
+                out.append(f"exógena usada `{k}` {t}: gravado {va}, agora {vn}")
+    ea, en = anterior["modelo"]["endogenas"], r["modelo"]["endogenas"]
+    for k in dict.fromkeys([*ea, *en]):
+        if k not in ea or k not in en:
+            out.append(f"endógena `{k}` só existe em um dos dois")
+            continue
+        jan = r["janela"]
+        for campo in ("central", "lo", "hi"):
+            la, ln = ea[k].get(campo), en[k].get(campo)
+            if campo != "central" and (la is None or ln is None):
+                continue                  # uma das rodadas rodou sem a faixa
+            if la is None or ln is None or len(la) != len(ln):
+                out.append(f"endógena `{k}` ({campo}): tamanhos diferentes")
+                continue
+            for j, (va, vn) in enumerate(zip(la, ln)):
+                if (va is None) != (vn is None) or (va is not None and _difere(vn, va)):
+                    out.append(f"endógena `{k}` ({campo}) {jan[j]}: gravado {va}, agora {vn}")
+    return out
+
+
+def consolidar(ciclo, etapa: str, raiz: Path | None = None, tracker: Path | str = TRACKER,
+               sim: dict | None = None, faixa: bool = True, gravar: bool = True,
+               refazer: bool = False) -> dict:
+    """Lê os `<agente>_r1.json` e a tutela, roda o modelo e grava <P>.md e <P>.json na pasta do
+    ciclo (etapa "p1" -> P1, "pf" -> PF). Devolve o conteúdo do JSON, com "modelo" (o resultado de
+    `modelo.rodar`) e "arquivos".
+
+    Segundo `pf`: se já há PF.json, os caminhos usados e a central de toda endógena têm de bater
+    com os gravados (1e-9), senão levanta com as diferenças e não grava; `refazer=True` pula a
+    conferência. `raiz` troca a pasta dos ciclos (testes); `sim` dá o retrato do simulador já
+    carregado (por padrão, `modelo.carregar(ciclo)`, que lê de obsidian/ciclos/<ciclo>/dados/A/)."""
+    if etapa not in ETAPAS:
+        raise ValueError(f"etapa {etapa!r} desconhecida (valem: {', '.join(ETAPAS)})")
     ciclo = str(ciclo)
     tut = ler_tutela(tracker)            # antes do modelo: a aba vazia é o erro mais provável
     sim = sim if sim is not None else modelo.carregar(ciclo)
     if str(sim["ciclo"]) != ciclo:
         raise ValueError(f"o retrato do simulador é do ciclo {sim['ciclo']}, não de {ciclo}")
     ctx = contexto(sim)
-    lidos, faltam = ler_caminhos(ciclo, rodada, ctx, raiz)
+    lidos, faltam = ler_caminhos(ciclo, ctx, raiz)
     if not lidos:
-        raise FileNotFoundError(f"nenhum caminho {RODADAS[rodada][1]} em "
-                                f"{pasta(ciclo, raiz) / 'caminhos'} (<agente>_{rodada}.json)")
+        raise FileNotFoundError(f"nenhum caminho em {pasta(ciclo, raiz) / 'caminhos'} "
+                                f"(<agente>_{RODADA}.json)")
     cams = {a: c["caminhos"] for a, c in lidos.items()}
     papeis = {k: v for k, v in tut["papeis"].items() if k in ctx["exogenas"]}
+    caudas = _caudas_linhas(lidos, papeis, ctx["janela"])
     usados, origem, div = juntar(papeis, cams, ctx["janela"], ctx["padrao"])
     res = modelo.rodar(sim, caminhos=usados, mult={}, faixa=faixa)
-    P = RODADAS[rodada][0]
+    P = ETAPAS[etapa][0]
     r = {
-        "ciclo": ciclo, "rodada": rodada, "p": P,
+        "ciclo": ciclo, "etapa": etapa, "p": P, "janela": ctx["janela"],
         "gerado_em": dt.datetime.now().isoformat(timespec="seconds"),
         "tracker": tut["arquivo"], "tutela": papeis,
         "agentes_lidos": list(lidos), "agentes_faltando": faltam,
         "caminhos_usados": usados, "origem": origem, "divergencias": div,
-        "avisos": _avisos(papeis, lidos, origem, ctx["janela"], ctx, faltam, rodada, tut["chaves"]),
+        "caudas": caudas,
+        "avisos": _avisos(papeis, lidos, origem, ctx["janela"], ctx, faltam, RODADA, tut["chaves"]),
         "teses": _teses(lidos, res, ctx, usados),
         "contratos": lidos,
         "modelo": res,
     }
     if gravar:
         d = pasta(ciclo, raiz)
-        d.mkdir(parents=True, exist_ok=True)
         md, js = d / f"{P}.md", d / f"{P}.json"
+        if etapa == "pf" and js.exists():
+            if refazer:
+                r["refeito"] = True
+            else:
+                try:
+                    anterior = json.loads(js.read_text(encoding="utf-8"))
+                except json.JSONDecodeError as err:
+                    raise ValueError(f"{js}: não é JSON válido ({err}); --refazer para "
+                                     "sobrescrever") from None
+                dif = _diferencas_pf(anterior, r)
+                if dif:
+                    raise ValueError(
+                        f"o PF* de {js} já existe e o novo difere nos caminhos ou na central "
+                        f"({len(dif)} diferença(s)); depois do fechamento só a tese muda. Nada "
+                        "foi gravado (refazer=True ou --refazer, se é um refazer deliberado):\n  - "
+                        + "\n  - ".join(dif[:40]) + (f"\n  - ... e mais {len(dif) - 40}"
+                                                    if len(dif) > 40 else ""))
+                r["atualizacao"] = {"anterior": anterior.get("gerado_em")}
+        d.mkdir(parents=True, exist_ok=True)
         md.write_text(_md(r, ctx, res, lidos), encoding="utf-8")
         js.write_text(json.dumps(r, ensure_ascii=False, indent=1, default=float), encoding="utf-8")
         r["arquivos"] = [str(md), str(js)]
@@ -674,16 +894,19 @@ def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(
         prog="python -m analytics.agent_system.consolidacao",
-        description="Consolida uma rodada do ciclo (P1, P2 ou PF*). O caminho de cada exógena é o do "
+        description="Consolida o ciclo (P1, na abertura, ou PF*, no fechamento). O caminho de cada exógena é o do "
                     "agente Principal dela na aba Exógenas do data_tracker.xlsx; subordinados dão "
                     "insumos e, se escreverem caminho diferente, viram divergência.")
     ap.add_argument("--ciclo", required=True, type=dt.date.fromisoformat)
-    ap.add_argument("--rodada", required=True, choices=list(RODADAS))
+    ap.add_argument("--etapa", required=True, choices=list(ETAPAS))
     ap.add_argument("--tracker", type=Path, default=TRACKER)
     ap.add_argument("--sem-faixa", action="store_true", help="sem a faixa de 90%% (mais rápido)")
+    ap.add_argument("--refazer", action="store_true",
+                    help="pf: pula a conferência contra o PF.json já gravado (refazer deliberado)")
     a = ap.parse_args()
     try:
-        r = consolidar(a.ciclo.isoformat(), a.rodada, tracker=a.tracker, faixa=not a.sem_faixa)
+        r = consolidar(a.ciclo.isoformat(), a.etapa, tracker=a.tracker, faixa=not a.sem_faixa,
+                        refazer=a.refazer)
     except (ValueError, FileNotFoundError) as err:
         print(f"  erro: {err}")
         sys.exit(2)

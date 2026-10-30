@@ -8,7 +8,7 @@ aliases: ["Borges 2022 - Taxa de desemprego de equilíbrio brasileira"]
 **Tags:** #nawru #taxa-natural #mercado-de-trabalho #curva-de-phillips #reforma-trabalhista
 **Source:** Blog do FGV-IBRE (seção Trabalho), post de 18 jul 2022
 **Language:** Portuguese
-**Source file:** [[economic_activity/clean_md/taxa_desemprego_equilibrio_brasil (Borges, 2022)]]
+**Source file:** [[labor_market/clean_md/taxa_desemprego_equilibrio_brasil (Borges, 2022)]]
 
 ---
 

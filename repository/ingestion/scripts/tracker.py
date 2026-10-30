@@ -84,7 +84,7 @@ LAYER_WIDTHS = [18, 10, 8]
 # same map (tests/test_conhecimento.py holds them equal).
 OWNERS = {"cambio": "exchange_rate", "politica_monetaria": "monetary_policy", "inflacao": "inflation",
           "fiscal": "fiscal_policy", "externo": "external", "expectativas": "expectations",
-          "atividade": "economic_activity", "credito": None, "mercado_trabalho": "labor_market",
+          "atividade": "economic_activity", "credito": "credit", "mercado_trabalho": "labor_market",
           "trader": "trader"}
 # The layout of the layer columns is this list; _migrate() moves the user's values by header name
 # whenever it changes.

@@ -1,0 +1,39 @@
+# Themes of the Copom meetings of the Galipolo presidency (from 2025-01-01).
+# Read by repository/ingestion/scripts/copom_gestao.py (build / check --gestao galipolo).
+#
+# Per meeting, a list of themes. Each theme:
+#   - tema: <slug from the closed vocabulary in copom_gestao.py (VOCABULARY)>
+#     evidence: "<one sentence copied word for word from that meeting's ata or comunicado>"
+# The evidence is searched (whitespace-normalised) in obsidian/monetary_policy/clean_md/central_bank/
+# atas/ and comunicados/; a sentence not found there fails the check. Fill the lists; leave the
+# meeting keys alone.
+gestao: galipolo
+reunioes:
+  268:  # 2025-01-29
+    temas: []
+  269:  # 2025-03-19
+    temas: []
+  270:  # 2025-05-07
+    temas: []
+  271:  # 2025-06-18
+    temas: []
+  272:  # 2025-07-30
+    temas: []
+  273:  # 2025-09-17
+    temas: []
+  274:  # 2025-11-05
+    temas: []
+  275:  # 2025-12-10
+    temas: []
+  276:  # 2026-01-28
+    temas: []
+  277:  # 2026-03-18
+    temas: []
+  278:  # 2026-04-29
+    temas: []
+  279:  # 2026-06-17
+    temas: []
+  280:  # 2026-08-05
+    temas: []
+  281:  # 2026-09-16
+    temas: []

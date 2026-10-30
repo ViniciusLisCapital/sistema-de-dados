@@ -16,6 +16,14 @@ outros e do Modelo Estrutural.
   (movido da raiz do projeto em 2026-08-25). **O script que o produziu não existe**; ver o README.
 - **`curva_juros/`** — material legado, nunca integrado; os imports apontam para um layout de
   pacote que não existe mais.
+- **`ancora_2026-10-30/`** e **`hiato_2026-10-30/`** — os dois testes da frente C do Plano 2 sobre o
+  Modelo Estrutural:
+    - `ancora_2026-10-30/` testa a âncora da (R) e da (H) com o juro de 10 anos em média móvel;
+    - `hiato_2026-10-30/` regride o hiato consolidado do BC contra NUCI, desocupação, PIB e CAGED.
+  Os resultados estão no `RESULTADOS.md` de cada pasta, e a decisão em `coordenacao/C_modelo.md`.
+  Rodar pelo caminho do arquivo (o hífen impede importar como módulo):
+
+      uv run python analytics/brasil/structural_model/experimentos/hiato_2026-10-30/hiato_a.py
 
 ## Pending
 

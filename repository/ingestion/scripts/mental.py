@@ -4,7 +4,8 @@ repository/ingestion/scripts/mental.py — the mental-model agent's deterministi
     uv run python repository/ingestion/scripts/mental.py --list
     uv run python repository/ingestion/scripts/mental.py begin <manager> <area> [--n N] [letter ...]
     uv run python repository/ingestion/scripts/mental.py check <manager> <area>
-    uv run python repository/ingestion/scripts/mental.py packet <manager> <area>
+    uv run python repository/ingestion/scripts/mental.py packet <manager> <area> [--delta]
+    uv run python repository/ingestion/scripts/mental.py findings <manager> <area>
     uv run python repository/ingestion/scripts/mental.py done <manager> <area> [--accept 4.4:C2 ...]
     uv run python repository/ingestion/scripts/mental.py abort <manager> <area>
     uv run python repository/ingestion/scripts/mental.py audit <manager> <area>
@@ -32,15 +33,26 @@ grows a few letters per run, in date order, and each run is bracketed by this sc
             - a new [[wikilink]] that resolves to no file, or to two;
             - a framework entry ("## 2.3 ...") without "What it is" and "How <manager> applied
               it" (or the Portuguese labels), or a document without About and Connections;
+            - (runs whose run file says "evidence_required", i.e. begun from 2026-10-30) a new
+              claim without "evidence": the letter sentence that supports it, word for word;
             - the writer's claims file (ledger/.<document>.claims.json) missing, or not covering
               exactly the blocks repacked and added: per block, the old text cut into statements
               (C1...) and the new statements (N1...), each tied to a letter of the run.
   packet  what the independent reviewer reads: per block, the old text, the new text and the
           claims; the run's letters; the document's sha. Requires a passing check.
+          --delta: only the blocks whose text (or claims) changed since the last review of this
+          run (the review base, below), with only the letters those blocks' new claims cite.
+  findings  fix mode's input: every blocking item of the current review, in full (block, claim id,
+          claim text, verdict, the reviewer's note, the letter of a new claim), the flagged blocks'
+          current text and the letters their new claims cite. Read-only.
   done    requires a passing check AND the reviewer's verdicts (ledger/.<document>.review.json) on
           the current version of the document (same sha): every old claim kept or sharpened, cited
           word for word in the new text; every new claim supported, with its evidence word for word
-          in a letter; nothing in uncovered_old or extra. --accept lets through verdicts the USER
+          in a letter; nothing in uncovered_old or extra. A block unchanged since the last review
+          (same hash in ledger/.<document>.review_base.json) keeps its earlier verdict, so a delta
+          review may list only the changed blocks. Whenever the review matches the current
+          document (also when done ends blocked) the review base is rewritten: per block, the
+          text hash and its verdict entry. --accept lets through verdicts the USER
           accepted. Then writes the letters to ledger/<document>.tsv, appends the verdict table to
           ledger/<document>.log.md, drops the run's files and updates the tracker's "Mental Models"
           tab (tracker.py; a workbook open in Excel only warns). A letter with nothing for the area
@@ -330,6 +342,7 @@ def cmd_begin(cfg: dict, manager: str, area: str, n: int | None, chosen: list[st
     rp.write_text(json.dumps({"document": str(s["path"].relative_to(OBSIDIAN.parent)),
                               "letters": [str(x["path"].relative_to(OBSIDIAN.parent)) for x in batch],
                               "names": [x["name"] for x in batch], "snapshot": snap,
+                              "evidence_required": True,
                               "opened": dt.datetime.now().isoformat(timespec="seconds")},
                              ensure_ascii=False, indent=1), encoding="utf-8")
     root = OBSIDIAN.parent
@@ -461,7 +474,7 @@ def check(cfg: dict, manager: str, area: str) -> dict:
         st, _ = resolve(t, idx)
         if st != "ok":
             prob.append(f"[[{t}]] {'matches several files' if st == 'ambiguous' else 'resolves to no file'}")
-    prob += claims_problems(s["name"], res, run["names"])
+    prob += claims_problems(s["name"], res, run["names"], bool(run.get("evidence_required")), text_n)
     prob[:] = list(dict.fromkeys(prob))
     res["ok"] = not prob
     res.update(_ob=ob, _nb=nb, _text_n=text_n, _new=new)
@@ -471,8 +484,16 @@ def check(cfg: dict, manager: str, area: str) -> dict:
 # ── the claims (writer) and the review (an independent agent) ────────────────
 
 def side_path(name: str, kind: str) -> Path:
-    """kind: claims · review — the run's two hand-offs, next to the snapshot, removed by done/abort."""
+    """kind: claims · review · review_base — the run's hand-offs, next to the snapshot, removed by done/abort."""
     return LEDGER / f".{name}.{kind}.json"
+
+
+RUN_KINDS = ("claims", "review", "review_base")
+
+
+def drop_run(name: str) -> None:
+    for p in (run_path(name), *(side_path(name, k) for k in RUN_KINDS)):
+        p.unlink(missing_ok=True)
 
 
 def log_path(name: str) -> Path:
@@ -488,7 +509,8 @@ def _load(p: Path) -> dict | None:
         return {"_error": f"{p.name} is not valid JSON: {e}"}
 
 
-def claims_problems(name: str, res: dict, letters_: list[str]) -> list[str]:
+def claims_problems(name: str, res: dict, letters_: list[str], evidence_required: bool = False,
+                    text_n: str = "") -> list[str]:
     """Every repacked or new block has its claims: the old text cut into numbered statements
     (C1, C2, ...) and the new statements (N1, ...) each tied to a letter of this run."""
     need = res["changed"] + res["added"]
@@ -514,6 +536,9 @@ def claims_problems(name: str, res: dict, letters_: list[str]) -> list[str]:
         for nid, v in new.items():
             if not isinstance(v, dict) or not v.get("claim") or v.get("letter") not in letters_:
                 prob.append(f"claims {k}.{nid}: needs a claim and a letter of this run ({', '.join(letters_)})")
+            elif evidence_required and not quote_found(str(v.get("evidence") or ""), text_n):
+                prob.append(f"claims {k}.{nid}: \"evidence\" must be the sentence of the letter that supports the claim, "
+                            "word for word (3+ words), found in this run's letters")
     for k in cl:
         if k not in need:
             prob.append(f"claims: block {k} is listed but was not changed or added in this run")
@@ -529,24 +554,97 @@ def doc_sha(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
-def cmd_packet(cfg: dict, manager: str, area: str) -> None:
+def block_hash(text: str) -> str:
+    return doc_sha(text.strip())
+
+
+def block_stamp(res: dict, cl: dict, k: str) -> dict:
+    """What a review of block k rests on: its text and its claims, as they are now."""
+    return {"hash": block_hash(res["_nb"][k]["text"]),
+            "claims_hash": doc_sha(json.dumps(cl.get(k, {}), sort_keys=True, ensure_ascii=False))}
+
+
+def load_base(name: str) -> dict:
+    b = _load(side_path(name, "review_base"))
+    return b if b and "_error" not in b else {}
+
+
+def stale_blocks(name: str, res: dict, cl: dict, need: list[str]) -> list[str]:
+    """The blocks of need whose text or claims differ from the last review (or were never in it)."""
+    base = load_base(name).get("blocks") or {}
+    out = []
+    for k in need:
+        b = base.get(k)
+        st = block_stamp(res, cl, k)
+        if not b or b.get("hash") != st["hash"] or b.get("claims_hash") != st["claims_hash"]:
+            out.append(k)
+    return out
+
+
+def merged_entries(name: str, res: dict, need: list[str]) -> dict:
+    """The review's entries, plus the base's verdict for every block unchanged since the last
+    review that this review does not list (a delta review lists only the changed ones)."""
+    rv = _load(side_path(name, "review")) or {}
+    ents = dict(rv.get("entries") or {})
+    cl = _load(side_path(name, "claims")) or {}
+    base = load_base(name).get("blocks") or {}
+    stale = set(stale_blocks(name, res, cl, need))
+    for k in need:
+        if k not in ents and k not in stale and isinstance(base.get(k, {}).get("entry"), dict):
+            ents[k] = base[k]["entry"]
+    return ents
+
+
+def write_review_base(name: str, res: dict, need: list[str]) -> None:
+    """Persist the verdicts of a review that matches the current document, per block with its stamp."""
+    rv = _load(side_path(name, "review"))
+    if not rv or "_error" in rv or rv.get("document_sha") != doc_sha(res["_new"]):
+        return
+    cl = _load(side_path(name, "claims")) or {}
+    ents = merged_entries(name, res, need)
+    blocks_ = {k: {**block_stamp(res, cl, k), "entry": ents[k]} for k in need if isinstance(ents.get(k), dict)}
+    side_path(name, "review_base").write_text(
+        json.dumps({"document_sha": rv["document_sha"], "blocks": blocks_}, ensure_ascii=False, indent=1),
+        encoding="utf-8")
+
+
+def cited_letters(run: dict, cl: dict, blocks_: list[str]) -> list[str]:
+    """Paths of the run's letters that the new claims of these blocks cite."""
+    names = {v.get("letter") for k in blocks_ for v in (cl.get(k, {}).get("new") or {}).values()
+             if isinstance(v, dict)}
+    return [p for n, p in zip(run["names"], run["letters"]) if n in names]
+
+
+def cmd_packet(cfg: dict, manager: str, area: str, delta: bool = False) -> None:
     """What the reviewer reads: for every changed or added block, the old text, the new text and the
-    writer's claims; the letters to check new claims against; where to write the verdicts."""
+    writer's claims; the letters to check new claims against; where to write the verdicts.
+    delta: only the blocks that changed since the last review, and only the letters they cite."""
     res = check(cfg, manager, area)
     if not res["ok"]:
         sys.exit("check fails — the writer has to finish first:\n" + "\n".join(f"- {p}" for p in res["problems"]))
     s, run = _open_run(cfg, manager, area)
     cl = _load(side_path(s["name"], "claims")) or {}
     need = res["changed"] + res["added"]
+    if delta:
+        if not load_base(s["name"]):
+            sys.exit(f"no review base for {s['name']}: the first review is a full one (packet without --delta); "
+                     "done writes the base")
+        shown = stale_blocks(s["name"], res, cl, need)
+        paths = cited_letters(run, cl, shown)
+        print(f"DELTA review: {len(shown)} of {len(need)} blocks changed since the last review "
+              f"({', '.join(shown) or '—'}); the others keep their earlier verdicts, do not list them")
+    else:
+        shown, paths = need, list(run["letters"])
     print(f"document_sha: {doc_sha(res['_new'])}")
     print(f"write the verdicts to: {side_path(s['name'], 'review').relative_to(OBSIDIAN.parent)}")
-    print("letters of this run (read each in full before judging a new claim):")
-    for p in run["letters"]:
+    print("letters" + (" cited by these blocks' new claims" if delta else " of this run")
+          + " (read each in full before judging a new claim):")
+    for p in paths:
         print(f"  {p}")
-    if not need:
-        print('\nnothing repacked or added: write {"document_sha": "<the sha above>", "entries": {}}')
+    if not shown:
+        print('\nnothing to judge: write {"document_sha": "<the sha above>", "entries": {}}')
         return
-    for k in need:
+    for k in shown:
         print(f"\n{'=' * 100}\nBLOCK {k}  ({'repacked' if k in res['changed'] else 'new'})")
         if k in res["changed"]:
             print(f"\n--- OLD TEXT ---\n{res['_ob'][k]['text'].strip()}")
@@ -554,19 +652,21 @@ def cmd_packet(cfg: dict, manager: str, area: str) -> None:
         print(f"\n--- WRITER'S CLAIMS ---\n{json.dumps(cl.get(k, {}), ensure_ascii=False, indent=1)}")
 
 
-def review_problems(name: str, res: dict, accept: set[str]) -> tuple[list[str], list[str]]:
-    """(problems, table rows for the log). Every claim judged, every passing verdict anchored in text."""
+def judge(name: str, res: dict, accept: set[str]) -> tuple[list[str], list[dict], list[str]]:
+    """(formal problems, blocking verdict items, table rows for the log). Every claim judged,
+    every passing verdict anchored in text. Items carry the full text: findings prints them whole,
+    review_problems cuts them for one line each."""
     need = res["changed"] + res["added"]
     rv = _load(side_path(name, "review"))
     cl = _load(side_path(name, "claims")) or {}
     if rv is None:
-        return [f"no review: run the reviewer (it writes {side_path(name, 'review').relative_to(OBSIDIAN.parent)})"], []
+        return [f"no review: run the reviewer (it writes {side_path(name, 'review').relative_to(OBSIDIAN.parent)})"], [], []
     if "_error" in rv:
-        return [rv["_error"]], []
-    prob, rows = [], []
+        return [rv["_error"]], [], []
+    prob, items, rows = [], [], []
     if rv.get("document_sha") != doc_sha(res["_new"]):
         prob.append("the review is of another version of the document (it changed after the review) — review again")
-    ents = rv.get("entries") or {}
+    ents = merged_entries(name, res, need)
     for k in need:
         e, c = ents.get(k), cl.get(k, {})
         if not isinstance(e, dict):
@@ -586,7 +686,8 @@ def review_problems(name: str, res: dict, accept: set[str]) -> tuple[list[str], 
             if verdict in OLD_OK and not ((len(where.split()) >= 3 and where in new_t) or where in bullets):
                 prob.append(f"review {k}.{cid}: '{verdict}' must cite, word for word, where the new text says it")
             if verdict not in OLD_OK and f"{k}:{cid}" not in accept:
-                prob.append(f"review {k}.{cid} {verdict.upper()}: {str(claim)[:80]} — {v.get('note', '')[:120]}")
+                items.append({"block": k, "id": cid, "tag": verdict.upper(), "claim": str(claim),
+                              "verdict": verdict, "note": v.get("note", ""), "letter": None})
         for nid, claim in (c.get("new") or {}).items():
             v = (e.get("new") or {}).get(nid) or {}
             verdict = v.get("verdict")
@@ -597,14 +698,62 @@ def review_problems(name: str, res: dict, accept: set[str]) -> tuple[list[str], 
             if verdict in NEW_OK and not quote_found(v.get("evidence", ""), res["_text_n"]):
                 prob.append(f"review {k}.{nid}: 'supported' must quote the letter word for word as evidence")
             if verdict not in NEW_OK and f"{k}:{nid}" not in accept:
-                prob.append(f"review {k}.{nid} UNSUPPORTED: {claim.get('claim', '')[:80]} — {v.get('note', '')[:120]}")
+                items.append({"block": k, "id": nid, "tag": "UNSUPPORTED", "claim": claim.get("claim", ""),
+                              "verdict": verdict, "note": v.get("note", ""), "letter": claim.get("letter")})
         for tag, label in (("uncovered_old", "said in the old text but not in the writer's claims"),
                            ("extra", "said in the new text but in neither the old text nor the letters")):
             for item in e.get(tag) or []:
                 rows.append(f"| {k} | {tag} | {str(item)[:80]} | flagged | |")
                 if f"{k}:{tag}" not in accept:
-                    prob.append(f"review {k}: {label}: {str(item)[:140]}")
+                    items.append({"block": k, "id": tag, "tag": tag, "label": label, "claim": str(item),
+                                  "verdict": "flagged", "note": "", "letter": None})
+    return prob, items, rows
+
+
+def review_problems(name: str, res: dict, accept: set[str]) -> tuple[list[str], list[str]]:
+    """(problems, table rows for the log): one line per problem, long texts cut."""
+    prob, items, rows = judge(name, res, accept)
+    for it in items:
+        if it["id"] in ("uncovered_old", "extra"):
+            prob.append(f"review {it['block']}: {it['label']}: {it['claim'][:140]}")
+        else:
+            prob.append(f"review {it['block']}.{it['id']} {it['tag']}: {it['claim'][:80]} — {it['note'][:120]}")
     return prob, rows
+
+
+def cmd_findings(cfg: dict, manager: str, area: str) -> None:
+    """Fix mode's input: every blocking item of the current review, in full."""
+    res = check(cfg, manager, area)
+    if not res["ok"]:
+        sys.exit("check fails — fix the document first:\n" + "\n".join(f"- {p}" for p in res["problems"]))
+    s, run = _open_run(cfg, manager, area)
+    cl = _load(side_path(s["name"], "claims")) or {}
+    formal, items, _ = judge(s["name"], res, set())
+    if not formal and not items:
+        print("no blocking item in the current review")
+        return
+    root = OBSIDIAN.parent
+    print(f"document: {run['document']}\nclaims file: {side_path(s['name'], 'claims').relative_to(root)}")
+    for f in formal:
+        print(f"\nFORMAL PROBLEM: {f}")
+    flagged = list(dict.fromkeys(it["block"] for it in items))
+    for it in items:
+        print(f"\n{'-' * 100}\nBLOCK {it['block']} · {it['id']} · {it['verdict']}")
+        print(f"statement: {it['claim']}")
+        if it["note"]:
+            print(f"reviewer's note: {it['note']}")
+        if it["letter"]:
+            print(f"letter the claim cites: {it['letter']}")
+        if it.get("label"):
+            print(f"({it['label']})")
+    for k in flagged:
+        print(f"\n{'=' * 100}\nCURRENT TEXT OF BLOCK {k}\n\n{res['_nb'][k]['text'].strip()}")
+        if k in res["changed"] and any(i["block"] == k and (i["id"].startswith("C") or i["id"] == "uncovered_old")
+                                       for i in items):
+            print(f"\n--- OLD TEXT OF BLOCK {k} ---\n{res['_ob'][k]['text'].strip()}")
+    print("\nletters to read (cited by the flagged blocks' new claims):")
+    for p in cited_letters(run, cl, flagged):
+        print(f"  {p}")
 
 
 def cmd_done(cfg: dict, manager: str, area: str, accept: list[str]) -> None:
@@ -613,6 +762,7 @@ def cmd_done(cfg: dict, manager: str, area: str, accept: list[str]) -> None:
         sys.exit("check fails — fix the document first:\n" + "\n".join(f"- {p}" for p in res["problems"]))
     s, run = _open_run(cfg, manager, area)
     prob, rows = review_problems(s["name"], res, set(accept))
+    write_review_base(s["name"], res, res["changed"] + res["added"])   # also when blocked: the next fix is delta-reviewed
     if prob:
         sys.exit("the review blocks the run:\n" + "\n".join(f"- {p}" for p in prob)
                  + "\n\nSend these back to the writer; or, for a verdict the USER accepts, done --accept <block>:<id>")
@@ -627,8 +777,7 @@ def cmd_done(cfg: dict, manager: str, area: str, accept: list[str]) -> None:
              if rows else "No block repacked or added.\n")
     with lp.open("a", encoding="utf-8") as fh:
         fh.write(head + f"\n## {today} · {', '.join(run['names'])}\n\n{summary}\n\n{table}")
-    for p in (run_path(s["name"]), side_path(s["name"], "claims"), side_path(s["name"], "review")):
-        p.unlink(missing_ok=True)
+    drop_run(s["name"])
     s = state(cfg, manager, area)
     span = f"{s['done'][0]['date']:%Y-%m} → {s['done'][-1]['date']:%Y-%m}"
     print(f"{s['name']}: +{len(run['names'])} letters · read {len(s['done'])} ({span}) · pending {len(s['pending'])}")
@@ -673,13 +822,16 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--list", action="store_true", help="every document and corpus, with what is pending")
     sub = ap.add_subparsers(dest="cmd")
-    for c in ("begin", "check", "packet", "done", "abort", "audit", "seed"):
+    for c in ("begin", "check", "packet", "findings", "done", "abort", "audit", "seed"):
         p = sub.add_parser(c)
         p.add_argument("manager")
         p.add_argument("area")
         if c == "begin":
             p.add_argument("--n", type=int, help=f"letters this run (default: up to {WORD_BUDGET:,} words, max {MAX_LETTERS})")
             p.add_argument("letters", nargs="*", help="these letters (file names without .md) instead of the next ones")
+        if c == "packet":
+            p.add_argument("--delta", action="store_true",
+                           help="only the blocks changed since the last review (needs the review base done writes)")
         if c == "done":
             p.add_argument("--accept", nargs="*", default=[], metavar="BLOCK:ID",
                            help="verdicts the USER accepted (4.4:C2, 4.4:N1, 4.4:extra, 4.4:uncovered_old)")
@@ -699,13 +851,14 @@ def main() -> None:
         print("\n" + ("PASS" if res["ok"] else "FAIL\n" + "\n".join(f"- {p}" for p in res["problems"])))
         sys.exit(0 if res["ok"] else 1)
     elif a.cmd == "packet":
-        cmd_packet(cfg, a.manager, a.area)
+        cmd_packet(cfg, a.manager, a.area, a.delta)
+    elif a.cmd == "findings":
+        cmd_findings(cfg, a.manager, a.area)
     elif a.cmd == "done":
         cmd_done(cfg, a.manager, a.area, a.accept)
     elif a.cmd == "abort":
         s, _ = _open_run(cfg, a.manager, a.area)
-        for p in (run_path(s["name"]), side_path(s["name"], "claims"), side_path(s["name"], "review")):
-            p.unlink(missing_ok=True)
+        drop_run(s["name"])
         print(f"{s['name']}: run dropped, ledger unchanged")
     elif a.cmd == "audit":
         cmd_audit(cfg, a.manager, a.area)

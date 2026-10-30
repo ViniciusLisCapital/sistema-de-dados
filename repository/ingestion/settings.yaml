@@ -330,5 +330,9 @@ files:
     mode: pymupdf
     reason: "plumber: 256 unmapped math glyphs, run_together 0.0023, and the rotated tables on p.16, 22, 23, 24 read backwards ('snoitavresbo'); pymupdf: 0 glyphs, no flags, common-word share 0.277 vs 0.247, rotated tables read forwards (p.23 checked: values and Greek letters intact, one cell per line so the row structure is lost). Both modes turn the ffi/ff ligatures into odd glyphs ('coe¢ cient', 'coeﬃcient') (measured 2026-10-29). Reference list is the last 68 lines to EOF"
 
+  "credit_market_shocks_real_economy (Greenstone et al., 2014).pdf":
+    mode: ocr
+    reason: "plumber and pymupdf read the table and figure pages (p.29-41) and the appendix tables through a substitution-cipher font ('CDC&$' for 0.042, not a shift), plumber leaves display equations as '!!!' (appendix a1-a4) and its References cut swallows all tables/figures up to the Appendix (764 lines). OCR (2026-10-30) keeps the equations readable (a1-a3 checked on the appendix page), cut is 101 lines to Figure 1, one-letter share 0.04 vs 0.149. Known loss: OCR reads the regression tables with the column order scrambled (Table 2, p.33, checked against the image: values present, columns not aligned) and chart pages as noise; digits in tables must be checked against the PDF before citing"
+
 # trader: released 2026-10-20 (the literature of a new trader agent).
 topics_on_hold: {}

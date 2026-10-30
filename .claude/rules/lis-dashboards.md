@@ -1,3 +1,15 @@
+---
+paths:
+  - "analytics/**/report.html"
+  - "analytics/**/generate_report.py"
+  - "analytics/**/*_tab.py"
+  - "analytics/report_structure/**"
+  - "analytics/release_calendar/**"
+  - ".claude/skills/lis-dashboard/**"
+  - "domain/dashboards/**"
+  - "tests/test_*_js.js"
+---
+
 # LIS Dashboards — Chart Interactivity
 
 All self-contained HTML dashboards/reports in this project should give every chart free pan/zoom on both axes, not leave them as static images. This applies **dashboard-wide regardless of charting library** — both the Chart.js dashboards and the Plotly-based reports implement the same interaction model, each via its own library-appropriate mechanism (sections below).

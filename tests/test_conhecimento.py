@@ -216,8 +216,9 @@ with tempfile.TemporaryDirectory() as tmp:
 
     # sem mapa, o retrato sem literatura ficaria vazio: levanta
     k.AREA["_teste_sem_mapa"] = "_pasta_que_nao_existe"
+    k.AREA["_teste_sem_pasta"] = None  # agente sem pasta no vault (o credito era o caso ate 2026-10-30)
     try:
-        for ag, trecho in (("credito", "não tem pasta"), ("_teste_sem_mapa", "_pasta_que_nao_existe_conceptual_map")):
+        for ag, trecho in (("_teste_sem_pasta", "não tem pasta"), ("_teste_sem_mapa", "_pasta_que_nao_existe_conceptual_map")):
             try:
                 k.gerar(ag, ciclo, planilha=planilha, destino=sem, sem_literatura=True)
                 confere(False, f"6. {ag} sem mapa: levanta")
@@ -225,7 +226,7 @@ with tempfile.TemporaryDirectory() as tmp:
                 confere(trecho in str(e) and not k.pasta(ag, ciclo, sem).exists(),
                         f"6. {ag} sem mapa: levanta com o caminho, sem criar a pasta")
     finally:
-        del k.AREA["_teste_sem_mapa"]
+        del k.AREA["_teste_sem_mapa"], k.AREA["_teste_sem_pasta"]
 
     confere(k.AREA["externo"] == "external" and k.AREA["expectativas"] == "expectations"
             and k.DONO_DA_AREA["expectations"] == "expectativas" and "expectativas" in k.tracker().OWNERS,
