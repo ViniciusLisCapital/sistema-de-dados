@@ -26,7 +26,11 @@ Fica enxuto de propósito: se o contexto dele crescer, o principal novo começa 
 6. **Status:** atualizar a tabela do PLANO a cada passagem.
 
 
-## Próximas ações (2026-10-30)
+## Próximas ações
+
+- **31/10: começar por [`ROTEIRO_2026-10-31.md`](ROTEIRO_2026-10-31.md).** Sem chats de frente: o principal conduz com subagentes.
+
+### Próximas ações de 30/10 (superadas)
 
 1. O usuário abre os chats A, B, C, D e E (onda 1), cada um com a frase de `README.md`.
 2. Avisar o chat C de que `analytics/brasil/structural_model/` e o chat E de que `domain/release_calendar/` também são mexidos por outros chats, fora do plano (`git status` de 2026-10-30).
@@ -58,7 +62,7 @@ Mais tarde no mesmo dia:
 - B liberado para os mapas, com a variável da tese provisória até o modelo.
 - D: expectativas da Verde descartado; segue Kapitalo em externo.
 
-## Pedidos pendentes de entrega (2026-10-30, fim do dia: todas as sessões de frente fechadas)
+## Pedidos pendentes de entrega (2026-10-30) — superada: os chats não voltam; tudo isto está no roteiro de 31/10
 
 O usuário decidiu **retirar o agente de expectativas** (SISTEMA III.III.x). Redistribuição: à PM a Focus de IPCA e de Selic, a ancoragem, a inflação implícita, o QPC e a variável de tese (Focus IPCA 12m, endógena da equação de expectativas); à atividade a Focus de PIB; ao MT a de desocupação; ao câmbio a de câmbio. Ciclo 2 com oito agentes.
 
