@@ -168,7 +168,7 @@ As of May 2023:
 - [[exchange_rate/synthesis/primer_gsdeer_gsfeer (Goldman, 2025)]] — companion piece explaining the model construction and BRL case study (2025 vintage)
 - [[ppp_balassa_samuelson]] — GSDEER is an augmented PPP model (this paper evaluates its forecasting performance); the augmentation itself corrects for the Balassa-Samuelson productivity effect this concept documents
 - [[exchange_rate/synthesis/expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]] — provides the theoretical basis for why fair value is a long-run concept and short-run deviations are rational (overshooting)
-- [[exchange_rate/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] / [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — the policy effectiveness framework that underpins why exchange rates deviate from PPP in the short run
+- [[monetary_policy/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] / [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — the policy effectiveness framework that underpins why exchange rates deviate from PPP in the short run
 - [[risk_premium]] — EM currencies with high risk premia show slower, noisier GSDEER convergence than this paper's G10-focused results would suggest
 - [[Sarno-Taylor]] — academic treatment of PPP mean-reversion and the 3–5 year half-life that GS references
 - [[verde_fx_mental_models]] — Verde letters treat GSDEER-type structural undervaluation as a necessary-but-not-sufficient condition for BRL appreciation; consistent with this paper's finding that convergence is slow and requires a catalyst

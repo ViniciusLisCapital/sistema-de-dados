@@ -488,5 +488,5 @@ Como a Verde lê o efeito do nível da Selic e da curva sobre os ativos de risco
 - [[monetary_policy/synthesis/high_interest_rates_puzzle_brazil (Segura-Ubiergo, 2012)]] — seção 1.1: o nível estrutural dos juros brasileiros ligado ao regime fiscal
 - [[global_financial_cycle]] — seção 3.4: o aperto das condições financeiras globais derrubando ações, crédito, moedas e commodities ao mesmo tempo
 - [[carry_trade]] — seção 4.2: o diferencial de juros do ciclo adiantado beneficiando o Real
-- [[monetary_policy/synthesis/us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020)]] — seções 3.2 e 3.4: o aperto americano transmitido aos ativos de risco globais
+- [[external/synthesis/us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020)]] — seções 3.2 e 3.4: o aperto americano transmitido aos ativos de risco globais
 - [[time_inconsistency]] — seção 1.1: regras contra discrição na política fiscal; a promessa de responsabilidade sem teto ou arcabouço legal ("la garantia soy yo") que, para a Verde, só se sustenta se as decisões a corroborarem (as cartas não usam o termo)

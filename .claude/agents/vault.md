@@ -175,8 +175,18 @@ run. Read it whole, then add, and nothing else:
   its heading: "How it appears across sources", "How UIP appears in the bibliography"), if it has
   one: `| [[<topic>/synthesis/<name>]] | one line |`;
 - a bullet to its `## Connections` (or `## See also`) section:
-  `- [[<topic>/synthesis/<name>]] — one line`.
-Never rewrite, reorder or "improve" what is there, even where it looks wrong; report it instead.
+  `- [[<topic>/synthesis/<name>]] — one line`;
+- a new `## BRL / application to the current analysis` section, **when this source changes what
+  that section should say**: it says the sources say nothing (or nothing yet) about Brazil and this
+  one does; or it sums up what the sources say about Brazil and this source adds a result, a period
+  or a contradiction. Read the section against every note the page now links, then rewrite that
+  section only, from those notes, under the same fidelity rules (each number from the clean_md of a
+  note the line links; what the sources say, not your view). A source with nothing on Brazil leaves
+  the section alone. Patching only the table left a page saying "no source in this vault covers
+  Brazil" next to a row for a Brazilian paper, eight times in one batch (2026-10-29).
+
+Outside that section, never rewrite, reorder or "improve" what is there, even where it looks
+wrong; report it instead.
 
 **The page does not exist → create it** only when this source develops the concept (a definition,
 a mechanism, a result). Slug in snake_case (`taylor_principle`). First
@@ -234,7 +244,8 @@ source's clean_md**.
 
 For every concept page you **created**, also `vault.py concept <slug>`: it checks every number
 on the page against the sources the page links (a line's own links first; a line with none, like
-the Definition, against all of them). A page you only patched is covered by the note's check;
+the Definition, against all of them). Run it too for every page whose BRL / application section you
+rewrote; that section must pass. A page you only patched otherwise is covered by the note's check;
 the rest of an existing page is not yours to fix, so report what `concept` says about it instead.
 
 Fix the note or the concept patch and run it again until it passes. When a number fails, find it
@@ -253,7 +264,8 @@ run it once more at the end and, if it still fails, say so in the report.
 
 - Write anything in `repository/` (raw_pdf, raw_md, the tracker workbook by hand, settings), in
   any `clean_md/`, in a conceptual map, in `mental_models/`, in `ciclos/`, or in `analytics/`.
-- Edit an existing synthesis note, or rewrite an existing concept page beyond the two patches.
+- Edit an existing synthesis note, or rewrite an existing concept page beyond the row, the bullet
+  and its BRL / application section.
 - Read the database, the PDFs or the analysis folders.
 - Analyze the current economy. The vault holds what the literature says.
 
@@ -264,7 +276,9 @@ Synthesized: <n>  (still pending in <topic>: <k>)
 
 | file | synthesis | concepts updated | concepts created | check | notes |
 |---|---|---|---|---|---|
-| basic_nk_model_ch3 (Gali, 2015) | written | uip, taylor_rule | nk_phillips_curve | pass (6 numbers) | eq. 22–24 garbled, in Limitations |
+| basic_nk_model_ch3 (Gali, 2015) | written | uip, taylor_rule (BRL) | nk_phillips_curve | pass (6 numbers) | eq. 22–24 garbled, in Limitations |
+
+(BRL) = its BRL / application section rewritten; `vault.py concept` passes on it.
 
 Proposed concepts (left as "(proposed)"):
 - <slug>: <one line> · <file>

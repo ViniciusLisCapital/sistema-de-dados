@@ -48,6 +48,17 @@ def test_parse_copom_le_o_strike_de_15_posicoes():
     assert set(P.tipo) == {"C"}
 
 
+def test_strike_com_tres_decimais_de_2020_a_2023():
+    """De 2020-08 a 2023-09 a B3 grava 100,500 como 100500: lido com duas casas, 1005,00."""
+    linha = ("0" * 11 + "20210226" + "CPM3HV83CE20210318" + f"{100500:015d}" + f"{6200:015d}" + "2")
+    assert len(linha) == 68
+    P = b3_premio.parse_copom(linha)
+    assert P.strike.iloc[0] == pytest.approx(100.5) and P.premio.iloc[0] == pytest.approx(62.0)
+    # E o cache gravado antes da correcao (strike x 10) sai certo na carga.
+    velho = P.assign(strike=1005.0)
+    assert m.linhas_do_pregao(velho, "2021-02-26").variacao_bps.tolist() == [50]
+
+
 def test_o_layout_do_dolar_estragaria_o_copom():
     """A razao de parse_copom existir: o parse do dolar le o mesmo texto e erra."""
     D = b3_premio.parse(_RAW, mercadoria="CPM")

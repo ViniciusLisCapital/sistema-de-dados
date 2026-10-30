@@ -507,7 +507,7 @@ their cluster.
 ### #new_keynesian_transmission — the model behind the rule
 
 - [[nk_phillips_curve]] — inflation from expected inflation and the gap; hybrid curves with persistence. [[monetary_policy/synthesis/basic_nk_model_ch3 (Gali, 2015)]], [[monetary_policy/synthesis/science_of_monetary_policy (Clarida, Gali & Gertler, 1999)]]
-- [[calvo_pricing]] — random price reset; the pricing block of the NK model. *Other owner (inflation):* [[monetary_policy/synthesis/staggered_prices (Calvo, 1983)]]
+- [[calvo_pricing]] — random price reset; the pricing block of the NK model. *Other owner (inflation):* [[inflation/synthesis/staggered_prices (Calvo, 1983)]]
 - [[natural_rate_of_interest]] — the flexible-price real rate; the gap depends on the real rate against it. [[monetary_policy/synthesis/basic_nk_model_ch3 (Gali, 2015)]]
 - [[taylor_principle]] — more than one-for-one response to inflation for a determinate equilibrium. [[monetary_policy/synthesis/classical_monetary_model_ch2 (Gali, 2015)]], [[monetary_policy/synthesis/monetary_policy_design_nk_ch4 (Gali, 2015)]]
 - [[divine_coincidence]] — stabilizing inflation closes the gap absent cost-push shocks; breaks with them and with sticky wages. [[monetary_policy/synthesis/monetary_policy_design_nk_ch4 (Gali, 2015)]], [[monetary_policy/synthesis/discretion_vs_commitment_ch5 (Gali, 2015)]], [[monetary_policy/synthesis/sticky_wages_prices_ch6 (Gali, 2015)]]
@@ -531,7 +531,7 @@ their cluster.
 - [[fiscal_dominance]], [[risk_premium]], [[uip]] — a hike raising default risk and depreciating the real; the fiscal rule and the vicious circle; Brazil 2002. [[monetary_policy/synthesis/fiscal_dominance_it_brazil (Blanchard, 2004)]], [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]]
 - [[jurisdictional_uncertainty]], [[capital_controls]] — the anti-creditor bias as the common cause of high short rates and no long credit. [[monetary_policy/synthesis/credit_interest_jurisdictional_uncertainty (Arida, Bacha & Lara-Resende, 2005)]]
 - `directed_credit` — no page. [[monetary_policy/synthesis/high_interest_rates_puzzle_brazil (Segura-Ubiergo, 2012)]]
-- No synthesis yet: [[monetary_policy/clean_md/samba_dsge_brazil (de Castro et al., 2011)]], [[monetary_policy/clean_md/samba_dsge_brazil_update (Fasolo et al., 2023)]], [[monetary_policy/clean_md/monetary_channels_brazil_semi_structural (Minella & Souza-Sobrinho, 2013)]], [[monetary_policy/clean_md/directed_credit_monetary_transmission (Bonomo & Martins, 2016)]]; *other owner (FX):* [[monetary_policy/clean_md/monetary_policy_fx_puzzle_em (Kohlscheen, 2014)]].
+- No synthesis yet: [[monetary_policy/clean_md/samba_dsge_brazil (de Castro et al., 2011)]], [[monetary_policy/clean_md/samba_dsge_brazil_update (Fasolo et al., 2023)]], [[monetary_policy/clean_md/monetary_channels_brazil_semi_structural (Minella & Souza-Sobrinho, 2013)]], [[monetary_policy/clean_md/directed_credit_monetary_transmission (Bonomo & Martins, 2016)]]; *other owner (FX):* [[exchange_rate/clean_md/monetary_policy_fx_puzzle_em (Kohlscheen, 2014)]].
 
 ### #neutral_rate — the neutral and the stance
 
@@ -542,7 +542,7 @@ their cluster.
 
 ### #reaction_function_and_gradualism — how the rule is estimated and why it is inertial
 
-- [[taylor_principle]], [[interest_rate_smoothing]] — pre-Volcker accommodation against a two-for-one response after; partial adjustment. [[monetary_policy/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]]
+- [[taylor_principle]], [[interest_rate_smoothing]] — pre-Volcker accommodation against a two-for-one response after; partial adjustment. [[external/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]]
 - [[real_time_data]], [[taylor_rule]] — prescriptions and coefficients change with the data available at the time. [[monetary_policy/synthesis/policy_rules_real_time_data (Orphanides, 2001)]]
 - [[interest_rate_smoothing]] — inertia as optimal commitment; super-inertial rules. [[monetary_policy/synthesis/optimal_monetary_policy_inertia (Woodford, 1999)]]
 
@@ -580,10 +580,10 @@ their cluster.
 
 - [[global_financial_cycle]], [[capital_controls]], [[macroprudential_policy]] — the trilemma as a dilemma. [[monetary_policy/synthesis/dilemma_not_trilemma (Rey, 2013)]]
 - [[financial_trilemma]], [[currency_regimes]] — floating buys short-rate independence, not long-rate independence. [[monetary_policy/synthesis/trilemma_tradeoffs (Obstfeld, 2015)]]
-- [[global_financial_cycle]] — US policy driving the global factor; floaters exposed. *Other owner (external):* [[monetary_policy/synthesis/us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020)]]
-- [[risk_premium]], [[uip]] — international risk spillovers; free floats better insulated. *Other owner (FX):* [[monetary_policy/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)]]; `fear_of_floating` — no page.
-- [[carry_trade]] — policy transmission to the exchange rate depends on carry positioning. *Other owner (FX):* [[monetary_policy/synthesis/monetary_policy_exchange_rates (BIS, 2026)]]
-- No synthesis yet: [[monetary_policy/clean_md/two_targets_two_instruments (Ostry, Ghosh & Chamon, 2012)]]; *other owner (FX):* [[monetary_policy/clean_md/systematic_monetary_policy_forward_premium_puzzle (Tambakis & Tarashev, 2012)]].
+- [[global_financial_cycle]] — US policy driving the global factor; floaters exposed. *Other owner (external):* [[external/synthesis/us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020)]]
+- [[risk_premium]], [[uip]] — international risk spillovers; free floats better insulated. *Other owner (FX):* [[exchange_rate/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)]]; `fear_of_floating` — no page.
+- [[carry_trade]] — policy transmission to the exchange rate depends on carry positioning. *Other owner (FX):* [[exchange_rate/synthesis/monetary_policy_exchange_rates (BIS, 2026)]]
+- No synthesis yet: [[monetary_policy/clean_md/two_targets_two_instruments (Ostry, Ghosh & Chamon, 2012)]]; *other owner (FX):* [[exchange_rate/clean_md/systematic_monetary_policy_forward_premium_puzzle (Tambakis & Tarashev, 2012)]].
 
 ### #institutional_framework and #brazil_policy_communication
 

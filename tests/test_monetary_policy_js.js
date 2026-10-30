@@ -275,7 +275,7 @@ global.Plotly = makePlotly(doc, chamadas);
 
 // Reexporta as funcoes internas: new Function() cria escopo proprio, entao nada e visivel
 // de fora sem esta linha.
-const EXPORTS = ['fmtBR', 'fmtTrunc', 'fmtDate', 'lastValid', 'growthN', 'dlText', 'lineTrace',
+const EXPORTS = ['fmtBR', 'cnDataBR', 'fmtTrunc', 'fmtDate', 'lastValid', 'growthN', 'dlText', 'lineTrace',
                  '_quickRangeOptions', '_defaultXRange', '_traceAllDates', 'mkTimeseriesLayout',
                  'mkBarLayout', '_reactPreserveX', 'activateTab', 'RENDERERS', 'setKPI', '_PLOTLY_CONFIG',
                  'D', 'dashTrace',
@@ -295,7 +295,7 @@ const EXPORTS = ['fmtBR', 'fmtTrunc', 'fmtDate', 'lastValid', 'growthN', 'dlText
                  'renderCnSelicTextos',
                  'renderExpectativas', 'renderEjHoje', 'renderEjHojeTextos', 'renderEjReuniao',
                  'renderEjReuniaoTextos', 'renderEjHz', 'renderEjHzTextos', 'EJ',
-                 'ejSemanaAtras', 'ejSegunda', 'ejGap', 'ejTabelaLinhas', 'renderEjTabela', 'ejNumero',
+                 'ejDatasComp', 'ejNaData', 'ejVizinha', 'ejCmpPadrao', 'ejComparadas', 'ejSegunda', 'ejGap', 'ejTabelaLinhas', 'renderEjTabela', 'ejNumero',
                  'ejOp', 'ejOpReunioes', 'ejOpDist', 'ejOpHist', 'ejOpPregaoAtras', 'renderEjOpDist',
                  'renderEjOpHist', 'renderEjOpTextos', 'EJ_OP_COR', 'EJ_OP_MIN', 'ejSerieReuniao'];
 let MP;
@@ -2040,7 +2040,7 @@ console.log('\n36. Aba Expectativas de Juros: a pesquisa e a curva, reuniao a re
   ok(!!rH, 'o caminho de hoje foi plotado');
   if (rH) {
     const T = rH.traces;
-    ok(T.length === 4, 'com a comparacao default: as duas de hoje e as duas de 4 semanas antes', String(T.length));
+    ok(T.length === 4, 'com a comparacao default: as duas de hoje e as duas do dia anterior', String(T.length));
     const tF = T[T.length - 2], tD = T[T.length - 1];
     const cF = cam('focus', X.focus.datas.length - 1), cD = cam('di', X.di.datas.length - 1);
     ok(JSON.stringify(tF.x) === JSON.stringify(cF.x) && JSON.stringify(tF.y) === JSON.stringify(cF.y),
@@ -2050,7 +2050,7 @@ console.log('\n36. Aba Expectativas de Juros: a pesquisa e a curva, reuniao a re
     ok(tF.line.color === '#1F2853' && tD.line.color === '#BB9B1D' && tF.line.width === 3,
        'pesquisa em azul, curva em dourado, as duas grossas');
     ok(T.every((t) => t.line.shape === 'hv'), "tudo em degrau ('hv')");
-    ok(T.slice(0, 2).every((t) => t.line.dash === 'dash'), 'as de 4 semanas antes tracejadas');
+    ok(T.slice(0, 2).every((t) => t.line.dash === 'dash'), 'as de comparacao tracejadas');
     ok(tF.customdata[0].indexOf('Selic vigente em') === 0, 'o hover da ancora diz que ela e a Selic vigente');
     const kE = tF.x.findIndex((d, k) => k > 0 && R.find((r) => r.d === d).est);
     if (kE > 0) ok(tF.customdata[kE].indexOf('(data estimada)') >= 0, 'e o de uma reuniao sem data marcada diz isso');
@@ -2062,19 +2062,79 @@ console.log('\n36. Aba Expectativas de Juros: a pesquisa e a curva, reuniao a re
   ok(rHd && rHd.traces.filter((t) => Array.isArray(t.text)).length === 2 &&
      rHd.traces.slice(-2).every((t) => t.text[0] === ''), 'toggle ligado: rotula as duas de hoje, menos a ancora');
   MP.EJ.dlHoje = false;
-  // A comparacao muda ate onde o grafico vai para tras, e a janela tem de ir junto -- senao o
-  // caminho de 52 semanas antes aparece cortado ao meio.
-  const pg = doc.getElementById('pg-ej-comp');
-  const pill = (txt) => pg.children.find((b) => b.textContent.indexOf(txt) === 0);
-  pill('52 semanas').fire('click');
-  const i52 = MP.ejSemanaAtras('focus', 52);
-  ok(MP._chartXRange['chart-ej-hoje'][0] <= X.focus.datas[i52],
-     'escolher 52 semanas alarga a janela ate o caminho de um ano atras', JSON.stringify(MP._chartXRange['chart-ej-hoje']));
-  ok(Date.parse(X.focus.datas[X.focus.datas.length - 1]) - Date.parse(X.focus.datas[i52]) >= 52 * 7 * 86400000,
-     'e "52 semanas antes" e por data, nao por posicao');
-  pill('Nenhuma').fire('click');
-  ok(ult('chart-ej-hoje').traces.length === 2, '"Nenhuma" deixa so as duas de hoje');
-  pill('4 semanas').fire('click');
+  // A comparacao por data (2026-10-29): uma data por fonte, independentes, e TODO dia nos
+  // ultimos dois anos -- o default e o dia anterior ao mais recente de cada uma.
+  ['focus', 'di'].forEach((f) => {
+    const S = X[f], Dd = S.diario, campo = f === 'di' ? 'v' : 'm';
+    ok(Dd && Dd.datas.length > 400, f + ': o payload traz a serie diaria dos ultimos dois anos', Dd && String(Dd.datas.length));
+    ok(Dd.datas[Dd.datas.length - 1] === S.datas[S.datas.length - 1], f + ': a diaria termina na mesma data da semanal');
+    ok(Dd.datas.every((d, k) => k === 0 || d > Dd.datas[k - 1]), f + ': datas diarias em ordem e sem repeticao');
+    // Nas datas que as duas tem, o caminho e o mesmo -- a diaria e a mesma conta, todo dia.
+    let comuns = 0, dif = 0;
+    Dd.datas.forEach((d, k) => {
+      const i = S.datas.indexOf(d);
+      if (i < 0) return;
+      comuns++;
+      if (Dd.vig[k] !== S.vig[i] || Dd.j0[k] !== S.j0[i]) dif++;
+      Object.keys(Dd.por_reuniao).forEach((j) => {
+        const bd = Dd.por_reuniao[j], bs = S.por_reuniao[j];
+        const vd = bd[campo][k - bd.i0], vs = bs ? bs[campo][i - bs.i0] : undefined;
+        if ((vd == null ? null : vd) !== (vs == null ? null : vs)) dif++;
+      });
+    });
+    ok(comuns > 90 && dif === 0, f + ': nas ' + comuns + ' datas que as duas tem, diaria e semanal dao o mesmo caminho', String(dif));
+    ok(MP.EJ.cmp[f] === Dd.datas[Dd.datas.length - 2], f + ': o default compara com o dia anterior disponivel', MP.EJ.cmp[f]);
+  });
+  if (rH) {
+    ok(rH.traces[0].name.indexOf(MP.cnDataBR(X.focus.diario.datas[X.focus.diario.datas.length - 2])) >= 0 &&
+       rH.traces[1].name.indexOf(MP.cnDataBR(X.di.diario.datas[X.di.diario.datas.length - 2])) >= 0,
+       'a legenda das tracejadas diz a data de cada uma', rH.traces.slice(0, 2).map((t) => t.name).join(' | '));
+  }
+  const cbox = (f) => doc.getElementById('ej-cmp-' + f);
+  const cbt = (f, txt) => cbox(f).children.find((c) => c.tag === 'button' && c.textContent === txt);
+  const cin = (f) => cbox(f).children.find((c) => c.tag === 'input');
+  ok(cbox('focus').children.length === 4 && cbox('di').children.length === 4 && cin('focus').type === 'date',
+     'cada fonte tem a sua barra: anterior, data, seguinte, sem comparacao');
+  const DF = X.focus.diario.datas, DD = X.di.diario.datas;
+  cbt('focus', '‹').fire('click');
+  ok(MP.EJ.cmp.focus === DF[DF.length - 3] && MP.EJ.cmp.di === DD[DD.length - 2],
+     '"‹" na pesquisa recua UM dia disponivel e nao mexe na curva', JSON.stringify(MP.EJ.cmp));
+  ok(cin('focus').value === DF[DF.length - 3], 'e a caixa mostra a data usada');
+  cbt('focus', '›').fire('click');
+  ok(MP.EJ.cmp.focus === DF[DF.length - 2], '"›" avanca um dia disponivel');
+  // Uma data sem dado encaixa na anterior disponivel, e a nota diz isso.
+  const iSex = DD.findIndex((d, k) => k < DD.length - 2 && new Date(d + 'T12:00:00Z').getUTCDay() === 5);
+  if (iSex >= 0) {
+    const sab = new Date(Date.parse(DD[iSex] + 'T12:00:00Z') + 86400000).toISOString().slice(0, 10);
+    cin('di').value = sab; cin('di').fire('change');
+    ok(MP.EJ.cmp.di === DD[iSex], 'um sabado na curva encaixa na sexta anterior', MP.EJ.cmp.di + ' <- ' + sab);
+    const nota = doc._els['ej-cmp-nota'].innerHTML;
+    ok(nota.indexOf(MP.cnDataBR(sab)) >= 0 && nota.indexOf(MP.cnDataBR(DD[iSex])) >= 0,
+       'e a nota diz a data pedida e a usada', nota);
+    ok(MP.EJ.cmp.focus === DF[DF.length - 2], 'trocar a curva nao mexe na pesquisa');
+  }
+  // Antes da janela diaria vale a semanal; e a janela do grafico alarga ate o caminho antigo.
+  cin('di').value = '2020-06-17'; cin('di').fire('change');
+  const sem20 = X.di.datas.filter((d) => d <= '2020-06-17').pop();
+  ok(MP.EJ.cmp.di === sem20, 'antes da janela diaria, a ultima data de semana ate a pedida', MP.EJ.cmp.di);
+  const rOld = ult('chart-ej-hoje');
+  ok(rOld.traces[1].x[0] === sem20 && MP._chartXRange['chart-ej-hoje'][0] <= sem20,
+     'o caminho antigo comeca na data dele e a janela alarga ate la', JSON.stringify(MP._chartXRange['chart-ej-hoje']));
+  cbt('di', '×').fire('click');
+  ok(MP.EJ.cmp.di === null && ult('chart-ej-hoje').traces.length === 3 && cin('di').value === '',
+     '"×" tira so a comparacao da curva', String(ult('chart-ej-hoje').traces.length));
+  ok(cbt('di', '›').disabled && cbt('di', '×').disabled && !cbt('focus', '×').disabled,
+     'sem comparacao, "›" e "×" da curva desligados; os da pesquisa nao');
+  cbt('di', '‹').fire('click');
+  ok(MP.EJ.cmp.di === DD[DD.length - 2], '"‹" sem comparacao volta ao dia anterior');
+  // A data mais recente nao desenha tracejada: ela seria a mesma linha da de hoje.
+  cin('focus').value = DF[DF.length - 1]; cin('focus').fire('change');
+  ok(ult('chart-ej-hoje').traces.length === 3 && cbt('focus', '›').disabled,
+     'comparar com a propria data de hoje nao desenha nada por cima, e "›" para ali');
+  cbt('focus', '‹').fire('click');
+  ok(MP.EJ.cmp.focus === DF[DF.length - 2] && ult('chart-ej-hoje').traces.length === 4, 'de volta ao default');
+  ok(doc._els['ej-cap-hoje'].innerHTML.indexOf(MP.cnDataBR(DF[DF.length - 2])) >= 0,
+     'a legenda nomeia a data da comparacao');
 
   // 1b. A tabela abaixo do grafico (2026-10-27): a decisao que cada reuniao embute, na curva e
   // na pesquisa, com o acumulado desde a Selic de hoje e o spread entre os acumulados. Pedido
@@ -2265,10 +2325,18 @@ console.log('\n36. Aba Expectativas de Juros: a pesquisa e a curva, reuniao a re
      'sintetico: cada fonte mede a decisao contra o proprio caminho, e o acumulado contra a Selic de hoje',
      Ts && JSON.stringify(Ts.linhas[0]));
   ok(MP.ejNumero(1) === 2, 'sintetico: o numero da reuniao vem do calendario');
+  // A comparacao por data: semanal ate a diaria comecar, diaria dali em diante, e uma data sem
+  // dado encaixa na anterior.
   MP.D.expectativas = {reunioes: [], di: null,
-    focus: {datas: ['2027-01-01', '2027-01-08', '2027-01-22', '2027-01-29'], vig: [14, 14, 14, 14], j0: [0, 0, 0, 0], por_reuniao: {}}};
-  ok(MP.ejSemanaAtras('focus', 3) === 1, 'sintetico: com uma semana faltando, "3 semanas antes" cai na data certa, nao 3 posicoes atras',
-     String(MP.ejSemanaAtras('focus', 3)));
+    focus: {datas: ['2027-01-01', '2027-01-08', '2027-01-15'], vig: [14, 14, 14], j0: [0, 0, 0], por_reuniao: {},
+            diario: {datas: ['2027-01-11', '2027-01-12', '2027-01-14', '2027-01-15'], vig: [14, 14, 14, 14], j0: [0, 0, 0, 0], por_reuniao: {}}}};
+  ok(MP.ejDatasComp('focus').map((e) => e.d).join(',') === '2027-01-01,2027-01-08,2027-01-11,2027-01-12,2027-01-14,2027-01-15',
+     'sintetico: as datas de comparacao sao a semanal antes da diaria e a diaria inteira, sem repetir',
+     MP.ejDatasComp('focus').map((e) => e.d).join(','));
+  ok(MP.ejNaData('focus', '2027-01-13').d === '2027-01-12' && MP.ejNaData('focus', '2027-01-10').d === '2027-01-08' &&
+     MP.ejNaData('focus', '2026-12-01').d === '2027-01-01', 'sintetico: data sem dado encaixa na anterior; antes do comeco, a primeira');
+  ok(MP.ejVizinha('focus', '2027-01-11', -1) === '2027-01-08' && MP.ejVizinha('focus', '2027-01-15', 1) === null &&
+     MP.ejCmpPadrao('focus') === '2027-01-14', 'sintetico: o vizinho atravessa a troca de serie, e o default e o dia anterior');
   MP.D.expectativas = Xreal;
 
   // Sintetico: cada fonte degrada sozinha.
@@ -2752,8 +2820,11 @@ console.log('\n38. Aba Expectativas de Juros: as opcoes de Copom');
         const tot = b.dec.reduce((a, x) => a + b.p[String(x)][t], 0);
         if (Math.abs(tot - 100) > 0.1) somaRuim++;
         const esp = b.dec.reduce((a, x) => a + b.p[String(x)][t] * x, 0) / 100;
-        if (Math.abs(esp - dd) > 0.02) dRuim++;
-        if (b.soma[t] < 80 || b.soma[t] > 102) descRuim++;
+        // Tolerancia do arredondamento do payload: cada probabilidade sai com 2 casas (meio
+        // centesimo de % por decisao, vezes a decisao) e a variacao esperada com 2.
+        const tol = b.dec.reduce((a, x) => a + Math.abs(x), 0) * 0.005 / 100 + 0.006;
+        if (Math.abs(esp - dd) > tol) dRuim++;
+        if (b.soma[t] < 80 || b.soma[t] > 120) descRuim++;
         // A Selic esperada, refeita: a vigente mais o passo esperado de CADA reuniao de hoje ate j.
         let acc = O.vig[i], falta = false;
         for (let q = O.j0[i]; q <= j; q++) {
@@ -2770,15 +2841,18 @@ console.log('\n38. Aba Expectativas de Juros: as opcoes de Copom');
     ok(passou === 0, 'nenhum pregao cota uma reuniao que ja passou', String(passou));
     ok(somaRuim === 0, 'as probabilidades de cada reuniao somam 100 em todo pregao', String(somaRuim));
     ok(dRuim === 0, 'a variacao esperada e a soma de probabilidade x decisao', String(dRuim));
-    ok(descRuim === 0, 'a soma dos premios fica entre 80 e 102 (100 x o desconto)', String(descRuim));
+    ok(descRuim === 0, 'so entram reunioes com soma dos premios entre 80 e 120', String(descRuim));
     ok(nV > 100 && vRuim === 0, 'a Selic esperada soma o passo de cada reuniao ate a escolhida, e so existe sem buraco no meio',
        vRuim + ' de ' + nV);
 
     // ── Render: a distribuicao e o historico ──
     const ultOp = (id) => chamadas.filter((c) => c.tipo === 'react' && c.divId === id).pop();
     const js = MP.ejOpReunioes(), iH = O.datas.length - 1;
+    // As secoes do meio zeram o registro de chamadas: redesenha no estado em que a aba abriu.
+    MP.renderEjOpDist(); MP.renderEjOpHist();
     ok(js.length >= 1 && MP.EJ.opReu === js[0], 'a secao abre na reuniao mais proxima com opcao', JSON.stringify(js));
-    const rot = (b) => b === 0 ? 'Manutenção' : (b < 0 ? 'Corte de ' : 'Alta de ') + Math.abs(b) + ' pb';
+    const rot = (b) => b === 0 ? 'Manutenção' : (b < 0 ? 'Corte de ' : 'Alta de ') +
+      Math.abs(b).toFixed(b % 1 ? 1 : 0).replace('.', ',') + ' pb';
     const rD = ultOp('chart-ej-op-dist');
     ok(!!rD, 'a distribuicao foi plotada');
     if (rD) {

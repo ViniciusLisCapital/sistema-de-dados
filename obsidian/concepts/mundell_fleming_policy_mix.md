@@ -48,7 +48,7 @@ The same headline policy announcement (e.g., "fiscal stimulus") can be currency-
 
 - [[exchange_rate/synthesis/exchange_rate_understanding_equilibrium (CFA L2, 2025)]] — primary source; this concept page was built from that reading's capital-mobility-conditioned policy tables
 - [[exchange_rate/synthesis/output_exchange_rates_sr (Krugman, 2023)]] — same qualitative fiscal/monetary-policy-to-exchange-rate results (temporary fiscal → appreciation, temporary monetary → depreciation), derived from the DD-AA model rather than a capital-mobility parameter
-- [[exchange_rate/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] — original Mundell source on capital mobility and policy effectiveness under fixed vs. floating rates
+- [[monetary_policy/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] — original Mundell source on capital mobility and policy effectiveness under fixed vs. floating rates
 - [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — companion original source
 - [[uip]] — the high-capital-mobility channel is UIP-driven capital flow response to interest differentials
 - [[balance_of_payments_approach]] — Mundell-Fleming is explicitly a short-run model; the portfolio balance approach extends it to the long-run effect of sustained fiscal deficits

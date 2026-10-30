@@ -426,7 +426,8 @@ def run(output: str = "reports/brasil/Monetary Policy.html") -> None:
             s = ex.get(nome)
             if s:
                 print(f"  expectativas  {nome:5s} {len(s['datas'])} semanas "
-                      f"({s['datas'][0]} -> {s['datas'][-1]}), {len(s['por_reuniao'])} reunioes")
+                      f"({s['datas'][0]} -> {s['datas'][-1]}), {len(s['por_reuniao'])} reunioes"
+                      f" + {len(s['diario']['datas'])} dias desde {s['diario']['datas'][0]}")
     except Exception as exc:
         print(f"  expectativas  FALHOU -- {exc}")
         data["expectativas"] = {}

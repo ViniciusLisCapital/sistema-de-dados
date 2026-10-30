@@ -59,8 +59,8 @@ keeps its free name: it has no clean_md.
 
 `.claude/agents/vault.md`, run by the skill in its own context, opus, at most 5 files per run. Per
 file: read the clean_md in full → write the synthesis (template in the agent file; it replaced
-the `/add` and `/sync-vault` commands, deleted 2026-10-19) → patch the concept pages it links (a row in the appearances table and a Connections
-bullet, never a rewrite) or create the missing ones → `vault.py check` → `tracker.py`. Every number
+the `/add` and `/sync-vault` commands, deleted 2026-10-19) → patch the concept pages it links (a row in the appearances table, a Connections
+bullet and, when the new source changes it, the BRL / application section; nothing else is rewritten) or create the missing ones → `vault.py check` → `tracker.py`. Every number
 in a note must be in the clean_md text, and damaged text is reported under "Limitations and
 caveats", not reconstructed; the Source line alone may take title, author and date from the
 tracker row when the clean_md has no title page (`vault.py biblio`). Numbers on concept pages are

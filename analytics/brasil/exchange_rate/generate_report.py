@@ -19,6 +19,7 @@ Uso:
 """
 
 import html
+import json
 import re
 import tempfile
 from datetime import datetime
@@ -675,6 +676,19 @@ def _load_comex_produto() -> dict:
         return {}
 
 
+def _load_episodios() -> dict:
+    """Episódios de estresse narrados no gráfico da PTAX (data/episodios_cambio.json).
+
+    Texto escrito à mão, não sai do banco: as fases (com o quadrante de cada uma)
+    e os marcos cronológicos que o painel abaixo do gráfico mostra ao clicar.
+    """
+    try:
+        return json.loads((Path(__file__).parent / "data" / "episodios_cambio.json").read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"  Aviso: erro em data/episodios_cambio.json — {exc}")
+        return {}
+
+
 def _load_ptax() -> dict:
     try:
         wide = _pivot("macro_brasil", "cmb_ptax")
@@ -1125,6 +1139,7 @@ def run(output: str = "reports/brasil/FX Report.html", include_models: bool = Tr
     report_data = {
         "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "ptax":            _load_ptax(),
+        "episodios":       _load_episodios(),
         # `diferenciais` saiu do payload em 2026-09-01, com a secao Diferenciais de
         # Juros (pedido do usuario) -- eram 39 KB para tres graficos que nao existem
         # mais. `_load_diferenciais()` FICA: generate_fx_outlook_pdf.py o chama para

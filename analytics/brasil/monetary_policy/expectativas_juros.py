@@ -82,6 +82,11 @@ HORIZONTE_MESES = 24
 # tela de CDI implicito da Bloomberg (22 e 24/09/2026): das cinco formas de custo e onze
 # pesos testados, e a que fica mais perto dela nos dois dias. Ver caminho_selic_curva_di.md.
 SUAVIZACAO = 0.1
+# A serie semanal (a ultima data de cada semana) cobre a historia inteira; nos ultimos
+# DIARIO_ANOS a aba guarda tambem TODO dia, para o caminho de hoje poder ser comparado com o de
+# qualquer data -- inclusive a de ontem (pedido do usuario, 2026-10-29). Toda a historia em
+# diario custaria ~90 s a mais de geracao so na curva.
+DIARIO_ANOS = 2
 # Lei 14.759: o 20 de novembro vira feriado nacional.
 _LEI_20NOV = dt.date(2023, 12, 21)
 _ROTULO = re.compile(r"R(\d+)/(\d{4})$")
@@ -271,12 +276,38 @@ def focus(reun: list[dict]) -> dict:
         if i is None or r.date > reun[r.j]["date"] or i not in por_j.get(r.j, {}):
             continue
         por_j[r.j][i]["b1"] = _r(r.mediana)
+
+    # Todo dia, so a mediana, na janela recente: e o que a comparacao por data le.
+    bd = f[f["base_calculo"] == 0]
+    bd = bd[bd["date"] >= _inicio_diario(bd["date"].max())]
+    dias = sorted(bd["date"].unique())
+    dia = {d: i for i, d in enumerate(dias)}
+    por_dia: dict[int, dict[int, dict]] = {}
+    for r in bd.itertuples():
+        if r.date > reun[r.j]["date"]:
+            continue
+        por_dia.setdefault(r.j, {})[dia[r.date]] = {"m": _r(r.mediana)}
     return {
         "datas": [d.isoformat() for d in datas],
         "vig": [_vigente(reun, d) for d in datas],
         "j0": _j0(reun, datas),
         "por_reuniao": {str(j): _bloco(p, ["m", "b1", "lo", "hi", "sd", "n"])
                         for j, p in sorted(por_j.items())},
+        "diario": _serie_diaria(reun, dias, por_dia, "m"),
+    }
+
+
+def _inicio_diario(ultima: dt.date) -> dt.date:
+    return (pd.Timestamp(ultima) - pd.DateOffset(years=DIARIO_ANOS)).date()
+
+
+def _serie_diaria(reun: list[dict], dias: list[dt.date], por_j: dict, campo: str) -> dict:
+    """O mesmo formato da serie semanal (datas, vig, j0, por_reuniao), com um campo so."""
+    return {
+        "datas": [d.isoformat() for d in dias],
+        "vig": [_vigente(reun, d) for d in dias],
+        "j0": _j0(reun, dias),
+        "por_reuniao": {str(j): _bloco(p, [campo]) for j, p in sorted(por_j.items())},
     }
 
 
@@ -291,6 +322,24 @@ def di(reun: list[dict]) -> dict:
     g = q(_DB, "SELECT g.date, g.du, g.value FROM br_di_grade g "
                "JOIN (SELECT MAX(date) d FROM br_di_grade GROUP BY YEARWEEK(date, 3)) w "
                "ON g.date = w.d ORDER BY g.date, g.du")
+    datas, por_j, spread = _caminhos_di(g, reun)
+    # Todo pregao, na janela recente: e o que a comparacao por data le.
+    ult = q(_DB, "SELECT MAX(date) d FROM br_di_grade").iloc[0]["d"]
+    gd = q(_DB, "SELECT date, du, value FROM br_di_grade WHERE date >= '%s' "
+                "ORDER BY date, du" % _inicio_diario(ult).isoformat())
+    dias, por_dia, _ = _caminhos_di(gd, reun)
+    return {
+        "datas": [d.isoformat() for d in datas],
+        "vig": [_vigente(reun, d) for d in datas],
+        "spread": spread,
+        "j0": _j0(reun, datas),
+        "por_reuniao": {str(j): _bloco(p, ["v"]) for j, p in sorted(por_j.items())},
+        "diario": _serie_diaria(reun, dias, por_dia, "v"),
+    }
+
+
+def _caminhos_di(g: pd.DataFrame, reun: list[dict]):
+    """Uma grade por pregao -> (pregoes, {reuniao: {indice do pregao: {v}}}, spread por pregao)."""
     g["date"] = pd.to_datetime(g["date"]).dt.date
     g["value"] = pd.to_numeric(g["value"])
     datas = sorted(g["date"].unique())
@@ -308,19 +357,19 @@ def di(reun: list[dict]) -> dict:
             continue
         for j, v in zip(js, cam):
             por_j.setdefault(j, {})[i] = {"v": round(v + s, 3)}
-    return {
-        "datas": [d.isoformat() for d in datas],
-        "vig": [_vigente(reun, d) for d in datas],
-        "spread": spread,
-        "j0": _j0(reun, datas),
-        "por_reuniao": {str(j): _bloco(p, ["v"]) for j, p in sorted(por_j.items())},
-    }
+    return datas, por_j, spread
 
 
 # ── opcoes de Copom ─────────────────────────────────────────────────────────────
 # Uma opcao vence no dia util seguinte a reuniao; o casamento vencimento -> reuniao aceita
 # ate 6 dias corridos (sexta de Carnaval, feriado na quinta) e nunca o proprio dia.
 _OPCAO_FOLGA = 6
+_OPCAO_SOMA = (80.0, 120.0)
+
+
+def _chave(x: float) -> str:
+    """A chave da decisao como o JS a escreve com String(): -25, nao -25.0; -12.5 fica."""
+    return str(int(x)) if x == int(x) else str(x)
 
 
 def opcoes(reun: list[dict]) -> dict:
@@ -338,6 +387,7 @@ def opcoes(reun: list[dict]) -> dict:
     o["date"] = pd.to_datetime(o["date"]).dt.date
     o["vencimento"] = pd.to_datetime(o["vencimento"]).dt.date
     o["premio"] = pd.to_numeric(o["premio"])
+    o["variacao_bps"] = pd.to_numeric(o["variacao_bps"]).astype(float)
     datas_r = [r["date"] for r in reun]
     venc_j = {}
     for v in sorted(o["vencimento"].unique()):
@@ -354,11 +404,19 @@ def opcoes(reun: list[dict]) -> dict:
     # da vespera do anuncio, que sai depois do fechamento.
     o = o[o["date"] <= o["j"].map(lambda j: datas_r[j])]
 
+    # A soma dos premios de uma reuniao fica em geral perto de 100 x o desconto (mediana anual
+    # de 97 a 99,7), mas cada premio e formado separadamente. Fora de [80, 120] ela nao e uma
+    # distribuicao legivel: abaixo, faltam decisoes listadas (em fev/2021 havia reuniao com UM
+    # strike, que normalizado sairia 100%); acima, os precos nao conversam entre si.
+    soma = o.groupby(["date", "j"])["premio"].transform("sum")
+    fora = ~soma.between(_OPCAO_SOMA[0], _OPCAO_SOMA[1])
+    if fora.any():
+        n = o.loc[fora, ["date", "j"]].drop_duplicates().shape[0]
+        print(f"  expectativas   opcoes: {n} reuniao x pregao fora de {_OPCAO_SOMA} na soma, fora da leitura")
+    o, soma = o[~fora].copy(), soma[~fora]
+    o["p"] = o["premio"] / soma
     datas = sorted(o["date"].unique())
     idx = {d: i for i, d in enumerate(datas)}
-    soma = o.groupby(["date", "j"])["premio"].transform("sum")
-    o = o[soma > 0]
-    o["p"] = o["premio"] / soma[soma > 0]
     vig = [_vigente(reun, d) for d in datas]
     j0 = _j0(reun, datas)
 
@@ -367,8 +425,8 @@ def opcoes(reun: list[dict]) -> dict:
     for (d, j), g in o.groupby(["date", "j"]):
         i = idx[d]
         b = por_j.setdefault(j, {"dec": set(), "pts": {}})
-        b["dec"].update(int(x) for x in g["variacao_bps"])
-        b["pts"][i] = {"p": dict(zip(g["variacao_bps"].astype(int), g["p"])),
+        b["dec"].update(float(x) for x in g["variacao_bps"])
+        b["pts"][i] = {"p": dict(zip(g["variacao_bps"], g["p"])),
                        "soma": float(g["premio"].sum())}
         esp_delta[(i, j)] = float((g["p"] * g["variacao_bps"]).sum())
 
@@ -376,19 +434,20 @@ def opcoes(reun: list[dict]) -> dict:
     for j, b in sorted(por_j.items()):
         dec = sorted(b["dec"])
         i0, i1 = min(b["pts"]), max(b["pts"])
-        p = {str(x): [] for x in dec}
+        p = {_chave(x): [] for x in dec}
         v, dd, sm = [], [], []
         for i in range(i0, i1 + 1):
             pt = b["pts"].get(i)
             for x in dec:
-                p[str(x)].append(None if pt is None else round(100 * pt["p"].get(x, 0.0), 2))
+                p[_chave(x)].append(None if pt is None else round(100 * pt["p"].get(x, 0.0), 2))
             sm.append(None if pt is None else round(pt["soma"], 2))
             dd.append(None if pt is None else round(esp_delta[(i, j)], 2))
             # A Selic esperada: a vigente mais o passo esperado de cada reuniao de hoje ate j.
             passos = [esp_delta.get((i, k)) for k in range(j0[i], j + 1)]
             v.append(None if pt is None or vig[i] is None or any(s is None for s in passos)
                      else round(vig[i] + sum(passos) / 100, 4))
-        out_j[str(j)] = {"i0": i0, "dec": dec, "p": p, "d": dd, "v": v, "soma": sm}
+        out_j[str(j)] = {"i0": i0, "dec": [int(x) if x == int(x) else x for x in dec],
+                         "p": p, "d": dd, "v": v, "soma": sm}
     return {
         "datas": [d.isoformat() for d in datas],
         "vig": vig,

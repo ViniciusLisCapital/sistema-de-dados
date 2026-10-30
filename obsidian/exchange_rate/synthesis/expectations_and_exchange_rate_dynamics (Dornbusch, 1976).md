@@ -148,7 +148,7 @@ The system becomes second-order. Overshooting can be larger or smaller depending
 - [[uip]] — Block 1's `r = r* + ε` with `ε = θ(ē − e)` is exactly the UIP condition, here made the engine of the whole dynamic system rather than a static no-arbitrage check
 - [[ppp_balassa_samuelson]] — the model's long-run anchor (`ē = p̄ − p̄*`, Block 3) is long-run PPP; the paper's contribution is explaining the short-run deviation from it, not the long-run condition itself
 - [[carry_trade]] — the required interest differential compensating for expected depreciation (Block 1) is the same UIP logic that, when it fails to hold empirically, defines carry-trade profitability
-- [[exchange_rate/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] — no price stickiness; exchange rate adjusts instantly → no overshooting
+- [[monetary_policy/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] — no price stickiness; exchange rate adjusts instantly → no overshooting
 - [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — same Mundell-Fleming framework; Dornbusch adds dynamic expectations
 - [[Obstfeld-Rogoff]] — extensions with microfoundations (Redux model, ch. 9–10)
 - [[verde_fx_mental_models]] — Verde letters frequently describe FX "running ahead of fundamentals" — consistent with this mechanism

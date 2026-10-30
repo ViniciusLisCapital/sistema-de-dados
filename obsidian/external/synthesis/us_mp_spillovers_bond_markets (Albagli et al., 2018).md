@@ -65,6 +65,6 @@ A weak RN response in EMEs is consistent with either. What separates them is the
 - [[forward_premium_puzzle]] — the source's results do not require UIP; it reconciles a dollar that depreciates on an easing surprise with the puzzle
 - [[mundell_fleming_policy_mix]] — the source's model breaks the Mundell-Fleming result that sterilized intervention can stabilize both the short rate and the currency
 - [[monetary_policy/synthesis/term_structure_linear_regressions (Adrian, Crump & Moench, 2013)]] — the decomposition the source applies to every country's yield curve
-- [[monetary_policy/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)]] — the companion argument that EME policies limiting exchange rate volatility are counterproductive; here the cost shows up in term premia
-- [[monetary_policy/synthesis/us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020)]] — the macro-financial counterpart: US shocks drive global risk appetite and flows; here the same shocks priced in foreign bond curves
+- [[exchange_rate/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)]] — the companion argument that EME policies limiting exchange rate volatility are counterproductive; here the cost shows up in term premia
+- [[external/synthesis/us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020)]] — the macro-financial counterpart: US shocks drive global risk appetite and flows; here the same shocks priced in foreign bond curves
 - [[monetary_policy/synthesis/information_effect_hf_identification (Nakamura & Steinsson, 2018)]] — the information effect at home; this source asks whether it explains effects abroad and finds it does not

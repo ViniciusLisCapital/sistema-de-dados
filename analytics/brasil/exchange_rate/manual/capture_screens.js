@@ -39,7 +39,7 @@ const SHOTS = [
   ['bcb_swap', 'tab-bcb', '#sec-bcb-swap .chart-ctrl', '#sec-bcb-swap .chart-card'],
   ['bcb_intervention', 'tab-bcb', '#sec-bcb-intervention .chart-ctrl', '#sec-bcb-intervention .chart-card'],
   ['bcb_cot', 'tab-bcb', '#sec-bcb-cot .chart-ctrl', '#sec-bcb-cot .chart-card'],
-  ['val_ptax', 'tab-valuation', '#sec-valuation-ptax .chart-card', '#sec-valuation-ptax .chart-card'],
+  ['val_ptax', 'tab-historia', '#sec-historia-ptax .chart-card', '#sec-historia-ptax .chart-card'],
   ['val_reer', 'tab-valuation', '#sec-valuation-reer .chart-card', '#sec-valuation-reer .chart-card'],
   ['val_termos', 'tab-valuation', '#sec-valuation-termos .chart-card', '#sec-valuation-termos .chart-card'],
   ['ppp_controls', 'tab-data', '#tab-data .controls', '#statsRow'],

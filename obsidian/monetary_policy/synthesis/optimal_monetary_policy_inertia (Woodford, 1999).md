@@ -57,7 +57,7 @@ With forward-looking private agents, outcomes depend on expected future policy, 
 - [[taylor_rule]] — a generalized Taylor rule with partial adjustment as the implementing rule; a non-inertial Taylor rule cannot reproduce the optimal non-inertial plan without a natural-rate term
 - [[taylor_principle]] — determinacy condition (5.5) for an inertial rule: the inflation coefficient plus the lag coefficient must exceed one
 - [[conservative_central_banker]] — optimal delegation extended from Rogoff's extra weight on inflation to an assigned smoothing objective and a negative weight on the rate level (Section 4)
-- [[monetary_policy/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]] — the estimated partial-adjustment reaction functions whose inertia this paper rationalizes
+- [[external/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]] — the estimated partial-adjustment reaction functions whose inertia this paper rationalizes
 - [[monetary_policy/synthesis/science_of_monetary_policy (Clarida, Gali & Gertler, 1999)]] — the same New Keynesian framework and discretion-vs-commitment comparison, where the long-rate leverage explanation of smoothing is attributed to Rotemberg and Woodford
 - [[monetary_policy/synthesis/optimal_commitment_intermediate_target (Rogoff, 1985)]] — the delegation argument this paper extends to the response to shocks
 - [[monetary_policy/synthesis/zero_bound_optimal_policy (Eggertsson & Woodford, 2003)]] — later history-dependent optimal policy by the same author, where the zero bound binds outright

@@ -30,7 +30,7 @@ Explanations offered in the sources, none established:
 | Source | Role |
 |---|---|
 | [[monetary_policy/synthesis/science_of_monetary_policy (Clarida, Gali & Gertler, 1999)]] | Section 5.2: estimated partial adjustment and its candidate explanations (parameter uncertainty, long-rate leverage, fear of disrupting financial markets, policymaker disagreement); smoothing in the estimated rule (7.3) |
-| [[monetary_policy/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]] | Partial-adjustment specification (3)–(4) estimated by GMM for the Fed: 0.68 pre-Volcker, 0.79 Volcker-Greenspan; 10 to 30 percent of a target change within the quarter; higher under Greenspan |
+| [[external/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]] | Partial-adjustment specification (3)–(4) estimated by GMM for the Fed: 0.68 pre-Volcker, 0.79 Volcker-Greenspan; 10 to 30 percent of a target change within the quarter; higher under Greenspan |
 | [[monetary_policy/synthesis/policy_rules_real_time_data (Orphanides, 2001)]] | Partial-adjustment Taylor-type and forward-looking reaction functions estimated on real-time and revised data, 1987-1992: "large and tight" smoothing coefficients; on revised data ρ rises with the forecast horizon, partly as a proxy for misspecified inflation and gap terms |
 | [[monetary_policy/synthesis/optimal_monetary_policy_inertia (Woodford, 1999)]] | Why inertia can be optimal: with forward-looking agents, small persistent rate changes move long rates and demand; the optimal commitment has intrinsic inertia (inertia coefficient .46 in the calibration) even with serially uncorrelated shocks; a smoothing objective assigned to a discretionary bank recovers more than 99.9 percent of the gain; optimal simple rules are super-inertial (lag coefficient 13.0) |
 | [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] | BCB reaction function, monthly 1999–2002: "a high degree of interest-rate smoothing", the two Selic lags summing to 0.8 or above |
@@ -46,7 +46,7 @@ The sources linked here say nothing about Brazil yet.
 - [[taylor_rule]] — estimated rules add the lagged policy rate to the Taylor-type target; the smoothing term is what lets them fit the funds rate quarter by quarter
 - [[taylor_principle]] — the principle concerns the long-run inflation response, which smoothing scales over time but does not change
 - [[monetary_policy/synthesis/science_of_monetary_policy (Clarida, Gali & Gertler, 1999)]] — candidate explanations and the open question
-- [[monetary_policy/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]] — the partial-adjustment specification and its estimates for the Fed
+- [[external/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]] — the partial-adjustment specification and its estimates for the Fed
 - [[monetary_policy/synthesis/policy_rules_real_time_data (Orphanides, 2001)]] — smoothing coefficients estimated with real-time Greenbook data and with revised data
 - [[monetary_policy/synthesis/optimal_monetary_policy_inertia (Woodford, 1999)]] — the formal case that policy inertia is a benefit of commitment, not a delay, and the delegated smoothing objective and super-inertial rules that implement it
 - [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] — smoothing in the BCB's estimated rule

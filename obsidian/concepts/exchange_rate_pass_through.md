@@ -33,7 +33,7 @@ Pass-through is not a fixed number: it rises with the horizon measured and then 
 
 Damaged or inconsistent in the source: the text calls America's coefficient "the highest (1.24 in 12 months)", while Table 3 prints 1,240 in the 18-month row and 0,692 in the 12-month row; the twelve-month table figure is the one used above. The extracted text also stops inside Section IV, so the forecast and robustness sections are not available.
 
-See [[exchange_rate/synthesis/depreciation_pass_through (Goldfajn, 2000)]].
+See [[inflation/synthesis/depreciation_pass_through (Goldfajn, 2000)]].
 
 ---
 
@@ -45,7 +45,7 @@ During the 1999–2002 floating/inflation-targeting period, Brazil's own pass-th
 |---|---|---|---|
 | 12 months | 17% | 69% | 11% |
 
-Brazil's pass-through was comparable in *magnitude* to developed markets, though faster in *speed* of transmission. The gap between wholesale/tradables pass-through (120% at 12 months — full and then some) and consumer pass-through (17%) shows most of a currency shock is absorbed via margin compression and distribution costs before reaching the CPI, not via a small elasticity throughout the chain. Brazil's own pass-through had also *fallen* sharply vs. earlier-period estimates (Schwartz and Rabanal 2001 found "almost 80 percent" for 1995-2000, "about four times more than in the recent sample") — attributed to the credibility gain from inflation targeting, though not formally tested. See [[exchange_rate/synthesis/depreciation_pass_through (Belaisch, 2003)]].
+Brazil's pass-through was comparable in *magnitude* to developed markets, though faster in *speed* of transmission. The gap between wholesale/tradables pass-through (120% at 12 months — full and then some) and consumer pass-through (17%) shows most of a currency shock is absorbed via margin compression and distribution costs before reaching the CPI, not via a small elasticity throughout the chain. Brazil's own pass-through had also *fallen* sharply vs. earlier-period estimates (Schwartz and Rabanal 2001 found "almost 80 percent" for 1995-2000, "about four times more than in the recent sample") — attributed to the credibility gain from inflation targeting, though not formally tested. See [[inflation/synthesis/depreciation_pass_through (Belaisch, 2003)]].
 
 ---
 
@@ -71,9 +71,9 @@ Pass-through is the mechanism that ties BRL depreciation to `IPCA`, and is the r
 |---|---|
 | [[exchange_rate/synthesis/output_exchange_rates_sr (Krugman, 2023)]] | Textbook definition: pass-through, pricing-to-market, backward and forward global-value-chain linkages |
 | [[exchange_rate/synthesis/money_interest_rate_exchange_rates (Krugman, 2023)]] | First-round vs. second-round pass-through, in the EM inflation-targeting case study |
-| [[exchange_rate/synthesis/depreciation_pass_through (Goldfajn, 2000)]] | 71-country panel: pass-through by horizon, region and development status; prior RER misalignment as the main dampener |
-| [[exchange_rate/synthesis/depreciation_pass_through (Belaisch, 2003)]] | Brazil 1999–2002 VAR: consumer pass-through low by international standards, wholesale close to complete; lower than earlier-period Brazilian estimates |
-| [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] | Brazil 2002–2021: pass-through asymmetric between appreciation and depreciation regimes |
+| [[inflation/synthesis/depreciation_pass_through (Goldfajn, 2000)]] | 71-country panel: pass-through by horizon, region and development status; prior RER misalignment as the main dampener |
+| [[inflation/synthesis/depreciation_pass_through (Belaisch, 2003)]] | Brazil 1999–2002 VAR: consumer pass-through low by international standards, wholesale close to complete; lower than earlier-period Brazilian estimates |
+| [[inflation/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] | Brazil 2002–2021: pass-through asymmetric between appreciation and depreciation regimes |
 | [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] | The BCB's linear and non-linear pass-through specifications; in the short sample the non-linear ones were close to the linear |
 | [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] | Brazil 1994–2002: higher pass-through to administered than to market prices; the size of the 2001–2002 depreciation, not the coefficient, drove inflation |
 | [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] | Brazil: administered-price pass-through above market-price pass-through; recursive estimates fall after the 1999 float |
@@ -91,13 +91,13 @@ Pass-through is the mechanism that ties BRL depreciation to `IPCA`, and is the r
 - [[exchange_rate/synthesis/money_interest_rate_exchange_rates (Krugman, 2023)]] — first-round vs. second-round pass-through distinction, in the EM inflation-targeting case study
 - [[ppp_balassa_samuelson]] — incomplete pass-through is one of the mechanisms (alongside pricing-to-market and nontradables) behind the law-of-one-price/PPP failures documented there
 - [[fiscal_dominance]] — under fiscal dominance, depreciation-driven pass-through compounds inflation instead of being absorbed as a one-off relative-price shift
-- [[exchange_rate/synthesis/depreciation_pass_through (Goldfajn, 2000)]] — 71-country panel estimates by horizon, region, and development status; RER misalignment as the key dampener
+- [[inflation/synthesis/depreciation_pass_through (Goldfajn, 2000)]] — 71-country panel estimates by horizon, region, and development status; RER misalignment as the key dampener
 - [[currency_crisis_indicators]] — this concept covers what happens to inflation *after* a crisis-driven depreciation; that one covers the pre-crisis warning signs
 - [[inflation/synthesis/em_food_inflation (Goldman, 2026)]] (obsidian/inflation vault) — dollar-invoicing/broad-USD channel as the dominant driver of a global food-inflation factor across 125 countries; pass-through operating through a specific traded CPI subcomponent rather than the aggregate basket
 - [[kinea_fx_mental_models]] — 3.5: quantified transmission model, BRL commodity prices → inflation → BCB's room to cut, including a direct bps-of-IPCA estimate of a specific FX appreciation scenario
 - [[kapitalo_fx_mental_models]] — 6.6: the 2024 fiscal-anchor credibility crisis and its pass-through to inflation, a practitioner-side case of pass-through rising precisely when credibility is in question
-- [[exchange_rate/synthesis/depreciation_pass_through (Belaisch, 2003)]] — Brazil 1999–2002 VAR estimates by price basket (wholesale/tradables vs. consumer/nontradables); Brazil's pass-through was below the LatAm average and had fallen sharply from pre-inflation-targeting estimates
-- [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] — extends Brazil's pass-through evidence to 2002–2021, arguing the coefficient is asymmetric between appreciation and depreciation regimes and that BCB's price control has become exacerbatedly dependent on currency appreciation specifically
+- [[inflation/synthesis/depreciation_pass_through (Belaisch, 2003)]] — Brazil 1999–2002 VAR estimates by price basket (wholesale/tradables vs. consumer/nontradables); Brazil's pass-through was below the LatAm average and had fallen sharply from pre-inflation-targeting estimates
+- [[inflation/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] — extends Brazil's pass-through evidence to 2002–2021, arguing the coefficient is asymmetric between appreciation and depreciation regimes and that BCB's price control has become exacerbatedly dependent on currency appreciation specifically
 - [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — the BCB's four pass-through specifications (constant, quadratic in the change, level-dependent, quadratic in the level); in the short quarterly sample the non-linear ones were close to the linear
 - [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] — Brazil 1994–2002: low consumer pass-through but more than twice as high for administered as for market prices (Table 7); the size of the 2001–2002 depreciation, not the coefficient, drove the inflation; a supply-curve estimate attributes the lower pass-through under inflation targeting to lower inflation persistence
 - [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] — Brazil through 2002: administered-price pass-through about twice market-price pass-through (Table 7), rising when the crisis months are added; recursive estimates show a fall in pass-through after the January 1999 float

@@ -1669,6 +1669,9 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
     # ever move when refit_from_latest_data(force=True) is called.
     cutoff_month = refit_from_latest_data(channels=channels)
     cutoff_period = pd.Period(cutoff_month, freq="M")
+    # Kept whole for the decomposition chart only (decomp_ext below), which
+    # runs to the last month every series has; nothing estimated reads it.
+    z_all = z
     z = z.loc[z.index.to_period("M") <= cutoff_period]
     ppp_vals = z[ppp_col].values
 
@@ -1886,6 +1889,33 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
         "residual": [round(float(v), 4) for v in residual_last],
     }
 
+    # --- decomposition past the fit cutoff (2026-10-29, direct user request:
+    # "expanda o grafico Exchange Rate Decomposition ate o ultimo mes que
+    # temos"). The fit stays pinned at cutoff_month; the months after it that
+    # every series already has (z_all, bounded by IPCA/US CPI) are decomposed
+    # with the SAME coefficients, so their residual is out-of-sample. Shipped
+    # as a separate block so `months`/contrib_monthly keep meaning "the fit
+    # sample" for everything else on the tab. The first n_fit entries of each
+    # array are identical to contrib_monthly / last_window.contrib_monthly. ---
+    def _contrib_ext(alpha: float, beta: dict, zz: pd.DataFrame) -> dict:
+        contrib = {c: beta[c] * zz[c].values for c in delta_cols}
+        contrib[ppp_col] = zz[ppp_col].values.copy()
+        fitted = zz[ppp_col].values + alpha + zz[delta_cols].values @ np.array([beta[c] for c in delta_cols])
+        return {
+            "baseline": [round(float(v), 4) for v in np.full(len(zz), alpha) + contrib[ar1_col]],
+            **{c: [round(float(v), 4) for v in contrib[c]] for c in channel_cols},
+            "residual": [round(float(v), 4) for v in (zz["delta_fx"].values - fitted)],
+        }
+
+    decomp_ext = {
+        "months": [d.strftime("%Y-%m") for d in z_all.index],
+        "n_fit": len(months),
+        "actual": [round(float(v), 4) for v in actual_ptax_full.reindex(z_all.index).values],
+        "contrib_monthly": _contrib_ext(whole["alpha"], whole["beta"], z_all),
+        "contrib_monthly_last_window": _contrib_ext(last_alpha, last_beta,
+                                                    z_all.iloc[len(months) - window:]),
+    }
+
     return {
         "n": int(len(z)),
         "sample_range": [months[0], months[-1]],
@@ -1916,6 +1946,7 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
         },
         "level_decomposition": level_decomposition,
         "contrib_monthly": contrib_monthly,
+        "decomp_ext": decomp_ext,
         "last_window": {
             "window_months": window,
             "start": last_window_months[0],

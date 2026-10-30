@@ -417,11 +417,11 @@ agent's layer 1.
   BRL).
 
 **Layer 1 (2026-10-29), one source per channel:**
-- 2.1 [[monetary_policy/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]]
+- 2.1 [[external/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]]
 - 2.2 [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]]
 - 2.3 [[external/synthesis/us_inflation_phillips_curve (Hooper, Mishkin & Sufi, 2019)]]
 - 2.4 [[external/synthesis/dollar_global_risk_factor (Avdjiev et al., 2019)]]
-- 2.5 [[monetary_policy/synthesis/us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020)]]
+- 2.5 [[external/synthesis/us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020)]]
 - 2.6 [[external/synthesis/china_demand_commodity_shocks_brazil (Fry-McKibbin & Souza, 2018)]]
 - 2.7 [[external/synthesis/it_latin_america (Corbo & Schmidt-Hebbel, 2001)]]
-- 2.8 [[exchange_rate/synthesis/capital_inflow (IMF, 2010)]]
+- 2.8 [[external/synthesis/capital_inflow (IMF, 2010)]]

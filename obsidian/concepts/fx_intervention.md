@@ -27,7 +27,7 @@ A central bank's purchases or sales of foreign currency, or of instruments index
 |---|---|
 | [[exchange_rate/synthesis/posicao_de_cambio (BCB, 2020)]] | BCB spot sales in 2019 as dollar liquidity that kept the system's short position far below what the year's negative saldo cambial would have produced; distinguishes spot auctions from line auctions and swaps |
 | [[exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016)]] | Sterilized intervention shows no effect on the real in either direction; footnote 19 explains why purchases have no traction (onshore-offshore arbitrage) and why sales do not trigger the reverse |
-| [[exchange_rate/synthesis/capital_inflow (IMF, 2010)]] | Reserve accumulation with sterilization as the first response to inflows, and its limits: fiscal cost, shallow markets, and higher domestic rates that perpetuate the inflows |
+| [[external/synthesis/capital_inflow (IMF, 2010)]] | Reserve accumulation with sterilization as the first response to inflows, and its limits: fiscal cost, shallow markets, and higher domestic rates that perpetuate the inflows |
 | [[exchange_rate/synthesis/logic_currency_crises (Obstfeld, 1994)]] | Sweden 1992: the krona survived an attack with an overnight rate pushed to 500 percent and borrowed reserves, and the peg was then dropped without a comparable defense — the decision, not the reserves, ended it |
 | [[external/synthesis/us_mp_spillovers_bond_markets (Albagli et al., 2018)]] | Model and evidence that sterilized intervention against US-driven flows dampens the currency move but strengthens the inflows and pushes the adjustment into long-term term premia; emerging-market currencies move roughly half as much as developed ones per bp of US shock (Table 7) |
 

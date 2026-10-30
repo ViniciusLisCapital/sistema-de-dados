@@ -297,6 +297,59 @@
     }
     .range-datas input:focus { outline: none; border-color: var(--lis-dourado); }
 
+    /* ── Episódios narrados no gráfico da PTAX ──
+       Faixas coloridas por quadrante no gráfico; um clique (na faixa, num marco ou
+       no nome do episódio) abre a cronologia num painel contido abaixo do gráfico. */
+    .ep-chips {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+      margin-bottom: 8px; font-size: 11.5px; color: var(--muted);
+    }
+    .ep-chip {
+      padding: 3px 11px; font: inherit; font-size: 11.5px; font-weight: 600;
+      color: var(--lis-azul); background: #fff;
+      border: 1px solid var(--border); border-radius: 20px; cursor: pointer;
+    }
+    .ep-chip:hover { border-color: var(--lis-dourado); }
+    .ep-chip.active { background: var(--lis-azul); color: #fff; border-color: var(--lis-azul); }
+    .ep-panel {
+      margin-top: 10px; padding: 14px 18px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
+    }
+    .ep-panel[hidden] { display: none; }
+    .ep-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .ep-head h3 { font-family: var(--cond); font-size: 17px; font-weight: 600; color: var(--lis-azul); }
+    .ep-close {
+      border: none; background: none; cursor: pointer;
+      font-size: 20px; line-height: 1; color: var(--muted);
+    }
+    .ep-close:hover { color: var(--lis-azul); }
+    .ep-resumo, .ep-licao {
+      margin-top: 6px; font-size: 12.5px; line-height: 1.55; color: var(--text);
+      text-align: justify; hyphens: auto;
+    }
+    .ep-licao { margin-top: 10px; font-weight: 600; color: var(--ice2); }
+    .ep-legenda { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 10px 0 2px; font-size: 11px; color: var(--muted); }
+    .ep-legenda span { display: inline-flex; align-items: center; gap: 5px; }
+    .ep-legenda i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+    .ep-list { list-style: none; margin-top: 8px; max-height: 380px; overflow-y: auto; border-top: 1px solid var(--line); }
+    .ep-item {
+      display: grid; grid-template-columns: 24px 86px 1fr; gap: 10px;
+      padding: 8px 6px; border-bottom: 1px solid var(--line); cursor: pointer;
+    }
+    .ep-item:hover { background: #fafbfc; }
+    .ep-item.sel { background: rgba(187,155,29,0.12); }
+    .ep-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff;
+    }
+    .ep-data { font-family: var(--mono); font-size: 11.5px; color: var(--ice2); padding-top: 3px; }
+    .ep-tit { font-size: 12.5px; font-weight: 600; color: var(--lis-azul); }
+    .ep-q { margin-left: 6px; font-size: 11px; font-weight: 500; color: var(--muted); }
+    .ep-txt { margin-top: 2px; font-size: 12.5px; line-height: 1.5; color: var(--text); text-align: justify; hyphens: auto; }
+    .ep-fontes { margin-top: 8px; font-size: 11px; color: var(--muted); }
+    .ep-fontes a { color: var(--lis-azul-cl); }
+
     /* ── Tabela hierárquica (mesmo padrão de analytics/brasil/credit) ── */
     .table-card {
       background: var(--card-bg);
@@ -934,6 +987,7 @@ table.scen-table tr.scen-kind-hd td {
 </header>
 
 <nav>
+  <button class="tab-btn" data-tab="tab-historia">A história do câmbio</button>
   <button class="tab-btn" data-tab="tab-bop">Balanço de Pagamentos</button>
   <button class="tab-btn" data-tab="tab-flow">Fluxo Cambial</button>
   <button class="tab-btn" data-tab="tab-bcb">Posicionamento: BCB e mercado</button>
@@ -949,6 +1003,21 @@ table.scen-table tr.scen-kind-hd td {
 <main>
 
   <div class="chart-hint" style="padding-top:0">Em todos os gráficos: scroll/pinça para zoom (ambos os eixos) · arraste para mover (ambos os eixos) · duplo-clique para resetar</div>
+
+  <!-- ══ A história do câmbio ══ -->
+  <!-- A PTAX com os episódios de estresse narrados (2026-10-29, pedido do usuário:
+       primeira aba do relatório; saiu da aba Valuation). -->
+  <div class="tab-panel" id="tab-historia">
+
+    <section id="sec-historia-ptax">
+      <h2>PTAX — Câmbio à Vista (BRL/USD)</h2>
+      <div class="ep-chips" id="ptax-ep-chips"></div>
+      <div class="chart-card"><div id="chart-ptax"></div></div>
+      <div class="ep-panel" id="ptax-ep-panel" hidden></div>
+      <div class="note">Taxa de câmbio de referência do BCB (PTAX, venda) — média das cotações de venda no mercado interbancário apuradas em quatro janelas do dia, usada em contratos e balanços. As faixas coloridas marcam episódios de estresse com narrativa: a cor de cada trecho diz que tipo de evento dominava o câmbio naquele momento, e os pontos sobre a linha são os marcos da cronologia. Clique na faixa, num ponto ou no nome do episódio acima do gráfico para abrir a cronologia.<!--WIP:nota-interna--> Cotações de moedas pares (MXN, CLP, COP etc.) ainda não estão na base — pendência conhecida, ver analytics/brasil/exchange_rate/CLAUDE.md.<!--/WIP:nota-interna--></div>
+    </section>
+
+  </div>
 
   <!-- ══ a) Balanço de Pagamentos ══ -->
   <!-- Uma árvore única para todo o BP (2026-08-27, decisão do usuário): os 6
@@ -1361,12 +1430,6 @@ table.scen-table tr.scen-kind-hd td {
 
   <!-- ══ d) Valuation ══ -->
   <div class="tab-panel" id="tab-valuation">
-
-    <section id="sec-valuation-ptax">
-      <h2>PTAX — Câmbio à Vista (BRL/USD)</h2>
-      <div class="chart-card"><div id="chart-ptax"></div></div>
-      <div class="note">O nível contra o qual tudo o mais nesta aba é lido. Taxa de câmbio de referência do BCB (PTAX, venda) — média das cotações de venda no mercado interbancário apuradas em quatro janelas do dia, usada em contratos e balanços.<!--WIP:nota-interna--> Cotações de moedas pares (MXN, CLP, COP etc.) ainda não estão na base — pendência conhecida, ver analytics/brasil/exchange_rate/CLAUDE.md.<!--/WIP:nota-interna--></div>
-    </section>
 
     <section id="sec-valuation-reer">
       <h2>Taxa de Câmbio Efetiva Real — BIS (2020 = 100)</h2>
@@ -3990,16 +4053,218 @@ var COT_ROWS = [
 (function() {
   var d = REPORT_DATA.ptax;
   if (!d || !d.dates) return;
+  var ep = _episodiosPtax(d, REPORT_DATA.episodios);
   Plotly.newPlot('chart-ptax', [
     tLine(d.dates, d.ptax_venda, 'PTAX (venda)', C.azul, {
       line: { color: C.azul, width: 2.5 },
     }),
-  ],
+  ].concat(ep.traces),
   mkLayout({
     yaxis: { title: { text: 'BRL/USD', standoff: 8 }, zeroline: false },
+    shapes: ep.shapes,
+    annotations: ep.annotations,
   }), CONFIG);
   finishChart('chart-ptax', d.dates);
+  _bindEpisodiosPtax('chart-ptax', ep);
 })();
+
+// ── Episódios narrados no gráfico da PTAX ─────────────────────────────────────
+// O texto vem de data/episodios_cambio.json (escrito à mão, não do banco). Cada
+// episódio vira: uma faixa por fase, na cor do quadrante; um contorno com o nome
+// do episódio no topo; e um ponto sobre a linha em cada marco da cronologia. O
+// valor do ponto é lido da própria série, não do texto.
+function _hexRgba(hex, a) {
+  var h = String(hex || '#BFBFBF').replace('#', '');
+  return 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' + parseInt(h.slice(2, 4), 16) + ',' +
+    parseInt(h.slice(4, 6), 16) + ',' + a + ')';
+}
+
+function _episodiosPtax(d, cfg) {
+  var out = { traces: [], shapes: [], annotations: [], eps: [], quad: {} };
+  if (!cfg || !cfg.episodios || !cfg.episodios.length) return out;
+  out.quad = cfg.quadrantes || {};
+  var idx = {};
+  d.dates.forEach(function(x, i) { idx[String(x).slice(0, 10)] = i; });
+  // Valor da PTAX no marco: o do dia, ou o do último pregão antes dele.
+  function valor(data) {
+    if (idx[data] !== undefined && d.ptax_venda[idx[data]] != null) return d.ptax_venda[idx[data]];
+    for (var i = d.dates.length - 1; i >= 0; i--) {
+      if (String(d.dates[i]).slice(0, 10) <= data && d.ptax_venda[i] != null) return d.ptax_venda[i];
+    }
+    return null;
+  }
+  function cor(q) { return (out.quad[q] && out.quad[q].cor) || '#BFBFBF'; }
+  var mx = [], my = [], mc = [], mt = [];
+  cfg.episodios.forEach(function(e, ei) {
+    out.eps.push(e);
+    (e.fases || []).forEach(function(f) {
+      out.shapes.push({
+        type: 'rect', xref: 'x', yref: 'paper', x0: f.inicio, x1: f.fim, y0: 0, y1: 1,
+        fillcolor: _hexRgba(cor(f.q), 0.13), line: { width: 0 }, layer: 'below',
+      });
+    });
+    out.shapes.push({
+      type: 'rect', xref: 'x', yref: 'paper', x0: e.inicio, x1: e.fim, y0: 0, y1: 1,
+      fillcolor: 'rgba(0,0,0,0)', line: { color: 'rgba(31,40,83,0.35)', width: 1, dash: 'dot' }, layer: 'below',
+    });
+    // Rótulo curto no topo da faixa, em duas alturas alternadas: na vista do
+    // histórico inteiro as faixas ficam estreitas e os nomes colidiriam.
+    // O episódio que chega à ponta direita (o em curso) leva o rótulo pelo fim,
+    // senão ele sai cortado pela borda do gráfico.
+    var naPonta = Date.parse(String(d.dates[d.dates.length - 1]).slice(0, 10)) - Date.parse(e.fim) <= 45 * 864e5;
+    out.annotations.push({
+      x: naPonta ? e.fim : e.inicio, xref: 'x', xanchor: naPonta ? 'right' : 'left',
+      y: ei % 2 ? 0.93 : 0.995, yref: 'paper', yanchor: 'top',
+      text: '▸ ' + (e.curto || e.titulo), hovertext: e.titulo, showarrow: false, captureevents: true,
+      font: { size: 11, color: '#1F2853' }, bgcolor: 'rgba(255,255,255,0.85)',
+      bordercolor: 'rgba(31,40,83,0.25)', borderpad: 3,
+    });
+    (e.marcos || []).forEach(function(m, mi) {
+      mx.push(m.data); my.push(valor(m.data)); mc.push(cor(m.q));
+      mt.push((mi + 1) + '. ' + m.titulo);
+    });
+  });
+  out.traces.push({
+    x: mx, y: my, type: 'scatter', mode: 'markers', name: 'Marcos da narrativa',
+    showlegend: false, customdata: mt,
+    marker: { size: 10, color: mc, line: { color: '#ffffff', width: 2 } },
+    hovertemplate: '%{customdata}<extra></extra>',
+  });
+  return out;
+}
+
+function _bindEpisodiosPtax(divId, ep) {
+  var el = document.getElementById(divId);
+  var chips = document.getElementById('ptax-ep-chips');
+  var panel = document.getElementById('ptax-ep-panel');
+  if (!el || !panel || !ep.eps.length) return;
+  var aberto = null;   // índice do episódio no painel
+
+  function fmtData(s) { var p = String(s).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
+  function cor(q) { return (ep.quad[q] && ep.quad[q].cor) || '#BFBFBF'; }
+  function rotuloQ(q) { return (ep.quad[q] && ep.quad[q].rotulo) || q; }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function(c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function selecionar(mi) {
+    var itens = panel.querySelectorAll('.ep-item');
+    for (var i = 0; i < itens.length; i++) itens[i].classList.toggle('sel', i === mi);
+    var lista = panel.querySelector('.ep-list');
+    if (lista && itens[mi]) lista.scrollTop = itens[mi].offsetTop - lista.offsetTop - 6;
+  }
+
+  function abrir(ei, mi, rolar) {
+    var e = ep.eps[ei];
+    aberto = ei;
+    var usados = {};
+    (e.fases || []).forEach(function(f) { usados[f.q] = true; });
+    (e.marcos || []).forEach(function(m) { usados[m.q] = true; });
+    var legenda = Object.keys(ep.quad).filter(function(q) { return usados[q]; }).map(function(q) {
+      return '<span><i style="background:' + cor(q) + '"></i>' + esc(rotuloQ(q)) + '</span>';
+    }).join('');
+    var itens = (e.marcos || []).map(function(m, i) {
+      return '<li class="ep-item" data-i="' + i + '">' +
+        '<span class="ep-num" style="background:' + cor(m.q) + '">' + (i + 1) + '</span>' +
+        '<span class="ep-data">' + fmtData(m.data) + '</span>' +
+        '<div><span class="ep-tit">' + esc(m.titulo) + '</span><span class="ep-q">' + esc(m.q) + '</span>' +
+        '<div class="ep-txt">' + esc(m.texto) + '</div></div></li>';
+    }).join('');
+    var fontes = (e.fontes || []).map(function(f) {
+      return '<a href="' + esc(f.url) + '" target="_blank" rel="noopener">' + esc(f.rotulo) + '</a>';
+    }).join(' · ');
+    panel.innerHTML =
+      '<div class="ep-head"><h3>' + esc(e.titulo) + ' · ' + fmtData(e.inicio) + ' a ' + fmtData(e.fim) + '</h3>' +
+      '<button type="button" class="ep-close" title="Fechar">×</button></div>' +
+      '<div class="ep-resumo">' + esc(e.resumo) + '</div>' +
+      '<div class="ep-legenda">' + legenda + '</div>' +
+      '<ol class="ep-list">' + itens + '</ol>' +
+      (e.licao ? '<div class="ep-licao">' + esc(e.licao) + '</div>' : '') +
+      (fontes ? '<div class="ep-fontes">Fontes: ' + fontes + '</div>' : '');
+    panel.hidden = false;
+    panel.querySelector('.ep-close').addEventListener('click', fechar);
+    var lis = panel.querySelectorAll('.ep-item');
+    for (var k = 0; k < lis.length; k++) {
+      lis[k].addEventListener('click', function() { selecionar(+this.getAttribute('data-i')); });
+    }
+    marcarChip();
+    if (mi != null) selecionar(mi);
+    if (rolar && panel.scrollIntoView) panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  function fechar() {
+    aberto = null;
+    panel.hidden = true;
+    panel.innerHTML = '';
+    marcarChip();
+  }
+
+  // Abre o episódio e enquadra o gráfico nele, com 3 meses de folga de cada lado.
+  // Mesmo caminho dos campos De/Até: a janela escolhida desliga as pílulas.
+  function enquadrar(ei) {
+    var e = ep.eps[ei];
+    var a = new Date(e.inicio + 'T00:00:00Z'), b = new Date(e.fim + 'T00:00:00Z');
+    a.setUTCDate(a.getUTCDate() - 90); b.setUTCDate(b.getUTCDate() + 90);
+    var r = [a.toISOString().slice(0, 10) + ' 00:00:00', b.toISOString().slice(0, 10) + ' 23:59:59'];
+    _rangeSelected[divId] = 'custom';
+    _rangeCustom[divId] = r;
+    var wrap = el.closest ? el.closest('.chart-with-range') : null;
+    var pills = wrap ? wrap.querySelectorAll('.range-btn') : [];
+    for (var i = 0; i < pills.length; i++) pills[i].classList.remove('active');
+    Plotly.relayout(divId, { 'xaxis.range': r });
+  }
+
+  function marcarChip() {
+    if (!chips) return;
+    var bs = chips.querySelectorAll('.ep-chip');
+    for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('active', i === aberto);
+  }
+
+  if (chips) {
+    chips.innerHTML = '';
+    var rot = document.createElement('span');
+    rot.textContent = 'Episódios narrados:';
+    chips.appendChild(rot);
+    ep.eps.forEach(function(e, ei) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ep-chip';
+      b.textContent = e.titulo;
+      b.addEventListener('click', function() {
+        if (aberto === ei) { fechar(); return; }
+        abrir(ei, null, false);
+        enquadrar(ei);
+      });
+      chips.appendChild(b);
+    });
+  }
+
+  if (!el.on) return;
+  // Clique no gráfico: se a data clicada cai dentro de um episódio, abre a
+  // cronologia nele e seleciona o marco mais próximo da data.
+  el.on('plotly_click', function(ev) {
+    var p = ev && ev.points && ev.points[0];
+    if (!p) return;
+    var x = String(p.x).slice(0, 10);
+    for (var ei = 0; ei < ep.eps.length; ei++) {
+      var e = ep.eps[ei];
+      if (x < e.inicio || x > e.fim) continue;
+      var best = null, dist = Infinity, t = Date.parse(x);
+      (e.marcos || []).forEach(function(m, mi) {
+        var dd = Math.abs(Date.parse(m.data) - t);
+        if (dd < dist) { dist = dd; best = mi; }
+      });
+      abrir(ei, best, true);
+      return;
+    }
+  });
+  // Clique no nome do episódio, no topo da faixa.
+  el.on('plotly_clickannotation', function(ev) {
+    if (ev && ev.index != null && ev.index < ep.eps.length) abrir(ev.index, null, true);
+  });
+}
 
 (function() {
   var d = REPORT_DATA.reer;
@@ -4486,7 +4751,7 @@ function _razao(a, b) {
 
 // ── Default tab ───────────────────────────────────────────────────────────────
 
-activateTab('tab-bop');
+activateTab('tab-historia');
 
 </script>
 
@@ -5524,8 +5789,16 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     // Coefficient dropdown above, which legitimately wants to show phi's
     // own rolling path).
     const L = D.level_decomposition;
-    const CM = D.contrib_monthly;
     const LW = D.last_window;
+    // O grafico vai alem do corte do ajuste, ate o ultimo mes que todas as
+    // series tem (decomp_ext, ver ridge_deviation_model.py): os mesmos pesos
+    // aplicados aos meses novos, entao o residuo deles e fora da amostra. O
+    // fallback reproduz o payload antigo, que parava no corte.
+    const DX = D.decomp_ext || {
+      months: D.months, n_fit: D.months.length, actual: D.level_decomposition.actual,
+      contrib_monthly: D.contrib_monthly, contrib_monthly_last_window: LW.contrib_monthly,
+    };
+    const CM = DX.contrib_monthly;
     const DECOMP_CHANNELS_RG = CHANNEL_ORDER_RIDGE.filter(k => k !== 'delta_fx_lag1');
     // O grafico de decomposicao mostra o PPP DENTRO do balde de tendencia
     // (2026-09-01, pedido do usuario: "coloque o baseline + PPP como tendencia
@@ -5544,16 +5817,16 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     const decompStartEl = document.getElementById('ridgeDecompStart');
     const decompEndEl = document.getElementById('ridgeDecompEnd');
     [decompStartEl, decompEndEl].forEach(sel => {
-      D.months.forEach((m, i) => {
+      DX.months.forEach((m, i) => {
         const opt = document.createElement('option');
         opt.value = String(i);
         opt.textContent = monthLabelRg(m);
         sel.appendChild(opt);
       });
     });
-    const defaultDecompStart = D.months.indexOf('2025-01');
+    const defaultDecompStart = DX.months.indexOf('2025-01');
     decompStartEl.value = String(defaultDecompStart >= 0 ? defaultDecompStart : 0);
-    decompEndEl.value = String(D.months.length - 1);
+    decompEndEl.value = String(DX.months.length - 1);
 
     // End can't precede start -- if the user picks a start after the
     // current end (or vice versa), snap the other select to match before
@@ -5651,7 +5924,7 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     const lastWindowSubtitle = `Using the last ${LW.window_months}-month rolling window's own fit (${monthLabelRg(LW.start)} → ${monthLabelRg(LW.end)}, R²=${fmtNumRg(LW.r2, 3)}) instead of the whole-sample fit. Start can't go earlier than ${monthLabelRg(LW.start)} — there's no fit for earlier months under these coefficients — but any start from there onward, and any end, are still free to pick.`;
 
     function currentArr(key) {
-      return useLastWindow ? LW.contrib_monthly[key] : CM[key];
+      return useLastWindow ? DX.contrib_monthly_last_window[key] : CM[key];
     }
     // Translates a full-sample index into whichever array is currently
     // active's own indexing -- identity when using the whole-sample CM
@@ -5679,8 +5952,8 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     function renderDecompChart() {
       const i0 = parseInt(decompStartEl.value, 10);
       const i1 = parseInt(decompEndEl.value, 10);
-      const slicedMonths = D.months.slice(i0, i1 + 1);
-      const anchorForWindow = i0 === 0 ? D.fit_level.anchor_level : L.actual[i0 - 1];
+      const slicedMonths = DX.months.slice(i0, i1 + 1);
+      const anchorForWindow = i0 === 0 ? D.fit_level.anchor_level : DX.actual[i0 - 1];
       const li0 = toLocal(i0), li1 = toLocal(i1);
 
       const trendMonthly = somaArrRg(currentArr('baseline'), currentArr(TREND_EXTRA_RG));
@@ -5695,7 +5968,7 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         bars.baseline = cumBaseline;
         DECOMP_BARS_RG.forEach(key => { bars[key] = cumChannels[key]; });
         bars.residual = cumResidual;
-        actualSeries = slicedMonths.map((_, i) => 100 * Math.log(L.actual[i0 + i] / anchorForWindow));
+        actualSeries = slicedMonths.map((_, i) => 100 * Math.log(DX.actual[i0 + i] / anchorForWindow));
         fittedSeries = cumBaseline.map((v, i) => v + DECOMP_BARS_RG.reduce((s, key) => s + cumChannels[key][i], 0));
       } else {
         let prevArr = cumBaseline.map(v => anchorForWindow * Math.exp(v / 100));
@@ -5708,7 +5981,7 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         fittedSeries = prevArr; // bridged level from baseline+channels, before the residual step below
         const finalArr = cumResidual.map((v, i) => prevArr[i] * Math.exp(v / 100));
         bars.residual = finalArr.map((v, i) => v - prevArr[i]);
-        actualSeries = L.actual.slice(i0, i1 + 1);
+        actualSeries = DX.actual.slice(i0, i1 + 1);
       }
 
       // Rodape: o balde "Trend" e uma barra so no grafico, entao a composicao
@@ -5747,7 +6020,12 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
           'inflation gap out of it, and the reason the bar is read as one number rather than three. ' +
           'The third is the exchange rate reacting to its own previous move. ' +
           'The three compound rather than add, so they multiply out to ' +
-          pct(ppp + alphaTot + ar1) + ' together.';
+          pct(ppp + alphaTot + ar1) + ' together.' + (i1 >= DX.n_fit
+            ? ' <b>The shaded months</b> (' + monthLabelRg(DX.months[Math.max(DX.n_fit, i0)]) + ' to ' +
+              monthLabelRg(DX.months[i1]) + ') come after the sample the model was fitted on, which ends in ' +
+              monthLabelRg(DX.months[DX.n_fit - 1]) + ': same weights, applied to the channels as they ' +
+              'actually moved, so the residual there is what the model did not see coming.'
+            : '');
       }
 
       const fmtBar = pctMode ? fmtPctRg : (v, key) => (key === 'baseline' ? fmtRateRg(v) : fmtSignedRg(v, 3));
@@ -5776,9 +6054,30 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
           hovertemplate: 'Actual (PTAX): %{customdata}<extra></extra>' },
       ];
 
+      // Faixa dos meses depois do corte do ajuste. Passada VAZIA quando a
+      // janela nao chega la: com Plotly.react, omitir a chave herdaria a faixa
+      // do desenho anterior.
+      const meioMes = (m, dias) => {
+        const d = new Date(m + '-01T00:00:00Z');
+        d.setUTCDate(d.getUTCDate() + dias);
+        return d.toISOString().slice(0, 10);
+      };
+      const foraAmostra = i1 >= DX.n_fit;
+      const shapesOos = foraAmostra ? [{
+        type: 'rect', xref: 'x', yref: 'paper', y0: 0, y1: 1, layer: 'below', line: { width: 0 },
+        x0: meioMes(DX.months[Math.max(DX.n_fit, i0)], -15), x1: meioMes(DX.months[i1], 15),
+        fillcolor: 'rgba(187,155,29,0.10)',
+      }] : [];
+      const annOos = foraAmostra ? [{
+        x: meioMes(DX.months[Math.max(DX.n_fit, i0)], -15), xref: 'x', xanchor: 'left',
+        y: 1, yref: 'paper', yanchor: 'bottom', showarrow: false,
+        text: 'after the fit', font: { size: 10, color: '#8A7215' },
+      }] : [];
+
       plotlyRenderAndBind('ridgeDecompChart', traces, {
         height: 400, barmode: 'relative', bargap: 0.15, showlegend: true,
         yaxis: { title: pctMode ? 'Cumulative % change from window start' : 'R$' },
+        shapes: shapesOos, annotations: annOos,
       });
     }
     decompStartEl.addEventListener('change', function () { clampDecompRange('start'); renderDecompChart(); });

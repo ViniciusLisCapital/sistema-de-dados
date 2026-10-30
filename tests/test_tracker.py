@@ -1,5 +1,5 @@
 """
-The knowledge tracker (repository/ingestion/scripts/tracker.py), for the four things that fail
+The knowledge tracker (repository/ingestion/scripts/tracker.py), for the five things that fail
 without raising anything:
 
   1. the migration to Camada/Fila (2026-10-21) moves or blanks a cell of the user's columns A-I,
@@ -8,7 +8,10 @@ without raising anything:
   3. the Copom recency rule hands a cycle a document published on or after the cycle date (the
      minutes come ~6 days after the meeting: dating them by the meeting would leak them);
   4. the Copom ETL's call to the tracker raises when the workbook cannot be written (open in
-     Excel), which would cost the load.
+     Excel), which would cost the load;
+  5. owner.py, moving a source to its owner's folder, rewrites a frozen cycle snapshot, misses a
+     link, or appends a second row next to the one the owner's list already had (the file would
+     then match two rows and drop out of the list).
 
 Script with asserts, not pytest (the project has no pytest), like tests/test_ingestion.py:
 
@@ -192,6 +195,86 @@ def test_copom_etl_hook_never_raises():
             shutil.copy(tracker.TRACKER, copy)
             assert "Copom" in (ct.atualizar_tracker(copy) or "")
             assert tracker.COPOM_TAB in openpyxl.load_workbook(copy).sheetnames
+
+
+# ── owner.py: a source in another owner's folder ─────────────────────────────
+
+import owner  # noqa: E402
+
+
+def _current_tab(wb, title, rows):
+    """A Qual tab in the current layout; rows: (Name, Autor, Date, Dono, File)."""
+    ws = wb.create_sheet(title)
+    for c, h in enumerate(tracker.BASE_HEADERS + tracker.LAYER_HEADERS + tracker.NEW_HEADERS, 1):
+        ws.cell(1, c, h)
+    for r, (name, autor, date, dono, file) in enumerate(rows, 2):
+        ws.cell(r, 1, name), ws.cell(r, 2, autor), ws.cell(r, 3, date)
+        ws.cell(r, tracker.FIRST_LAYER, dono), ws.cell(r, tracker.FIRST_NEW, file)
+    return ws
+
+
+def test_owner_plan_moves_only_rows_whose_owner_has_another_folder():
+    wb = openpyxl.Workbook()
+    _current_tab(wb, "Qual - Exchange Rate", [
+        ("Pass-through", "Goldfajn", "2000", "inflacao", "depreciation_pass_through (Goldfajn, 2000)"),
+        ("Overshooting", "Dornbusch", "1976", "cambio", "overshooting (Dornbusch, 1976)"),
+        ("Credit", "Someone", "2010", "credito", "credit_thing (Someone, 2010)"),
+        ("Not here yet", "Nobody", "2020", "externo", None)])
+    rows, skipped = owner.plan(wb)
+    assert [(r["src"], r["dst"], r["names"]) for r in rows] == [
+        ("exchange_rate", "inflation", ["depreciation_pass_through (Goldfajn, 2000)"])], rows
+    assert len(skipped) == 1 and "credito has no folder" in skipped[0], skipped
+
+
+def test_owner_merges_into_the_owners_row_when_its_list_already_has_the_source():
+    wb = openpyxl.Workbook()
+    src = _current_tab(wb, "Qual - Exchange Rate", [
+        ("Pass-through", "Goldfajn, I. & Werlang, S.", "2000", "inflacao", "depreciation_pass_through (Goldfajn, 2000)")])
+    src.cell(2, tracker.CAMADA, 2)
+    dst = _current_tab(wb, "Qual - Inflation", [
+        ("Other", "Calvo", "1983", None, None),
+        ("The Pass-Through from Depreciation to Inflation", "Goldfajn, I. & Werlang, S.", "2000", None, None)])
+    dst.cell(3, tracker.FILA, 4)
+    assert owner._same_source(dst, ["depreciation_pass_through (Goldfajn, 2000)"]) == 3
+    assert owner._same_source(dst, ["something_else (Belaisch, 2003)"]) is None
+    owner._merge_layer(src, 2, dst, 3)
+    assert [dst.cell(3, c).value for c in tracker.LAYER_COLS] == ["inflacao", 2, 4]   # the owner's Fila stays
+
+
+def test_owner_rewrites_links_but_not_the_frozen_cycles():
+    with tempfile.TemporaryDirectory() as tmp:
+        root, old = Path(tmp), owner.OBSIDIAN
+        link = "[[exchange_rate/synthesis/x (A, 2000)\\|x]] and [[exchange_rate/clean_md/x (A, 2000)]]"
+        for rel in ("concepts/c.md", "ciclos/2026-10-27/conhecimento/cambio/c.md", ".obsidian/w.md"):
+            (root / rel).parent.mkdir(parents=True)
+            (root / rel).write_bytes(f"line\r\n{link}\r\n".encode())
+        owner.OBSIDIAN = root
+        try:
+            changed = owner._rewrite_links({"exchange_rate/synthesis/x (A, 2000)": "inflation/synthesis/x (A, 2000)",
+                                            "exchange_rate/clean_md/x (A, 2000)": "inflation/clean_md/x (A, 2000)"})
+        finally:
+            owner.OBSIDIAN = old
+        assert list(changed.values()) == [2], changed
+        assert (root / "concepts/c.md").read_bytes() == (
+            b"line\r\n[[inflation/synthesis/x (A, 2000)\\|x]] and [[inflation/clean_md/x (A, 2000)]]\r\n")
+        for rel in ("ciclos/2026-10-27/conhecimento/cambio/c.md", ".obsidian/w.md"):
+            assert b"exchange_rate/synthesis" in (root / rel).read_bytes(), rel
+
+
+def test_owner_rewrites_the_log_topic_of_moved_files_only():
+    with tempfile.TemporaryDirectory() as tmp:
+        log, old = Path(tmp) / "LOG.md", owner.LOG
+        log.write_bytes(b"| date | topic | file |\r\n"
+                        b"| 2026-10-19 | exchange_rate | x (A, 2000) | default |\r\n"
+                        b"| 2026-10-19 | exchange_rate | y (B, 2001) | default |\r\n")
+        owner.LOG = log
+        try:
+            assert owner._rewrite_log({"x (A, 2000)": ("exchange_rate", "inflation")}) == 1
+        finally:
+            owner.LOG = old
+        assert log.read_bytes() == (b"| date | topic | file |\r\n"
+                                    b"| 2026-10-19 | inflation | x (A, 2000) | default |\r\n"
+                                    b"| 2026-10-19 | exchange_rate | y (B, 2001) | default |\r\n")
 
 
 if __name__ == "__main__":

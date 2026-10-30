@@ -115,8 +115,12 @@ with tempfile.TemporaryDirectory() as tmp:
     confere(not any("Krugman, 2023" in a or "Blanchard, 2004" in a for a in arqs),
             "1. a camada 2 linkada pelos mesmos conceitos fica fora (do câmbio e de outro dono)")
     confere("exchange_rate/mental_models/kinea_fx_mental_models.md" not in arqs, "1. modelo mental de camada 2 fica fora")
-    confere(all(f"exchange_rate/synthesis/{n}.md" in arqs for n, (d, c) in FICTICIA.items() if d == "cambio" and c == 1),
+    # o caminho é o da pasta em que a nota está: Mundell (1963) está em monetary_policy/ e aqui o dono
+    # fictício é o câmbio — o dono vem do tracker, e o retrato o acha na pasta em que estiver
+    confere(all(any(a.endswith(f"/synthesis/{n}.md") and (k.OBSIDIAN / a).exists() for a in arqs)
+                for n, (d, c) in FICTICIA.items() if d == "cambio" and c == 1),
             "a camada 1 do câmbio entra, com o caminho do vault")
+    confere(k.AREA == k.tracker().OWNERS, "o AREA do retrato é o OWNERS do tracker (dono -> pasta)")
     confere("exchange_rate/mental_models/verde_fx_mental_models.md" in arqs, "o modelo mental de camada 1 entra")
     confere("exchange_rate/exchange_rate_conceptual_map.md" in arqs, "o mapa conceitual entra")
 

@@ -861,13 +861,14 @@ ok(!!REPORT_DATA.cambio_contratado && REPORT_DATA.cambio_contratado.dates.length
    'o payload traz cambio_contratado', REPORT_DATA.cambio_contratado &&
    REPORT_DATA.cambio_contratado.dates.length);
 
-// A ordem das abas no nav: Fluxo Cambial em 2o lugar (pedido do usuario), e o painel
-// no HTML tem de seguir a mesma ordem da navegacao.
+// A ordem das abas no nav: "A historia do cambio" em 1o lugar (2026-10-29) e Fluxo
+// Cambial logo depois do BP (pedidos do usuario), e o painel no HTML tem de seguir a
+// mesma ordem da navegacao.
 const ordemNav = [...htmlBruto.matchAll(/<button class="tab-btn" data-tab="([\w-]+)">/g)].map(m => m[1]);
-ok(ordemNav[0] === 'tab-bop' && ordemNav[1] === 'tab-flow',
-   'Fluxo Cambial e a 2a aba do nav', ordemNav.slice(0, 4).join(' > '));
+ok(ordemNav[0] === 'tab-historia' && ordemNav[1] === 'tab-bop' && ordemNav[2] === 'tab-flow',
+   'A historia do cambio abre o nav, e Fluxo Cambial vem logo depois do BP', ordemNav.slice(0, 4).join(' > '));
 const ordemPaineis = [...htmlBruto.matchAll(/<div class="tab-panel[^"]*" id="([\w-]+)">/g)].map(m => m[1]);
-ok(ordemPaineis[0] === 'tab-bop' && ordemPaineis[1] === 'tab-flow',
+ok(ordemPaineis[0] === 'tab-historia' && ordemPaineis[1] === 'tab-bop' && ordemPaineis[2] === 'tab-flow',
    'o painel esta na mesma ordem do nav', ordemPaineis.slice(0, 4).join(' > '));
 
 // Seletor e tabela em cada um dos 3 graficos da aba
@@ -1281,9 +1282,10 @@ console.log('\n=== 13. aba Posicionamento: BCB e mercado ===================');
      'e explica por que a linha dos bancos mora no mesmo grafico do swap do BCB');
   hideInfo();
 
-  // 13k. a aba e a terceira do nav
+  // 13k. a aba e a terceira do nav, contando a partir do BP (A historia do cambio
+  // entrou na frente de todas em 2026-10-29)
   const abas = (htmlBruto.match(/data-tab="tab-[\w-]+"/g) || []).map(m => m.slice(10, -1));
-  ok(abas[2] === 'tab-bcb', 'Posicionamento: BCB e mercado e a terceira aba', abas.slice(0, 4).join(', '));
+  ok(abas[3] === 'tab-bcb', 'Posicionamento: BCB e mercado e a terceira aba depois do BP', abas.slice(0, 4).join(', '));
 }
 
 console.log('\n=== 14. reorganizacao das abas (2026-09-01) =================');
@@ -1326,7 +1328,7 @@ console.log('\n=== 14. reorganizacao das abas (2026-09-01) =================');
   ok(semPainel.length === 0 && semBotao.length === 0,
      'nenhum botao sem painel e nenhum painel sem botao',
      'sem painel: ' + semPainel.join(', ') + ' / sem botao: ' + semBotao.join(', '));
-  ok(abas14.length === 10, 'sao 10 abas (Mercado B3, Opcoes de Dolar e Juros e Bolsa entraram em 2026-10-28)', abas14.join(', '));
+  ok(abas14.length === 11, 'sao 11 abas (Mercado B3, Opcoes de Dolar e Juros e Bolsa entraram em 2026-10-28; A historia do cambio em 2026-10-29)', abas14.join(', '));
 
   // 14c. o rotulo da aba anuncia as duas pontas
   ok(htmlBruto.indexOf('data-tab="tab-bcb">Posicionamento: BCB e mercado<') > 0,
@@ -1335,8 +1337,8 @@ console.log('\n=== 14. reorganizacao das abas (2026-09-01) =================');
   // 14d. onde cada grafico foi parar -- os dois que mudaram...
   ok(abaDe('chart-cot-brl') === 'tab-bcb',
      'o posicionamento especulativo mora na aba do BCB', abaDe('chart-cot-brl'));
-  ok(abaDe('chart-ptax') === 'tab-valuation',
-     'o PTAX mora na aba Valuation', abaDe('chart-ptax'));
+  ok(abaDe('chart-ptax') === 'tab-historia',
+     'o PTAX mora na aba A historia do cambio (saiu de Valuation em 2026-10-29)', abaDe('chart-ptax'));
   // ...e os que nao mudaram, para a mudanca nao ter arrastado vizinho junto
   ['chart-reer', 'chart-termos'].forEach(id => {
     ok(abaDe(id) === 'tab-valuation', 'segue em Valuation: ' + id, abaDe(id));
@@ -1345,11 +1347,10 @@ console.log('\n=== 14. reorganizacao das abas (2026-09-01) =================');
     ok(abaDe(id) === 'tab-bcb', 'segue na aba do BCB: ' + id, abaDe(id));
   });
 
-  // 14e. o PTAX ABRE a aba Valuation: e o preco que as outras tres secoes qualificam
+  // 14e. sem o PTAX, Valuation abre no cambio real e segue nos termos de troca
   const painelVal = htmlBruto.slice(htmlBruto.indexOf('id="tab-valuation"'));
-  ok(painelVal.indexOf('chart-ptax') < painelVal.indexOf('chart-reer') &&
-     painelVal.indexOf('chart-reer') < painelVal.indexOf('chart-termos'),
-     'a ordem em Valuation e PTAX -> cambio real -> termos de troca');
+  ok(painelVal.indexOf('chart-reer') < painelVal.indexOf('chart-termos'),
+     'a ordem em Valuation e cambio real -> termos de troca');
 
   // 14f. e o especulativo entra DEPOIS das tres secoes do BCB -- e a ordem que o
   // nome da aba promete ("BCB e mercado", nessa ordem)
@@ -1424,15 +1425,16 @@ console.log('\n=== 15. Diferenciais de Juros removidos (2026-09-01) ========');
   ok(!REPORT_DATA.diferenciais, 'a chave `diferenciais` saiu do payload',
      REPORT_DATA.diferenciais && Object.keys(REPORT_DATA.diferenciais).join(', '));
 
-  // 15e. Valuation ficou com exatamente os 3 graficos que o usuario listou
+  // 15e. Valuation ficou com exatamente os graficos que o usuario listou -- 3 ate
+  // 2026-10-29, quando o PTAX foi para a aba A historia do cambio
   const iVal = htmlBruto.indexOf('id="tab-valuation"');
   const fimVal = htmlBruto.indexOf('<div class="tab-panel', iVal + 10);
   const noVal = chartDivIds.filter(id => {
     const k = htmlBruto.indexOf('id="' + id + '"');
     return k > iVal && k < fimVal;
   });
-  ok(noVal.length === 3 && noVal.join(',') === 'chart-ptax,chart-reer,chart-termos',
-     'Valuation tem so PTAX, cambio efetivo real e termos de troca', noVal.join(', '));
+  ok(noVal.length === 2 && noVal.join(',') === 'chart-reer,chart-termos',
+     'Valuation tem so cambio efetivo real e termos de troca', noVal.join(', '));
 }
 
 console.log('\n=== 16. posicionamento no futuro de real (CFTC) =============');

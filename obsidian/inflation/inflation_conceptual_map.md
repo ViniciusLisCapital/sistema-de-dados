@@ -464,10 +464,10 @@ Concepts with no page yet: `relative_price_shock`, `diffusion_index`, `seasonali
 
 **Layer 1 (2026-10-29), one source per channel:**
 - 2.1 [[inflation/synthesis/core_inflation_brazil_past_present (da Gama Machado, 2024)]]
-- 2.2 [[monetary_policy/synthesis/staggered_prices (Calvo, 1983)]]
+- 2.2 [[inflation/synthesis/staggered_prices (Calvo, 1983)]]
 - 2.3 reached through [[inflation_expectations_anchoring]] (owner: expectations).
 - 2.4 [[inflation/synthesis/targets_inflation_dynamics (Alves & Areosa, 2005)]]
-- 2.5 [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]]
+- 2.5 [[inflation/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]]
 - 2.6 [[inflation/synthesis/em_food_inflation (Goldman, 2026)]]
 - 2.7 [[inflation/synthesis/administered_prices_projection_pass_through (Alves et al., 2013)]]
 - 2.8 reached through [[monetary_transmission_lags]] (owner: monetary policy).

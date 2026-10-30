@@ -193,8 +193,8 @@ Quem influencia o modelo, e por qual variável, vai mudar. Um exemplo: o modelo 
 - Um modelo do hiato que regride só a parte consolidada do hiato do BC (até dois ou três anos atrás, a de menor revisão esperada) contra PIB, desemprego, indústria e outros, e usa os coeficientes para a frente (ideia do usuário, 2026-10-22).
 - ~~A camada 1 de literatura dos agentes novos~~ (feita 2026-10-29, uma fonte por canal: SISTEMA II.IV). Falta o ciclo com literatura, a medição do ruído (a rodada 1 duas vezes) e a gestora da camada 1 de cada um nos modelos mentais.
 - Os demais agentes (crédito, mercado de trabalho, trader, administrador), as promoções de câmbio e PM, o estoque de sínteses pendentes e o diagrama.
-- **Mover os arquivos para a pasta do dono**, de uma vez, quando a camada 1 dos agentes novos entrar. Um script move os arquivos e reescreve os wikilinks; o `vault.py check` confere.
-- Duas páginas de conceito apontadas pelo `/vault`: `exchange_rate_pass_through` traz uma conta do próprio autor; `monetary_policy_shocks` ainda diz que não há fonte brasileira.
+- ~~**Mover os arquivos para a pasta do dono**~~ (feito 2026-10-29: 17 fontes, pelo `repository/ingestion/scripts/owner.py`; o `vault.py check` e o `concept` ficaram como estavam antes, e o retrato dos sete agentes monta sem arquivo faltando).
+- ~~Duas páginas de conceito apontadas pelo `/vault`~~ (consertadas 2026-10-29, com a seção BRL / application de mais seis páginas; a regra do `/vault` mudou para o defeito não voltar, SISTEMA II.IV.iii).
 - **Notas do usuário na leitura da rodada 1 do ciclo 2026-10-27** (para conversar depois):
     - a. O escrivão precisa sintetizar bem: a leitura dos reports está pesada.
     - b. A parte "o que derrubaria a tese?" precisa ficar melhor.

@@ -40,7 +40,8 @@ corte de 25 p.b., 100,00 a manutencao. Conferido contra duas decisoes: na vesper
 da 281a (corte de 25) a 99,75 valia 96,00 e a 100,00, 3,50; na da 280a, 95,50 e
 3,25. So calls -- nao ha put no arquivo.
 
-**O layout de verdade e strike [37:52] com 2 decimais e premio [52:67].** O
+**O layout de verdade e strike [37:52] com 2 decimais e premio [52:67]** -- com 3
+decimais de 2020-08-07 a 2023-09-08, que `parse_copom()` corrige. O
 [37:50]/[50:67] do dolar so funciona porque strike de dolar nunca tem centavos e
 as duas casas que ele joga no premio sao `00`; no `CPM` elas sao `75`, `50`,
 `25`, e lidas daquele jeito o premio sai na casa dos 10^16. `parse_copom()` usa o
@@ -126,7 +127,13 @@ def parse_copom(txt: str) -> pd.DataFrame | None:
         linha = linha.rstrip("\r")
         if len(linha) < 68 or linha[19:22] != "CPM":
             continue
-        linhas.append((linha[27], linha[29:37], int(linha[37:52]) / 100,
+        strike = int(linha[37:52]) / 100
+        # De 2020-08-07 a 2023-09-08 a B3 grava o strike com TRES decimais (100,500 vira
+        # 1005,00 lido com duas): medido no cache inteiro, todo strike dessa janela fica entre
+        # 985 e 1040 e nenhum de fora passa de 103. Nenhum strike real passa de 200.
+        if strike > 200:
+            strike /= 10
+        linhas.append((linha[27], linha[29:37], round(strike, 3),
                        int(linha[52:67]) / 10 ** int(linha[67])))
     if not linhas:
         return None

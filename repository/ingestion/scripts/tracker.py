@@ -77,11 +77,15 @@ BASE_HEADERS = ["Name", "Autor/Company", "Date", "Importance (1-5)", "Do we have
 BASE_WIDTHS = [42, 28, 12, 10, 14, 20, 28, 55, 30]
 LAYER_HEADERS = ["Dono", "Camada", "Fila"]  # the user's, like A-I (SISTEMA_AGENTES I.III.xvii)
 LAYER_WIDTHS = [18, 10, 8]
-# The agents a source can belong to, including those that do not exist yet. The tracker never
-# writes Dono; it only warns about a value outside this list (a typo would drop the source from
-# every snapshot without a word).
-OWNERS = ("cambio", "politica_monetaria", "inflacao", "fiscal", "externo", "expectativas", "atividade",
-          "credito", "mercado_trabalho", "trader")
+# The agents a source can belong to, including those that do not exist yet, and the topic folder of
+# each (None: no folder yet). The tracker never writes Dono; it only warns about a value outside this
+# list (a typo would drop the source from every snapshot without a word) and about a source sitting
+# in another agent's folder (owner.py moves it). analytics/agent_system/conhecimento.py's AREA is the
+# same map (tests/test_conhecimento.py holds them equal).
+OWNERS = {"cambio": "exchange_rate", "politica_monetaria": "monetary_policy", "inflacao": "inflation",
+          "fiscal": "fiscal_policy", "externo": "external", "expectativas": "expectations",
+          "atividade": "economic_activity", "credito": None, "mercado_trabalho": "labor_market",
+          "trader": "trader"}
 # The layout of the layer columns is this list; _migrate() moves the user's values by header name
 # whenever it changes.
 FIRST_LAYER = len(BASE_HEADERS) + 1        # column J
@@ -378,10 +382,19 @@ def _fill_tab(ws, topic: str, log: dict) -> dict:
                   if ws.cell(r, dono).value not in (None, "") and str(ws.cell(r, dono).value).strip() not in OWNERS})
     if odd:
         print(f"  {ws.title}: Dono not in {', '.join(OWNERS)}: {', '.join(odd)}")
+    # 7. a source in another owner's folder is read from there by the snapshot all the same, but the
+    #    folders stop telling whose library it is: say so, and owner.py --move puts it back
+    away = sorted(str(ws.cell(r, FIRST_NEW).value).splitlines()[0] for r in range(2, ws.max_row + 1)
+                  if ws.cell(r, FIRST_NEW).value
+                  and OWNERS.get(str(ws.cell(r, dono).value or "").strip()) not in (None, topic))
+    if away:
+        print(f"  {ws.title}: {len(away)} source(s) outside their owner's folder "
+              f"(owner.py --move): {'; '.join(away)}")
 
     ws.auto_filter.ref = f"A1:{get_column_letter(last_new)}{ws.max_row}"
     ws.sheet_view.showGridLines = False
-    return {"files": sum(len(v) for v in per_row.values()), "appended": len(unmatched), "odd_owners": odd}
+    return {"files": sum(len(v) for v in per_row.values()), "appended": len(unmatched), "odd_owners": odd,
+            "away": away}
 
 
 def _summary(wb, tabs: list[tuple[str, str]]) -> None:

@@ -21,8 +21,8 @@ repository/
   BIBLIOGRAPHY_METHODOLOGY.md   — reusable process, not the output of any single topic
   <área>/raw_pdf/, raw_md/      — acquired PDFs and their untouched pdfplumber extraction
                                   (clean_md/ for these lives in obsidian/<área>/clean_md/)
-    exchange_rate/              — 35 PDF, 35 raw_md (2026-10-20)
-    monetary_policy/            — literature flat at the top of raw_pdf/ (64 PDFs, all ingested; the
+    exchange_rate/              — 29 PDF, 29 raw_md (2026-10-29, after the move to the owners' folders)
+    monetary_policy/            — literature flat at the top of raw_pdf/ (58 PDFs, all ingested; the
                                   theorical_literature/ subfolder was dissolved 2026-10-19), and
                                   central_bank/, the same tree as the vault's
                                   clean_md/central_bank/: raw_pdf/central_bank/{atas (82),
@@ -33,10 +33,12 @@ repository/
     trader/                     — 26 PDF, all ingested 2026-10-20: chapters of two Willer et al.
                                   books (Trading Global Macro Markets, 2024; Trading Fixed Income
                                   and FX in Emerging Markets, 2020), literature of a new trader agent
-    fiscal_policy/ (10), inflation/ (4), economic_activity/ (5), external/ (5), expectations/ (6)
-                                — the layer-1 literature of the five new agents, all ingested and
-                                  synthesized 2026-10-29 (SISTEMA_AGENTES II.IV); external/ and
-                                  expectations/ are new topics, their Qual tabs were created by tracker.py
+    fiscal_policy/ (10), inflation/ (8), economic_activity/ (5), external/ (13), expectations/ (6)
+                                — the literature of the five new agents: their layer 1, all ingested
+                                  and synthesized 2026-10-29 (SISTEMA_AGENTES II.IV), plus what came
+                                  from exchange_rate/ and monetary_policy/ when every source went to
+                                  its owner's folder the same day; external/ and expectations/ are
+                                  new topics, their Qual tabs were created by tracker.py
     labor_market/               — empty, future pillar
   mental_model/<gestora>/       — asset-manager letters: raw_pdf/ + raw_md/ + clean_md/. The letters
                                   are cross-area raw material, so their clean_md stays HERE; the
@@ -74,15 +76,17 @@ but unused. See `INGESTION.md` for why they were replaced.
 **Exchange rate — complete.** 28 sources processed into
 [`obsidian/exchange_rate/exchange_rate_conceptual_map.md`](../obsidian/exchange_rate/exchange_rate_conceptual_map.md),
 9 clusters. 2 real gaps: FX options/volatility (Garman & Kohlhagen 1983) and non-Brazil EM depth
-(Eichengreen & Hausmann 1999) — rows marked No in the Qual - Exchange Rate tab.
+(Eichengreen & Hausmann 1999, ingested since and, like the capital-flow sources, in external/ with
+the external agent as owner).
 
-**Monetary policy — ingested (2026-10-20).** 64 PDFs in `raw_pdf/`, all with raw_md and clean_md; 53 have a
-synthesis note. No conceptual map yet. The list is the Qual - Monetary Policy tab (12 clusters plus the
-legal sources and the Copom track); still missing is Brainard (1967), paywalled on JSTOR, and three books
-were dropped. Since 2026-10-21 the agents grow by layers (`PRINCIPIOS_AGENTES.md` I.VI): the 11 sources
-without synthesis are only synthesized if they fall in layer 1 or get promoted. The extraction quirks
-(two Caesar-shifted CGG files, letter spacing) are handled by `ingestion/settings.yaml`. Decide where to
-file Tambakis & Tarashev (2012), which also touches exchange rate.
+**Monetary policy — ingested (2026-10-20).** 58 PDFs in `raw_pdf/` since the move to the owners'
+folders (2026-10-29), all with raw_md and clean_md; 49 have a synthesis note. The conceptual map is
+`obsidian/monetary_policy/monetary_policy_conceptual_map.md`. The list is the Qual - Monetary Policy tab
+(12 clusters plus the legal sources and the Copom track); still missing is Brainard (1967), paywalled on
+JSTOR, and three books were dropped. Since 2026-10-21 the agents grow by layers (`PRINCIPIOS_AGENTES.md`
+I.VI): the 9 sources without synthesis are only synthesized if they fall in layer 1 or get promoted. The
+extraction quirks (the two Caesar-shifted CGG files, one here and the 2000 one in external/, letter
+spacing) are handled by `ingestion/settings.yaml`.
 
 **Trader — ingested, for a new agent.** Decided 2026-10-20: the literature of a new trader agent,
 not a topical pillar (`SISTEMA_AGENTES.md` I.II.vii). All 26 chapters ingested the same day; the
@@ -93,9 +97,16 @@ the scope. Next: `/vault trader`.
 
 **fiscal_policy / external / inflation / economic_activity / expectations — layer 1 in (2026-10-29).**
 One source per channel of each conceptual map, owner and layer in the Qual tabs; the rest of each tab is
-the stock for promotion. Some layer-1 sources of these agents live in other folders (Calvo 1983,
-Clarida, Galí & Gertler 2000, Miranda-Agrippino & Rey 2020 in monetary_policy/; Cortapasso 2023 and
-IMF 2010 in exchange_rate/): the owner comes from the tracker, never from the folder.
+the stock for promotion.
+
+**Every source sits in its owner's folder (since 2026-10-29).** The owner is the tracker's Dono; the
+folder follows it. `ingestion/scripts/owner.py --move` moves a source whose Dono's folder is not its
+tab's: PDF, raw_md, clean_md, synthesis, the vault's wikilinks (the frozen cycle snapshots in
+`obsidian/ciclos/` excepted), its LOG.md lines and its tracker row (merged into the owner's own row
+when the owner's list already had the source). `tracker.py` prints the sources out of place after
+every run, so a Dono changed by hand is noticed. 17 moved on 2026-10-29: from exchange_rate/ to
+external/ (7), inflation/ (3) and monetary_policy/ (Mundell 1963); from monetary_policy/ to
+exchange_rate/ (4), external/ (2) and inflation/ (Calvo 1983).
 **labor_market — placeholder.** Candidates in its Qual tab.
 
 **The Quant tabs date from July (2026-07-22, the inventories' last real revision; exchange rate
@@ -121,11 +132,10 @@ the status lands in `agent_mapping/data_tracker.xlsx`.
 - **Equation/symbol garbling in `raw_md`** (e.g. Dornbusch 1976): inherent to pdfplumber on scanned
   PDFs of that era; would need a vision-based extraction if equation fidelity matters. For
   born-digital PDFs the `pymupdf` mode maps math symbols to Unicode (2026-10-19).
-- **The 16 exchange-rate files ingested before 2026-10-19** used `x_tolerance=3` and the old
-  References cut; re-run with `/ingest exchange_rate "<file>" --overwrite` if one shows glued words
-  or a missing appendix.
+- **The 16 exchange-rate files ingested before 2026-10-19** (some now in external/, inflation/ and
+  monetary_policy/, their owners' folders) used `x_tolerance=3` and the old References cut; re-run
+  with `/ingest <topic> "<file>" --overwrite` if one shows glued words or a missing appendix.
 - **One file name with a typo**, kept so links don't break: `fiscal_dominance (itau, 2025)`
   (Itaú, lowercase). Its synthesis note carries the same name since 2026-10-19, so the tracker
   matches it exactly. The other one, `em_food_inflation (goldamn, 2026)`, was renamed to
   `(Goldman, 2026)` on 2026-10-20, with its raw_md, clean_md, synthesis note and wikilinks.
-- **Monetary policy — build the conceptual map**, one source at a time.

@@ -451,10 +451,11 @@ def _annualized_vol_6m(daily: pd.Series) -> pd.Series:
 
 
 # USD/BRL 3-month at-the-money implied volatility, daily, from the fund's
-# Bloomberg automation. It has NO table in the database yet -- it travels as a
-# versioned CSV owned by the structural model (the same file its FX equation
-# reads), which is declared debt, not design: the Atualizar button cannot reach
-# it. Pending F-vol in PENDENCIAS.md (destination macro_brasil.cmb_vol_implicita).
+# Bloomberg automation. The history travels as a versioned CSV owned by the
+# structural model (the same file its FX equation reads); since 2026-10-29 the
+# months after the CSV's last complete month come from the B3 table
+# macro_brasil.cmb_vol_implicita (see _load_implied_vol_3m), so the Atualizar
+# button now reaches the recent end. Pending F-vol in PENDENCIAS.md.
 _IMPLIED_VOL_CSV = (Path(__file__).resolve().parents[2] / "structural_model" / "data"
                     / "vol_implicita_usdbrl_3m.csv")
 
@@ -467,11 +468,34 @@ def _load_implied_vol_3m() -> pd.Series:
     refreshed (2026-08-04 at the time of writing), and a partial month read
     as final would lock a scenario box on a value the month did not close at."""
     d = pd.read_csv(_IMPLIED_VOL_CSV, parse_dates=["date"]).dropna()
-    s = d.set_index("date")["vol_implicita_3m"].astype(float).sort_index()
+    csv = _complete_months(d.set_index("date")["vol_implicita_3m"].astype(float).sort_index())
+    # Depois do último mês completo do CSV, a série segue pela B3
+    # (macro_brasil.cmb_vol_implicita, 3M, no passe diário), a pedido do usuário em
+    # 2026-10-29. Emenda, e não troca: a amostra do ajuste (até jun/2026) continua
+    # inteira no CSV, então os pesos não mudam; a B3 só alcança os meses que o
+    # export manual não alcança. Na sobreposição 2006-01..2026-08 as duas diferem
+    # -0,20 p.p. na média e 0,31 em valor absoluto; a maior diferença recente é
+    # jul/2026 (-1,8), a eleição diluída no prazo fixo da B3.
+    try:
+        b3 = _read_table("macro_brasil", "cmb_vol_implicita")
+        b3 = b3[b3["prazo"] == "3M"]
+        b3 = b3.set_index(pd.to_datetime(b3["date"]))["value"].astype(float).sort_index()
+        ext = _complete_months(b3)
+        ext = ext[ext.index > csv.index.max()]
+    except Exception as exc:
+        print(f"  Aviso: vol implícita da B3 indisponível, carry_vol fica só no CSV — {exc}")
+        ext = pd.Series(dtype=float)
+    return pd.concat([csv, ext]).rename("fx_vol")
+
+
+def _complete_months(s: pd.Series) -> pd.Series:
+    """Fechamento de cada mês, no índice de início de mês, só dos meses COMPLETOS:
+    um mês cuja última cotação cai mais de 5 dias antes do fim dele sai, em vez de
+    entrar como fechamento um valor que o mês não fechou."""
     last_obs = s.groupby(s.index.to_period("M")).apply(lambda x: x.index.max())
     complete = np.array([(p.to_timestamp("M") - dt).days <= 5 for p, dt in last_obs.items()])
     m = s.resample("MS").last()
-    return m[complete].rename("fx_vol")
+    return m[complete]
 
 
 def _load_carry_vol_metrics(carry_m: pd.Series) -> pd.DataFrame:

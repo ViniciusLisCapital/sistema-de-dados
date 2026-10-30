@@ -14,10 +14,13 @@ ja como `variacao_bps` (-25, 0, ...). O vencimento e o dia util seguinte a reuni
 
 O premio e o valor presente de "100 se acontecer": dividido por 100 e pelo fator de
 desconto ate o vencimento, e a probabilidade que o mercado atribui a decisao (neutra a
-risco). A soma dos premios de uma reuniao e ~100 x o fator de desconto -- 98 a 50 dias,
-96 a quatro meses --, entao a probabilidade de cada decisao e o premio dela sobre a soma
-da reuniao, sem precisar de curva nenhuma. Quem faz essa conta e o relatorio; a tabela
-guarda o premio como a B3 publica.
+risco). A soma dos premios de uma reuniao fica em geral perto de 100 x o fator de desconto
+(mediana anual de 97 a 99,7), mas nao exatamente: cada premio e formado separadamente, e a
+soma ja foi de 72 a 123 num pregao. Por isso a probabilidade de cada decisao e o premio dela
+sobre a SOMA da reuniao, nunca sobre 100. Quem faz essa conta e o relatorio; a tabela guarda o
+premio como a B3 publica.
+
+O strike vem com tres decimais de 2020-08 a 2023-09 (`b3_premio.parse_copom` corrige).
 
 Conferido contra duas decisoes conhecidas: na vespera da 281a (corte de 25) a opcao de
 -25 valia 96,00 e a de manutencao 3,50; na da 280a, 95,50 e 3,25.
@@ -54,15 +57,18 @@ _TABLE = "pm_copom_opcoes"
 # geram linha.
 _INICIO = "2020-05-04"
 _DIAS_ROTINA = 10
-# Guardas de unidade/layout: um layout lido errado poe o premio na casa dos 10^16.
+# Guardas de unidade/layout: um layout lido errado poe o premio na casa dos 10^16. A soma de
+# uma reuniao NAO e sempre 100 x o desconto: cada premio e formado separadamente, e medido de
+# 2020 a 2026 a mediana anual fica entre 97 e 99,7, mas ha pregoes de 72 e de 123. O guarda
+# so pega layout; quem decide o que e reuniao legivel e a leitura (expectativas_juros.opcoes).
 _PREMIO_MAX = 100.5
-_SOMA_MAX = 102.0
+_SOMA_MAX = 130.0
 
 _DDL = """
 CREATE TABLE IF NOT EXISTS pm_copom_opcoes (
     date          DATE    NOT NULL COMMENT 'Pregao',
     vencimento    DATE    NOT NULL COMMENT 'Vencimento da opcao: o dia util seguinte a reuniao do Copom',
-    variacao_bps  INT     NOT NULL COMMENT 'Decisao a que a opcao se refere: variacao da meta Selic em pontos-base (strike 100 + variacao em p.p.; -25 = corte de 25, 0 = manutencao)',
+    variacao_bps  DECIMAL(6,1) NOT NULL COMMENT 'Decisao a que a opcao se refere: variacao da meta Selic em pontos-base (strike 100 + variacao em p.p.; -25 = corte de 25, 0 = manutencao; em 2020 houve strikes de -12,5 e -10)',
     premio        DOUBLE  NOT NULL COMMENT 'Premio de referencia em pontos; a opcao paga 100 se a decisao for esta',
     PRIMARY KEY (date, vencimento, variacao_bps)
 ) COMMENT='Opcoes digitais de Copom da B3 (CPM): premio de referencia de cada decisao possivel em cada reuniao, do arquivo RE do pregao. A opcao paga 100 pontos se a variacao decidida for a do strike; premio / soma dos premios da reuniao = probabilidade neutra a risco da decisao. Premio teorico, piso de 0,02-0,03 nas decisoes que ninguem espera. Ver domain/db/brasil/b3/pm_copom_opcoes.py.'
@@ -93,10 +99,16 @@ def linhas_do_pregao(P: pd.DataFrame, data) -> pd.DataFrame:
     vir: no dia do vencimento a opcao ja e exercicio, nao preco."""
     data = pd.Timestamp(data).normalize()
     P = P[(P["tipo"] == "C") & (P["vencimento"] > data)]
+    # A mesma correcao de parse_copom, de novo aqui: o cache gravado antes dela guarda o strike
+    # de 2020-08 a 2023-09 multiplicado por dez.
+    k = P["strike"].where(P["strike"] <= 200, P["strike"] / 10)
     out = pd.DataFrame({
         "date": data.date(),
         "vencimento": P["vencimento"].dt.date,
-        "variacao_bps": ((P["strike"] - 100) * 100).round().astype(int),
+        # Uma casa: em 2020, com a Selic a 2%, a B3 listou o corte de 12,5 p.b. (99,875). No
+        # layout de duas casas ele sai 99,88 (2020-08-06): todo strike vive na grade de 2,5 p.b.,
+        # e e para ela que a variacao e levada.
+        "variacao_bps": (((k - 100) * 100) / 2.5).round() * 2.5,
         "premio": P["premio"].astype(float),
     })
     return out.drop_duplicates(["vencimento", "variacao_bps"])
@@ -122,9 +134,11 @@ def coletar(full: bool = False, dias: int = _DIAS_ROTINA, inicio: str = _INICIO)
     if (soma > _SOMA_MAX).any():
         raise ValueError(f"pm_copom_opcoes: soma dos premios de uma reuniao acima de {_SOMA_MAX}:\n"
                          f"{soma[soma > _SOMA_MAX].head().to_string()}")
-    if (df.variacao_bps % 25 != 0).any():
+    # Fora da grade de 25 so os de 2020 (-12,5 e -10, com a Selic a 2%); um novo merece olhar.
+    fora25 = df[(df.variacao_bps % 25 != 0) & (pd.to_datetime(df.date) >= "2021-01-01")]
+    if len(fora25):
         logger.warning("pm_copom_opcoes: strike fora da grade de 25 p.b.: %s",
-                       sorted(df.loc[df.variacao_bps % 25 != 0, "variacao_bps"].unique()))
+                       sorted(fora25.variacao_bps.unique()))
     return df
 
 

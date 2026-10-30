@@ -354,7 +354,7 @@ dashboards:
       - {kind: mysql, ref: macro_international.cmb_reer, role: "REER do BIS"}
       - {kind: mysql, ref: macro_international.cmb_cot_fx, role: "Posicionamento especulativo CFTC"}
       - {kind: mysql, ref: macro_brasil.cmb_dol_futuro, role: "Curva futura do dólar e prêmio a termo, aba Mercado B3"}
-      - {kind: mysql, ref: macro_brasil.cmb_vol_implicita, role: "Volatilidade implícita das opções de dólar, aba Mercado B3"}
+      - {kind: mysql, ref: macro_brasil.cmb_vol_implicita, role: "Volatilidade implícita das opções de dólar, aba Mercado B3; no FX Model, os meses depois do fim do arquivo da Bloomberg"}
       - {kind: mysql, ref: macro_brasil.cmb_contratos_b3, role: "Posição em aberto e volume do dólar futuro e do cupom, aba Posicionamento"}
       - {kind: mysql, ref: macro_brasil.cmb_opcoes_dolar, role: "Posição por strike e razão put/call, aba Opções de Dólar"}
       - {kind: mysql, ref: macro_brasil.br_juros_contratos, role: "Volume e posição do DI futuro e do DAP, aba Juros e Bolsa na B3"}
@@ -434,7 +434,7 @@ dashboards:
         date_col: date
         scope: modelos
         role: "Volatilidade implícita de 3 meses do dólar, denominador do canal carry/volatilidade do FX Model"
-        refresh: exportação manual da automação Bloomberg do fundo — ainda sem tabela no banco (pendência F-vol)
+        refresh: exportação manual da automação Bloomberg do fundo; os meses depois do fim do arquivo vêm da B3 (cmb_vol_implicita) desde 2026-10-29
       - kind: csv
         ref: analytics/brasil/exchange_rate/models/fx_attribution_data/verde_asset/claims.csv
 

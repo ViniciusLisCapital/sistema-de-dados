@@ -1770,6 +1770,31 @@ histórico inteiro e valem: put/call mediana de 0,75 (2018) a 1,74 (2019); 83% d
 rolagem nos 3 últimos pregões do mês; FRA de cupom 7 a 52 vezes o futuro de cupom em todo ano;
 DI com 13 a 45 vezes a posição do DAP.
 
+## Episódios narrados no gráfico da PTAX (2026-10-29, teste com 2014–2016)
+
+Pedido do usuário: marcar no gráfico "PTAX — Câmbio à Vista" os episódios de estresse com a
+narrativa cronológica, contida e aberta por clique. O texto é escrito à mão em
+`data/episodios_cambio.json` (não sai do banco) e entra no payload como `episodios`
+(`_load_episodios()`). Cada episódio vira uma faixa por fase, na cor do **quadrante** do framework
+de eventos (Q0 sem evento dominante; Q1 data conhecida e resultado incerto; Q2 surpresa; Q3
+calendário; Q4 processo, Q4↓ o de melhora), mais um contorno com o nome e um ponto na linha em
+cada marco. O valor do ponto é lido da série, não do texto. Clicar na faixa, num ponto, no nome
+ou no botão acima do gráfico abre o painel `#ptax-ep-panel`; o botão também enquadra o gráfico no
+episódio pelo mesmo caminho dos campos De/Até (`_rangeSelected = 'custom'`).
+Conferido no Chrome headless: 16 marcos, 8 faixas, painel abre e fecha, clique em 25/09/2015
+seleciona o marco do clímax, zero exceções. No mesmo dia entraram os outros 13 episódios (2002,
+2008, taper, Joesley, greve de 2018, eleição de 2018, Covid, teto, precatórios, 2022, fiscal de
+2024, tarifaço, eleição de 2026, esta em curso): 14 no total, sem sobreposição, cada fato de
+notícia com URL nas `fontes` do episódio e cada PTAX citada no texto conferida contra o banco
+(±0,01). O campo `curto` é o rótulo do topo da faixa, em duas alturas alternadas; o episódio que
+chega à ponta direita leva o rótulo pelo fim. Episódio novo = objeto novo no JSON, sem código.
+
+No mesmo dia o gráfico saiu da aba Valuation e virou a **primeira aba, "A história do câmbio"**
+(`tab-historia`, `#sec-historia-ptax`, aberta por padrão); a Valuation ficou com câmbio efetivo
+real e termos de troca. `tests/test_fx_report_js.js` (ordem do nav, aba de cada gráfico) e
+`manual/capture_screens.js` acompanharam. **Pendente:** o guia de leitura do cliente
+(`manual/generate_manual_pdf.py`) ainda descreve a PTAX dentro da Valuation.
+
 ## Pending / next steps
 
 - **Cenários base dos outros 4 canais exógenos** (`dxy_em`, `carry_vol`, `sp500`, `icbr_usd`) — o
@@ -1801,4 +1826,23 @@ DI com 13 a 45 vezes a posição do DAP.
 - **The PTAX section shows only BRL/USD** — explicit user ask for EM peer currencies (MXN, CLP, COP) side by side; no spot series for those pairs exists in the DB yet (FRED has candidates like `DEXMXUS`) — blocked on authorization for new data collection, not on a technical blocker.
 - **Fluxo cambial — CEP/CBE sub-items** (candidate SGS codes 24372–24376) returned data in an initial search but descriptions are unconfirmed — cross-check against the BCB's weekly Nota Cambial before using them.
 - ~~**Cupom cambial + B3 FX futures (DOL/WDO)** — deferred; requires Bloomberg~~ — **feito em 2026-10-28 sem Bloomberg**, da própria B3 (aba Mercado B3, abaixo).
-- **O `carry_vol` do FX Model ainda lê a vol implícita do CSV da Bloomberg**, não `cmb_vol_implicita`. Trocar é decisão do usuário: fora de evento as duas batem na casa decimal, mas no fim de jul/2026 o 3M da B3 ficou ~1,7 p.p. abaixo (eleição diluída no prazo fixo).
+- ~~**O `carry_vol` do FX Model ainda lê a vol implícita do CSV da Bloomberg**~~ — **emendado em
+  2026-10-29, a pedido do usuário:** o CSV continua até o último mês completo dele (jul/2026) e os
+  meses seguintes vêm da B3 (`cmb_vol_implicita`, 3M, `_load_implied_vol_3m()`). Emenda e não
+  troca, para a amostra do ajuste (até jun/2026) não mudar: os pesos são os mesmos, e o
+  `carry_vol` passou a ter ago e set/2026 realizados. Na sobreposição 2006-01..2026-08 as duas
+  diferem −0,20 p.p. na média e 0,31 em valor absoluto (jul/2026: −1,8, a eleição diluída no prazo
+  fixo da B3). Trocar o histórico inteiro pela B3 continua sendo decisão do usuário: mexe na
+  amostra e pede reestimação.
+
+## O gráfico "Exchange Rate Decomposition" vai além do corte do ajuste (2026-10-29)
+
+Pedido: *"expanda o gráfico até o último mês que temos"*. O ajuste continua fixado em
+`model_fit_cutoff.json` (2026-06) e **não é reestimado**; o payload ganhou `decomp_ext`
+(`ridge_deviation_model.build_dashboard_payload`), que aplica os **mesmos coeficientes** (amostra
+inteira e última janela) aos meses seguintes que todas as séries já têm (hoje até 2026-09, limite do
+IPCA/US CPI). As `n_fit` primeiras entradas de cada array são idênticas a `contrib_monthly` e a
+`last_window.contrib_monthly`; `months`/`contrib_monthly` seguem significando "a amostra do ajuste"
+para o resto da aba. No gráfico (`renderRidgeTab()`, `DX`), os meses posteriores ao corte ficam sob
+uma faixa dourada "after the fit" e o rodapé os cita: o resíduo ali é **fora da amostra**. Guardas em
+`tests/test_ridge_ppp_js.js` §Z.

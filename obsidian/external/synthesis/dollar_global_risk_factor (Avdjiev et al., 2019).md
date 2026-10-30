@@ -63,7 +63,7 @@ The evidence supports the chain at each link and the sign reversal relative to t
 - [[financial_channel_exchange_rate]] — the source's subject: the balance-sheet and lender risk-taking channel through which a stronger dollar contracts dollar credit and EME investment, opposite to net exports
 - [[global_financial_cycle]] — US policy and the VIX as drivers of cross-border bank lending and EME investment; the dollar's value as the price that transmits global bank risk-taking to EMEs
 - [[carry_trade]] — tested as the alternative explanation (carry flows both weakening the dollar and feeding EME credit) and found not to overturn the result
-- [[monetary_policy/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)]] — the same balance-sheet effect of depreciation on dollar debt, there as one term of a framework for US spillovers through EME risk premia
+- [[exchange_rate/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)]] — the same balance-sheet effect of depreciation on dollar debt, there as one term of a framework for US spillovers through EME risk premia
 - [[monetary_policy/synthesis/trilemma_tradeoffs (Obstfeld, 2015)]] — offshore dollar credit as a transmission of US funding conditions to non-dollar balance sheets; this source measures its effect on investment
 - [[monetary_policy/synthesis/dilemma_not_trilemma (Rey, 2013)]] — the global cycle in cross-border credit and the VaR-constrained global bank that this source puts at the end of a dollar shock
 - [[exchange_rate/synthesis/output_exchange_rates_sr (Krugman, 2023)]] — the textbook trade channel (depreciation raises demand) whose sign this source finds reversed for EME investment and GDP

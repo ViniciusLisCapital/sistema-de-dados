@@ -765,5 +765,32 @@ ok(!/\(sample\[c\] - mu\)|ref_col\.mean\(\)/.test(corpo),
 ok(/Nothing is subtracted before the division/.test(src),
    'e a metodologia da aba diz ao leitor que nada e subtraido');
 
+sec('Z. a decomposicao vai alem do corte do ajuste (decomp_ext)');
+{
+  const X = D.decomp_ext;
+  ok(!!X, 'o payload traz decomp_ext');
+  const nf = X.n_fit;
+  ok(nf === D.months.length, 'n_fit e o tamanho da amostra do ajuste', nf + ' vs ' + D.months.length);
+  ok(X.months.length > nf, 'ha meses alem do corte', String(X.months.length));
+  ok(X.months.slice(0, nf).join() === D.months.join(), 'os n_fit primeiros meses sao os do ajuste');
+  ok(X.actual.length === X.months.length, 'actual cobre todos os meses');
+  const ks = Object.keys(CM);
+  ok(ks.every(k => X.contrib_monthly[k].length === X.months.length &&
+        X.contrib_monthly[k].slice(0, nf).every((v, i) => perto(v, CM[k][i], 1e-9))),
+     'as n_fit primeiras entradas de cada canal sao iguais a contrib_monthly');
+  const LWc = D.last_window.contrib_monthly, w = D.last_window.window_months;
+  ok(Object.keys(LWc).every(k => X.contrib_monthly_last_window[k].slice(0, w).every((v, i) => perto(v, LWc[k][i], 1e-9))),
+     'e as primeiras "janela" entradas da ultima janela sao iguais a last_window.contrib_monthly');
+  const i = X.months.length - 1;
+  const soma = ks.reduce((a, k) => a + X.contrib_monthly[k][i], 0);
+  const dlog = 100 * Math.log(X.actual[i] / X.actual[i - 1]);
+  ok(perto(soma, dlog, 1e-2), 'no ultimo mes baseline+canais+residuo = variacao em log-% da PTAX', soma + ' vs ' + dlog);
+  ok(/const DX = D\.decomp_ext/.test(src) && /decompEndEl\.value = String\(DX\.months\.length - 1\)/.test(src),
+     'o seletor de fim abre no ultimo mes de decomp_ext');
+  ok(/const foraAmostra = i1 >= DX\.n_fit;\s*const shapesOos = foraAmostra \? \[\{[\s\S]*?\}\] : \[\];/.test(src),
+     'a faixa de fora da amostra so existe quando a janela cruza n_fit (senao e [])');
+  ok(/shapes: shapesOos, annotations: annOos/.test(src), 'e e passada sempre ao grafico, vazia ou nao (Plotly.react nao herda)');
+}
+
 console.log('\n' + oks + ' ok, ' + falhas + ' falhou');
 process.exit(falhas ? 1 : 0);

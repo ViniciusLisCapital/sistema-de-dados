@@ -9,8 +9,9 @@ Gera o retrato do conhecimento de um agente para um ciclo (PLANO_AGENTES.md 3C).
 Roda no início do ciclo, junto com o `dados` (o F(A)). O agente lê só daqui, nunca do vault direto.
 
 O que entra (SISTEMA_AGENTES I.III.xvii, PRINCIPIOS I.VI): o dono e a camada vêm do tracker
-(repository/agent_mapping/data_tracker.xlsx), nunca da pasta. Os arquivos só mudam de pasta na
-Fase 9.
+(repository/agent_mapping/data_tracker.xlsx), nunca da pasta. Desde 2026-10-29 cada fonte fica na
+pasta do dono (repository/ingestion/scripts/owner.py; o tracker.py avisa quando uma sai do lugar), mas
+o retrato acha a nota na pasta da aba em que a linha está, seja qual for o dono.
   1. a camada 1 de que o agente é dono: na literatura, síntese + clean_md de cada fonte (abas
      "Qual", colunas Dono e Camada); os modelos mentais da área dele (aba "Mental Models", Camada);
      no agente de política monetária, os documentos do Copom da camada 1 para a data do ciclo
@@ -59,7 +60,8 @@ CICLOS = OBSIDIAN / "ciclos"
 CONCEITOS = OBSIDIAN / "concepts"
 SCRIPTS = RAIZ / "repository" / "ingestion" / "scripts"
 
-# agente -> pasta da área no vault (None: agente que ainda não tem pasta)
+# agente -> pasta da área no vault (None: agente que ainda não tem pasta). É o OWNERS do tracker.py,
+# o mapa que o owner.py usa para mover as fontes; tests/test_conhecimento.py exige os dois iguais
 AREA = {"cambio": "exchange_rate", "politica_monetaria": "monetary_policy", "inflacao": "inflation",
         "fiscal": "fiscal_policy", "atividade": "economic_activity", "mercado_trabalho": "labor_market",
         "trader": "trader", "externo": "external", "expectativas": "expectations", "credito": None}

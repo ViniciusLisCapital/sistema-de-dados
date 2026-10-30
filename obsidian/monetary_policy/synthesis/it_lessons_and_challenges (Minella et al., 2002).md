@@ -58,4 +58,4 @@ The evidence supports the credibility story on all three tests the authors run, 
 - [[central_bank_communication]] — clear communication (minutes, Inflation Report, explaining breaches) as one of the two conditions for keeping expectations anchored when inflation overshoots
 - [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — the institutional design and structural model whose first three years this paper evaluates
 - [[monetary_policy/synthesis/inflation_targeting_em (Mishkin, 2000)]] — cited for the risk that exchange-rate intervention signals that the exchange rate takes precedence over price stability
-- [[exchange_rate/synthesis/depreciation_pass_through (Belaisch, 2003)]] — an outside VAR estimate of Brazil's low pass-through over the same 1999–2002 floating period
+- [[inflation/synthesis/depreciation_pass_through (Belaisch, 2003)]] — an outside VAR estimate of Brazil's low pass-through over the same 1999–2002 floating period

@@ -645,7 +645,7 @@ precificando"*. A aba Curva do Copom de lá saiu inteira, e o que ela mostrava e
 da curva DI. `expectativas_juros.montar()` entrega `D.expectativas`: a lista de reuniões e, por
 fonte, a última data de cada semana ISO, a Selic vigente nela, o índice da primeira reunião ainda
 por acontecer (`j0`) e um bloco `{i0, ...}` por reunião. Três seções: o caminho de hoje das duas
-fontes com a comparação de 1/4/12/52 semanas antes; a formação da expectativa para uma reunião
+fontes com a comparação **por data, uma para cada fonte** (ver abaixo); a formação da expectativa para uma reunião
 (seletor, default a próxima), com a faixa das respostas e as respostas de 4 dias úteis; e a
 n-ésima reunião à frente ao longo do tempo, com a distância curva − pesquisa em p.b. embaixo.
 
@@ -703,6 +703,19 @@ casos sintéticos, vocabulário) e `tests/test_expectativas_juros.py`; verificad
 (fila deslocada, âncora fora da Selic vigente, "semanas antes" por posição, distância sem conferir
 a reunião, janela sem reset na comparação, degrau no dia da decisão) e em Chrome headless: 4
 gráficos, zero exceções. Geração: ~20 s a mais (o `montar()`).
+
+**A comparação do caminho de hoje é por data** (2026-10-29, pedido do usuário: *"essa forma de
+comparar com '1 semana antes' é ruim, eu quero poder comparar por data mesmo e separado entre focus
+e curva ... às vezes quero ver o que mudou de um dia para o outro"*). As pills de 1/4/12/52 semanas
+saíram; cada fonte tem a sua barra (‹ dia anterior, a data, › dia seguinte, × sem comparação), e o
+default é o **dia anterior disponível** de cada uma. Para isso cada fonte ganhou `diario`: o mesmo
+formato da série semanal, com **todo dia dos últimos `DIARIO_ANOS` = 2 anos** e só a mediana/taxa
+(~500 datas por fonte; a geração não mudou de tempo de forma mensurável, ~60 s). Antes da janela a
+comparação lê a semanal. Três regras: a data digitada **encaixa na disponível mais recente até ela**,
+a caixa passa a mostrar a usada e uma nota diz a troca (sábado → sexta); comparar com a própria data
+de hoje não desenha nada; e o harness exige que, nas datas que as duas séries têm, a diária e a
+semanal deem o mesmo caminho (105 por fonte hoje). O gráfico de opções continua com "N semanas
+antes" — o pedido foi sobre este.
 
 **A tabela abaixo do caminho de hoje** (2026-10-27, pedido do usuário, formato aprovado num
 exemplo em .md antes): uma linha por reunião ainda à frente, e para a curva e para a pesquisa a

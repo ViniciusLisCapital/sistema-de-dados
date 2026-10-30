@@ -139,7 +139,7 @@ The implication: don't use GSDEER cheapness as a buy signal for BRL without a ca
 - [[ppp_balassa_samuelson]] — GSDEER is explicitly framed here as augmented PPP correcting for the Balassa-Samuelson productivity effect; BRL's GSDEER undervaluation is this concept's direct application
 - [[risk_premium]] — explicitly listed as a shared limitation of both models ("Neither model captures risk premium"); the key reason BRL's structural GSDEER cheapness doesn't convert into convergence
 - [[exchange_rate/synthesis/expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]] — overshooting means fair value is a long-run concept; short-run deviations are rational
-- [[exchange_rate/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] / [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — GSFEER is implicitly a macro balance model in the M-F tradition
+- [[monetary_policy/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] / [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — GSFEER is implicitly a macro balance model in the M-F tradition
 - [[verde_fx_mental_models]] — Verde letters treat GSDEER-type arguments as "structural" floor for BRL; skeptical of convergence without carry catalyst
 - [[Sarno-Taylor]] — academic treatment of PPP-based equilibrium exchange rates and their empirical limitations
 - [[exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006)]] — BEER model, the direct methodological ancestor applied to Brazil two decades earlier: same terms-of-trade/productivity/NFA/risk-premium fundamentals, cointegration instead of a cross-sectional regression

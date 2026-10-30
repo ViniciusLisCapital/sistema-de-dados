@@ -169,6 +169,17 @@
       min-width: 110px;
     }
     .date-select:focus-visible { outline: none; border-color: var(--lis-azul-cl); }
+    /* A comparacao por data da aba Expectativas de Juros: dia anterior, data, dia seguinte, sem. */
+    .ej-cmp { display: inline-flex; align-items: center; gap: 4px; }
+    .ej-cmp input[type="date"] { min-width: 0; cursor: text; }
+    .ej-cmp-btn {
+      font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--text); padding: 5px 7px;
+      border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); cursor: pointer;
+    }
+    .ej-cmp-btn:hover:not(:disabled) { border-color: var(--lis-azul-cl); }
+    .ej-cmp-btn:disabled { color: var(--muted); cursor: not-allowed; opacity: 0.5; }
+    .ej-cmp-nota { font-family: var(--mono); font-size: 11px; color: var(--muted); margin: -4px 0 8px; min-height: 0; }
+    .ej-cmp-nota:empty { display: none; }
     .period-ctrl-bar { margin-bottom: 12px; }
 
     /* ── Toggle "Dados no gráfico" (padrão da skill lis-dashboard) ── */
@@ -967,11 +978,15 @@
       <p class="lead" id="ej-lead">—</p>
 
       <div class="ctrl-bar chart-ctrl-bar">
-        <span class="ctrl-label">Comparar com</span>
-        <div class="pill-group" id="pg-ej-comp"></div>
+        <span class="ctrl-label">Comparar a pesquisa com</span>
+        <div class="ej-cmp" id="ej-cmp-focus"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Comparar a curva com</span>
+        <div class="ej-cmp" id="ej-cmp-di"></div>
         <div class="ctrl-sep"></div>
         <div class="dl-toggle" id="dl-chart-ej-hoje"><span class="toggle-icon"></span> Dados no gráfico</div>
       </div>
+      <p class="ej-cmp-nota" id="ej-cmp-nota"></p>
       <div class="chart-card"><div id="chart-ej-hoje"></div></div>
       <p class="chart-caption" id="ej-cap-hoje">—</p>
       <details class="tbl-fold" open style="margin-top:14px">
@@ -1109,12 +1124,15 @@
             e vence no dia útil seguinte à reunião.
             <br><br>
             O preço de uma opção dessas é o valor de hoje de "100 se acontecer". Somando os preços
-            de todas as decisões da mesma reunião, o resultado fica um pouco abaixo de 100 — a
-            diferença é o juro até o vencimento (hoje a soma da próxima reunião é
+            de todas as decisões da mesma reunião, o resultado costuma ficar um pouco abaixo de
+            100, pelo juro até o vencimento — mas não exatamente, porque o preço de cada decisão
+            se forma separado dos outros (hoje a soma da próxima reunião é
             <b><span id="ej-ap-op-soma">—</span></b>). Dividindo o preço de cada decisão por essa
-            soma, o juro sai da conta e o que sobra é a <b>probabilidade que o preço atribui à
-            decisão</b>. É uma probabilidade de mercado: como a curva, carrega o que se cobra
-            para correr o risco, e não é pesquisa de opinião.
+            soma, as probabilidades passam a somar 100%, e cada uma é a <b>probabilidade que o
+            preço atribui à decisão</b>. É uma probabilidade de mercado: como a curva, carrega o
+            que se cobra para correr o risco, e não é pesquisa de opinião. Os pregões em que a
+            soma de uma reunião fica longe de 100 — abaixo de 80, quando faltam decisões listadas,
+            ou acima de 120 — ficam fora dos gráficos.
             <br><br>
             O preço usado é o <b>prêmio de referência</b> que a B3 calcula todo dia para cada série,
             negociada ou não — por isso há número para todas as decisões, inclusive as que ninguém
@@ -3579,17 +3597,18 @@ function renderCondicionais() {
 //
 //  D.expectativas vem resolvido por expectativas_juros.py: a lista de reuniões (data real
 //  ou estimada) e, para cada fonte, a última data de cada semana, a Selic vigente nela, o
-//  índice j0 da primeira reunião ainda por acontecer e um bloco {i0, ...} por reunião. O JS
-//  só escolhe, recorta e desenha.
+//  índice j0 da primeira reunião ainda por acontecer e um bloco {i0, ...} por reunião. Em
+//  `diario`, o mesmo formato com TODO dia dos últimos dois anos e só a mediana/taxa -- é o que
+//  a comparação por data do primeiro gráfico lê. O JS só escolhe, recorta e desenha.
 // ═══════════════════════════════════════════════════════════════════════════════
-var EJ = {dlHoje: false, dlReu: false, dlHz: false, comp: 4, reuniao: null, hz: 4,
+// cmp: a data com que cada fonte compara o caminho de hoje -- uma por fonte, null = nenhuma.
+var EJ = {dlHoje: false, dlReu: false, dlHz: false, cmp: {focus: null, di: null}, cmpNota: {}, reuniao: null, hz: 4,
           dlOp: false, opReu: null, opComp: 4};
 var EJ_HOJE = 'chart-ej-hoje', EJ_REU = 'chart-ej-reuniao', EJ_HZ = 'chart-ej-hz', EJ_GAP = 'chart-ej-gap';
 var EJ_UNID = 'meta Selic, % ao ano';
 var EJ_UNID_GAP = 'curva DI menos pesquisa Focus, pontos-base';
 var EJ_COR = {focus: C.azul, focusAnt: '#8C93B5', di: C.dourado, diAnt: '#DCC67A', b1: C.azulCl,
               vig: '#8A8A8A', dec: C.verde, faixa: 'rgba(31,40,83,0.10)', op: '#8E44AD'};
-var EJ_COMP = [0, 1, 4, 12, 52];
 var EJ_HZS = [1, 2, 4, 8];
 
 function ejD() { return D.expectativas || {}; }
@@ -3619,32 +3638,61 @@ function ejSemanas(n) { return n === 1 ? '1 semana' : n + ' semanas'; }
 // saem com duas casas -- a terceira seria precisão que a conta não tem.
 function ejFmt(fonte, v) { return fonte === 'focus' ? cnSel(v) : fmtBR(v, 2); }
 function ejCampo(fonte) { return fonte === 'focus' ? 'm' : 'v'; }
-function ejVal(fonte, campo, j, i) {
-  var S = ejD()[fonte];
+// S: a serie lida -- a semanal (default) ou a diaria da mesma fonte, que tem o mesmo formato.
+function ejVal(fonte, campo, j, i, S) {
+  S = S || ejD()[fonte];
   var b = S && S.por_reuniao[String(j)];
   if (!b || !b[campo]) return null;
   var k = i - b.i0;
   return (k >= 0 && k < b[campo].length) ? b[campo][k] : null;
 }
-// A semana mais recente com data até `semanas` semanas antes da última -- por DATA, não por
-// posição: uma semana sem pesquisa (feriado) faria "4 posições atrás" cair 5 semanas antes.
-function ejSemanaAtras(fonte, semanas) {
-  var S = ejD()[fonte];
-  if (!S || !S.datas.length) return -1;
-  var alvo = Date.parse(S.datas[S.datas.length - 1]) - semanas * 7 * 86400000;
-  for (var i = S.datas.length - 1; i >= 0; i--) if (Date.parse(S.datas[i]) <= alvo) return i;
-  return -1;
-}
-// O caminho de uma fonte numa semana: a Selic vigente naquele dia e uma reunião por ponto.
-function ejCaminho(fonte, i) {
-  var S = ejD()[fonte], campo = ejCampo(fonte);
+// O caminho de uma fonte numa data: a Selic vigente naquele dia e uma reunião por ponto.
+function ejCaminho(fonte, i, S) {
+  S = S || ejD()[fonte];
+  var campo = ejCampo(fonte);
   var n = (ejD().reunioes || []).length, pts = [];
   for (var j = S.j0[i]; j < n; j++) {
-    var v = ejVal(fonte, campo, j, i);
+    var v = ejVal(fonte, campo, j, i, S);
     if (v != null) pts.push({j: j, v: v});
   }
   return {fonte: fonte, i: i, data: S.datas[i], vig: S.vig[i], pts: pts};
 }
+
+// ── A comparação por data ─────────────────────────────────────────────────────────
+// As datas com que uma fonte pode ser comparada, em ordem: TODO dia na janela recente (a série
+// diária) e, antes dela, a última data de cada semana (a semanal). Cada entrada aponta para a
+// série e o índice de onde o caminho daquela data sai.
+function ejDatasComp(fonte) {
+  var X = ejD()[fonte];
+  if (!X || !X.datas) return [];
+  var Dd = X.diario && X.diario.datas && X.diario.datas.length ? X.diario : null, out = [];
+  X.datas.forEach(function(d, i) { if (!Dd || d < Dd.datas[0]) out.push({d: d, S: X, i: i}); });
+  if (Dd) Dd.datas.forEach(function(d, i) { out.push({d: d, S: Dd, i: i}); });
+  return out;
+}
+// A data disponível mais recente até `data` -- num fim de semana, feriado ou dia sem pesquisa,
+// a anterior; antes do começo da série, a primeira.
+function ejNaData(fonte, data) {
+  var L = ejDatasComp(fonte);
+  if (!L.length || !data) return null;
+  for (var k = L.length - 1; k >= 0; k--) if (L[k].d <= data) return L[k];
+  return L[0];
+}
+// O passo de "dia anterior"/"dia seguinte": a data disponível vizinha.
+function ejVizinha(fonte, data, passo) {
+  var L = ejDatasComp(fonte);
+  if (!L.length) return null;
+  var e = ejNaData(fonte, data), k = e ? L.map(function(x) { return x.d; }).indexOf(e.d) : L.length - 1;
+  var n = k + passo;
+  return (n >= 0 && n < L.length) ? L[n].d : null;
+}
+// O default: a data imediatamente anterior à mais recente -- o que mudou de um dia para o outro.
+function ejCmpPadrao(fonte) {
+  var L = ejDatasComp(fonte);
+  return L.length >= 2 ? L[L.length - 2].d : null;
+}
+function ejNomeFonte(f) { return f === 'di' ? 'Curva DI' : 'Pesquisa Focus'; }
+
 function ejTraceCaminho(c, nome, cor, largura, dash) {
   return {
     x: [c.data].concat(c.pts.map(function(p) { return ejReu(p.j).d; })),
@@ -3676,20 +3724,16 @@ function ejHoje() {
 function renderEjHoje() {
   var el = document.getElementById(EJ_HOJE), fontes = ejFontes();
   if (!fontes.length) { if (el) el.innerHTML = ''; return; }
-  var H = ejHoje(), traces = [];
-  if (EJ.comp) {
-    fontes.forEach(function(f) {
-      var i = ejSemanaAtras(f, EJ.comp);
-      if (i < 0) return;
-      var c = ejCaminho(f, i);
-      traces.push(ejTraceCaminho(c, (f === 'di' ? 'Curva' : 'Pesquisa') + ' ' + ejSemanas(EJ.comp) +
-        ' antes — ' + cnDataBR(c.data), f === 'di' ? EJ_COR.diAnt : EJ_COR.focusAnt, 1.6, 'dash'));
-    });
-  }
+  var H = ejHoje(), traces = [], comp = ejComparadas();
+  fontes.forEach(function(f) {
+    var c = comp[f];
+    if (c) traces.push(ejTraceCaminho(c, ejNomeFonte(f) + ' — ' + cnDataBR(c.data),
+      f === 'di' ? EJ_COR.diAnt : EJ_COR.focusAnt, 1.6, 'dash'));
+  });
   fontes.forEach(function(f) {
     var c = H[f];
-    traces.push(ejRotular(ejTraceCaminho(c, (f === 'di' ? 'Curva DI' : 'Pesquisa Focus') + ' — ' +
-      cnDataBR(c.data), EJ_COR[f], 3), f, EJ.dlHoje));
+    traces.push(ejRotular(ejTraceCaminho(c, ejNomeFonte(f) + ' — ' + cnDataBR(c.data), EJ_COR[f], 3),
+      f, EJ.dlHoje));
   });
   _PERIOD_LABEL[EJ_HOJE] = cnDataBR;
   var layout = mkTimeseriesLayout(EJ_UNID, 560, traces, {
@@ -3701,8 +3745,25 @@ function renderEjHoje() {
   var nReu = Math.max.apply(null, fontes.map(function(f) { return H[f].pts.length; }));
   describeChart(EJ_HOJE, ejSemNome(traces), [
     nReu + ' reuniões à frente, um degrau na data de cada uma',
-    EJ.comp ? 'tracejadas: ' + ejSemanas(EJ.comp) + ' antes' : '',
+    ejCmpResumo(comp),
   ], EJ_UNID, {freq: 'dia'});
+}
+// Os caminhos de comparação desenhados, por fonte: o da data escolhida, e nenhum quando ela é a
+// mesma da linha de hoje (as duas se sobreporiam).
+function ejComparadas() {
+  var out = {};
+  ejFontes().forEach(function(f) {
+    var e = EJ.cmp[f] ? ejNaData(f, EJ.cmp[f]) : null, S = ejD()[f];
+    if (!e || e.d === S.datas[S.datas.length - 1]) return;
+    out[f] = ejCaminho(f, e.i, e.S);
+  });
+  return out;
+}
+function ejCmpResumo(comp) {
+  var p = [];
+  if (comp.focus) p.push('pesquisa de ' + cnDataBR(comp.focus.data));
+  if (comp.di) p.push('curva de ' + cnDataBR(comp.di.data));
+  return p.length ? 'tracejadas: ' + p.join(' · ') : '';
 }
 // A última reunião do ano que vem que as duas fontes cotam hoje -- o ponto que a prosa usa
 // para dizer onde cada uma põe a Selic no fim do horizonte que se costuma olhar.
@@ -3718,6 +3779,16 @@ function ejFimDoAno(H, ano) {
 function ejValorNoCaminho(c, j) {
   var p = c.pts.filter(function(x) { return x.j === j; })[0];
   return p ? p.v : null;
+}
+// A frase da legenda sobre as tracejadas: a data de cada uma, e de onde vem a escolha.
+function ejCmpLegenda() {
+  var comp = ejComparadas(), fs = Object.keys(comp);
+  if (!fs.length) return '';
+  var p = fs.map(function(f) { return (f === 'di' ? 'a curva do pregão de ' : 'a pesquisa de ') + cnDataBR(comp[f].data); });
+  var ini = ejFontes().map(function(f) { var X = ejD()[f]; return X.diario && X.diario.datas.length ? X.diario.datas[0] : null; })
+                      .filter(Boolean).sort().pop();
+  return 'Tracejadas e mais claras: ' + p.join(' e ') + ' — cada uma com a sua data, escolhida acima' +
+    (ini ? '; desde ' + cnDataBR(ini) + ' qualquer dia, antes disso a última data de cada semana' : '') + '. ';
 }
 function renderEjHojeTextos() {
   var fontes = ejFontes();
@@ -3752,7 +3823,7 @@ function renderEjHojeTextos() {
   var est = F ? F.pts.filter(function(p) { return ejReu(p.j).est; }).length : 0;
   ejPut('ej-cap-hoje',
     'Azul: a pesquisa Focus mais recente. Dourada: a curva DI do pregão mais recente. ' +
-    (EJ.comp ? 'Tracejadas e mais claras: as duas ' + ejSemanas(EJ.comp) + ' antes. ' : '') +
+    ejCmpLegenda() +
     'Cada linha começa na Selic vigente no próprio dia e dá um degrau na data de cada reunião' +
     (est ? '; as que o Banco Central ainda não marcou entram estimadas, na data da mesma reunião do ano anterior' : '') +
     '. O hover põe as duas lado a lado em cada reunião.');
@@ -4114,7 +4185,10 @@ var EJ_OP_OUTRAS = '#9E9E9E';
 var EJ_OP_MIN = 3;
 
 function ejOp() { var X = ejD(); return X.opcoes && X.opcoes.datas && X.opcoes.datas.length ? X.opcoes : null; }
-function ejOpRotulo(b) { return b === 0 ? 'Manutenção' : (b < 0 ? 'Corte de ' : 'Alta de ') + Math.abs(b) + ' pb'; }
+// Uma casa só onde existe: em 2020, com a Selic a 2%, a B3 listou o corte de 12,5 pb.
+function ejOpRotulo(b) {
+  return b === 0 ? 'Manutenção' : (b < 0 ? 'Corte de ' : 'Alta de ') + fmtBR(Math.abs(b), b % 1 ? 1 : 0) + ' pb';
+}
 function ejOpCor(b) { return EJ_OP_COR[String(b)] || EJ_OP_OUTRAS; }
 // As reuniões com opção no pregão mais recente, em ordem.
 function ejOpReunioes() {
@@ -4352,15 +4426,7 @@ function renderExpectativas() {
     EJ.opComp = parseInt(k, 10);
     if (!primeiro) { renderEjOpDist(); renderEjOpTextos(); }
   });
-  setupPillGroup('pg-ej-comp', EJ_COMP.map(function(n) {
-    return {key: String(n), label: n ? ejSemanas(n) + ' antes' : 'Nenhuma'};
-  }), String(EJ.comp), function(k) {
-    EJ.comp = parseInt(k, 10);
-    // A comparacao muda ate onde o grafico vai para tras: a janela de antes cortaria o
-    // caminho de 52 semanas atras pela metade.
-    delete _chartXRange[EJ_HOJE];
-    if (!primeiro) { renderEjHoje(); renderEjHojeTextos(); }
-  });
+  ['focus', 'di'].forEach(function(f) { EJ.cmp[f] = ejCmpPadrao(f); ejSetupCmp(f); });
   setupPillGroup('pg-ej-hz', EJ_HZS.map(function(n) { return {key: String(n), label: ejOrdinal(n)}; }),
     String(EJ.hz), function(k) {
       EJ.hz = parseInt(k, 10);
@@ -4386,6 +4452,55 @@ function renderExpectativas() {
   renderEjHz(); renderEjHzTextos();
   renderEjOpDist(); renderEjOpHist(); renderEjOpTextos();
   renderEjNotas();
+}
+
+// A barra de uma fonte: dia anterior, a data, dia seguinte e "sem comparação". A data digitada
+// encaixa na disponível mais recente até ela, e a caixa passa a mostrar a que de fato foi usada.
+function ejSetupCmp(f) {
+  var box = document.getElementById('ej-cmp-' + f);
+  if (!box) return;
+  box.innerHTML = '';
+  var L = ejDatasComp(f), nome = f === 'di' ? 'curva' : 'pesquisa';
+  var botao = function(txt, title) {
+    var b = document.createElement('button');
+    b.className = 'ej-cmp-btn'; b.type = 'button'; b.textContent = txt; b.title = title;
+    box.appendChild(b); return b;
+  };
+  var ant = botao('‹', 'A ' + nome + ' do dia anterior disponível');
+  var inp = document.createElement('input');
+  inp.type = 'date'; inp.className = 'date-select';
+  inp.title = 'Data com que a ' + nome + ' de hoje é comparada';
+  if (L.length) { inp.min = L[0].d; inp.max = L[L.length - 1].d; }
+  box.appendChild(inp);
+  var seg = botao('›', 'A ' + nome + ' do dia seguinte disponível');
+  var sem = botao('×', 'Sem comparação para a ' + nome);
+  var sync = function() {
+    inp.value = EJ.cmp[f] || '';
+    ant.disabled = !L.length || (EJ.cmp[f] != null && ejVizinha(f, EJ.cmp[f], -1) == null);
+    seg.disabled = EJ.cmp[f] == null || ejVizinha(f, EJ.cmp[f], 1) == null;
+    sem.disabled = EJ.cmp[f] == null;
+  };
+  var aplicar = function(data, pedida) {
+    var e = data ? ejNaData(f, data) : null;
+    EJ.cmp[f] = e ? e.d : null;
+    EJ.cmpNota[f] = e && pedida && e.d !== pedida
+      ? 'Sem ' + (f === 'di' ? 'pregão' : 'pesquisa') + ' em ' + cnDataBR(pedida) + ': a ' + nome +
+        ' comparada é a de ' + cnDataBR(e.d) + '.'
+      : '';
+    ejPut('ej-cmp-nota', ['focus', 'di'].map(function(k) { return EJ.cmpNota[k]; }).filter(Boolean).join(' '));
+    sync();
+    // A comparação muda até onde o gráfico vai para trás: a janela de antes cortaria um caminho
+    // de um ano atrás pela metade.
+    delete _chartXRange[EJ_HOJE];
+    renderEjHoje(); renderEjHojeTextos();
+  };
+  ant.addEventListener('click', function() {
+    aplicar(EJ.cmp[f] == null ? ejCmpPadrao(f) : ejVizinha(f, EJ.cmp[f], -1));
+  });
+  seg.addEventListener('click', function() { if (EJ.cmp[f] != null) aplicar(ejVizinha(f, EJ.cmp[f], 1)); });
+  sem.addEventListener('click', function() { aplicar(null); });
+  inp.addEventListener('change', function() { aplicar(inp.value || null, inp.value || null); });
+  sync();
 }
 
 // ── Troca de aba — render lazy na primeira ativação ──────────────
