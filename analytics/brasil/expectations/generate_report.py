@@ -74,6 +74,11 @@ _TABELAS = ("expc_focus", "expc_focus_periodo")
 # mensal esta no periodo proximo. Anual e trimestral entram inteiros.
 _MENSAL_REF_MIN = "2015-01-01"
 
+# Quantos anos de pesquisa entram TAMBEM em diario (so a mediana do expc_focus_periodo): e o
+# que deixa os graficos compararem por data, inclusive a de ontem, em vez de "N semanas
+# atras". Mesmo alcance da aba Expectativas de Juros do relatorio de Politica Monetaria.
+_DIARIO_ANOS = 2
+
 # Familia de cada indicador, para agrupar os seletores e as linhas do Boletim.
 # Todo indicador que a carga trouxer e que nao estiver aqui cai em "Outros" e
 # aparece no log -- e sinal de que a pesquisa mudou, nao de bug do relatorio.
@@ -234,6 +239,31 @@ def _load_periodo(conn, wk_idx: dict[str, int]) -> tuple[dict, dict]:
     return stores, indice
 
 
+def _load_periodo_diario(conn) -> dict:
+    """expc_focus_periodo nos ultimos _DIARIO_ANOS, TODO dia e so a mediana.
+
+    E o que a comparacao por data le (Boletim, Trajetoria): a grade semanal so tem a ultima
+    pesquisa de cada semana, e com ela nao da para ver o que mudou de um dia para o outro.
+    Mesmo formato do store semanal, sobre uma grade propria (`diario.grade`).
+    """
+    ult = pd.read_sql("SELECT MAX(date) d FROM expc_focus_periodo", conn).iloc[0]["d"]
+    ini = (pd.Timestamp(ult) - pd.DateOffset(years=_DIARIO_ANOS)).strftime("%Y-%m-%d")
+    df = pd.read_sql(
+        "SELECT date, periodicidade, indicador, detalhe, data_referencia, ref_date, mediana "
+        f"FROM expc_focus_periodo WHERE date >= '{ini}'", conn)
+    df["date"] = pd.to_datetime(df["date"])
+    df = df[(df["periodicidade"] != "mensal") | (df["ref_date"].astype(str) >= _MENSAL_REF_MIN)]
+    df["wk"] = df["date"].dt.strftime("%Y-%m-%d")  # a "semana" de _comprime aqui e o dia
+    grade = sorted(df["wk"].unique())
+    idx = {d: i for i, d in enumerate(grade)}
+    df["serie"] = df["indicador"] + "|" + df["detalhe"] + "|" + df["data_referencia"]
+    stores = {per: _comprime(g, ["serie"], {"m": "mediana"}, idx)
+              for per, g in df.groupby("periodicidade")}
+    print(f"  diario         {len(grade)} dias desde {grade[0]}, "
+          f"{sum(len(b['m']) for st in stores.values() for b in st.values())} pontos")
+    return {"grade": grade, "periodo": stores}
+
+
 def _load_movel(conn, wk_idx: dict[str, int]) -> dict:
     """expc_focus (horizonte movel 12m/24m) -> {indicador|horizonte|suav|base: bloco}."""
     df = pd.read_sql(
@@ -310,6 +340,12 @@ def run(output: str = "reports/brasil/Expectations.html") -> None:
         except Exception as exc:
             print(f"  periodo        FALHOU -- {exc}")
             data["periodo"], data["indice"] = {}, {}
+
+        try:
+            data["diario"] = _load_periodo_diario(conn)
+        except Exception as exc:
+            print(f"  diario         FALHOU -- {exc}")
+            data["diario"] = {}
 
         try:
             data["movel"] = _load_movel(conn, wk_idx)

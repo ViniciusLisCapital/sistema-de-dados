@@ -12,7 +12,7 @@ arquivo, poda e codigo de saida.
 ## Por que existe, e por que roda sob pythonw.exe
 
 Pedido do usuario (2026-09-03): rodar de 30 em 30 minutos das 09:30 as 12:00
-**sem abrir janela**. A janela vinha do `.bat`: um arquivo de lote e executado
+**sem abrir janela** (desde 2026-10-30 e um disparo so, as 09:00). A janela vinha do `.bat`: um arquivo de lote e executado
 pelo cmd.exe, que e um binario de console, entao a cada disparo pipocava um
 prompt preto na frente de quem estivesse usando a maquina. `pythonw.exe` e a
 variante do Python compilada para o subsistema GUI -- nao aloca console.
@@ -48,7 +48,7 @@ com a seta em UTF-8 correto (`e2 86 92` no arquivo).
 ## A janela retroativa nao e daqui
 
 Cada script tem a sua, e nenhuma e configurada aqui -- e por isso que disparar
-seis vezes de manha nao e desperdicio nem risco: toda insercao e upsert
+de novo (o botao do calendario, um passe manual) nao e desperdicio nem risco: toda insercao e upsert
 (`ON DUPLICATE KEY UPDATE`), entao reescrever um dia que nao mudou nao produz
 linha nova. Medido em 2026-09-03: um passe que nao encontra dado novo leva ~45s
 e nao regera dashboard nenhum, porque `status.estado()` acha todo mundo em dia.

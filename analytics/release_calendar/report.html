@@ -238,6 +238,25 @@
     .bulk .upd-msg { max-width: 420px; white-space: normal; }
     .bulk .upd-none { display: inline-block; max-width: 380px; white-space: normal; text-align: right; }
 
+    /* ── Cartão das séries diárias ──
+       Fechado, é uma linha: o resumo, os fatos e o botão. A lista das tabelas abre por
+       um link, no mesmo tom da linha aberta de uma divulgação. */
+    .diarias-toggle {
+      font-family: var(--mono); font-size: 10.5px; color: var(--text2); background: none;
+      border: none; padding: 0; cursor: pointer; text-decoration: underline;
+    }
+    .diarias-toggle:hover { color: var(--text); }
+    .diarias-lista {
+      list-style: none; margin: 8px 0 0; padding: 8px 12px; border-radius: 8px;
+      background: rgba(31,40,83,0.025); font-family: var(--mono); font-size: 10.5px; color: var(--text2);
+    }
+    .diarias-lista li { padding: 2px 0; }
+    .diarias-lista .det-tab { color: var(--text); font-weight: 600; margin-right: 10px; }
+    .diarias-lista .det-fato { color: var(--muted); }
+    .diarias-lista .late { color: var(--lis-laranja); font-weight: 600; }
+    .diarias-lista .ok { color: var(--lis-verde); font-weight: 600; }
+    .diarias-lista .err { color: var(--lis-laranja); }
+
     /* ── Texto explicativo: ocupa a largura do bloco e vai JUSTIFICADO ─────────
        Pedido explícito do usuário (2026-08-31), a partir de um print: os textos tinham
        `max-width` em ch e o card é largo, então sobrava um vazio grande à direita de cada
@@ -398,6 +417,19 @@
   <main>
    <div class="view" id="view-releases" role="tabpanel" aria-labelledby="tab-releases">
     <div class="recurring-card" id="recurring-card"></div>
+
+    <!-- Séries diárias (2026-10-30): o que muda a cada pregão e não tem data de
+         divulgação, então não tem linha na lista abaixo. Acima dela porque é o que se
+         atualiza todo dia. -->
+    <div class="table-card" id="diarias-card">
+      <div class="card-head">
+        <h2>Séries diárias</h2>
+        <span class="list-resumo" id="diarias-resumo"></span>
+        <div class="bulk" id="bulk-diarias"></div>
+      </div>
+      <div class="card-hint" id="diarias-hint"></div>
+      <div id="diarias-lista"></div>
+    </div>
 
     <div class="table-card">
       <div class="card-head">
@@ -877,6 +909,9 @@
       // inteiro — por isso renderBulkReleases() passou a contar também o que ficou de
       // fora do recorte, em vez de deixar sumir em silêncio.
       renderBulkReleases();
+      // O cartão das séries diárias lê os mesmos fatos, e é redesenhado junto: todo
+      // caminho que relê /api/status termina aqui.
+      renderDiarias();
       var tbody = document.getElementById('table-body');
       tbody.innerHTML = '';
       if (!entries.length) {
@@ -1304,6 +1339,150 @@
     document.getElementById('bulk-releases').addEventListener('click', function(ev) {
       var btn = ev.target.closest ? ev.target.closest('button') : null;
       if (btn && LIVE.on) rodarPendentes();
+    });
+
+    /* ─────────────────── Séries diárias: o cartão e o botão ─────────────────────
+       Pedido do usuário (2026-10-30): um botão para as séries diárias. Elas não têm
+       data de divulgação — mudam a cada pregão —, então não têm linha na lista e não
+       havia botão nenhum que as alcançasse pela página.
+
+       A lista é REPORT_DATA.diarias, a mesma `continuas()` que a tarefa agendada roda.
+       O botão manda `{continuous: true}` para o mesmo /api/run, e é o servidor que
+       resolve que tabelas são essas — a página nunca manda nome de tabela. Só busca o
+       dado: regerar os dashboards continua sendo a outra aba, como em todo botão daqui.
+
+       Fatos, não veredito, como nas linhas: quando a busca MAIS ANTIGA entre as tabelas
+       aconteceu e quantas trouxeram dado novo hoje. Laranja quando alguma não foi
+       buscada hoje — e o botão existe em todo estado, laranja ou não. */
+    var DIARIAS = { rodando: false, aberto: false, msg: null };
+
+    function diariasAlcancaveis() {
+      return (REPORT_DATA.diarias || []).filter(function(t) {
+        var f = LIVE.tabelas && LIVE.tabelas[t];
+        return !(f && f.sem_script);
+      });
+    }
+
+    function fatosDiarias() {
+      if (!LIVE.on || !LIVE.tabelas) return null;
+      var hoje = (LIVE.today || REPORT_DATA.reference_date) + 'T00:00';
+      var okEm = null, semReg = [], novos = 0, falhas = [];
+      var alc = diariasAlcancaveis();
+      alc.forEach(function(t) {
+        var f = LIVE.tabelas[t] || {};
+        if (!f.ok_em) semReg.push(t);
+        else if (okEm === null || f.ok_em < okEm) okEm = f.ok_em;
+        if (f.mudou_em && f.mudou_em >= hoje) novos++;
+        if (f.ok === false) falhas.push(t);
+      });
+      return { okEm: okEm, semReg: semReg, novos: novos, total: alc.length, falhas: falhas,
+               late: okEm !== null && okEm < hoje };
+    }
+
+    function linhaDiaria(t) {
+      var x = LIVE.tabelas && LIVE.tabelas[t];
+      if (!LIVE.tabelas) return '<li><span class="det-tab">' + esc(t) + '</span></li>';
+      var hoje = (LIVE.today || REPORT_DATA.reference_date) + 'T00:00';
+      var partes = [];
+      if (!x || !x.existe) partes.push('<span class="err">não existe no banco</span>');
+      else {
+        if (x.max) partes.push('dado mais recente ' + fmtDado(x.max));
+        if (x.sem_script) partes.push('<span class="err">sem script de atualização</span>');
+        else if (!x.ok_em) partes.push('sem registro de atualização');
+        else {
+          partes.push(x.ok_em < hoje
+            ? '<span class="late">buscada ' + fmtCurto(x.ok_em) + ', antes de hoje</span>'
+            : 'buscada ' + fmtCurto(x.ok_em));
+          if (x.mudou_em && x.mudou_em >= hoje) partes.push('<span class="ok">com dado novo hoje</span>');
+        }
+        if (x.ok === false)
+          partes.push('<span class="err">falhou ' + fmtCurto(x.tentativa_em) + ': ' + esc(x.erro || '') + '</span>');
+      }
+      return '<li><span class="det-tab">' + esc(t) + '</span><span class="det-fato">' +
+             partes.join(' · ') + '</span></li>';
+    }
+
+    function renderDiarias() {
+      var lista = REPORT_DATA.diarias || [];
+      var card = document.getElementById('diarias-card');
+      if (!lista.length) { card.style.display = 'none'; return; }
+      document.getElementById('diarias-resumo').innerHTML = '<strong>' + lista.length + '</strong> tabelas';
+      document.getElementById('diarias-hint').innerHTML =
+        'Cotações, curvas e posições que mudam a cada pregão e não têm data de divulgação, ' +
+        'por isso não aparecem na lista abaixo. Uma tarefa agendada do Windows as busca ' +
+        'sozinha uma vez por dia, às 09:00. O botão faz a mesma ' +
+        'busca agora, sem esperar o próximo horário; leva de 3 a 5 minutos.';
+
+      var f = fatosDiarias();
+      var fatos = '';
+      if (f) {
+        if (f.okEm === null) {
+          fatos = '<span class="upd-fato">sem registro de atualização</span>';
+        } else if (f.late) {
+          fatos = '<span class="upd-fato late">não atualizadas hoje · última ' + fmtCurto(f.okEm) + '</span>';
+        } else {
+          fatos = '<span class="upd-fato">atualizadas ' + fmtCurto(f.okEm) + ' · ' +
+                  (f.novos ? f.novos + ' de ' + f.total + ' com dado novo hoje' : 'nenhuma com dado novo hoje') +
+                  '</span>';
+        }
+        if (f.okEm !== null && f.semReg.length)
+          fatos += '<span class="upd-fato">' + f.semReg.length + ' sem registro de atualização</span>';
+        if (f.falhas.length)
+          fatos += '<span class="upd-fato err">última tentativa falhou: ' + esc(f.falhas.join(', ')) + '</span>';
+      }
+      var cls = f && (f.late || f.okEm === null) ? 'late' : 'neutral';
+      var rotulo = DIARIAS.rodando ? 'rodando...' : (LIVE.on ? 'Atualizar diárias' : 'Copiar cmd');
+      var titulo = LIVE.on
+        ? 'Busca agora as ' + lista.length + ' séries diárias'
+        : 'Copia o comando (abra via serve.py para rodar daqui). Na linha de comando ele também regera os dashboards que leem estas tabelas.';
+      var msg = DIARIAS.msg ? '<span class="upd-msg' + (DIARIAS.msg.erro ? ' err' : '') + '">' +
+                              esc(DIARIAS.msg.texto) + '</span>' : '';
+      document.getElementById('bulk-diarias').innerHTML = fatos +
+        '<button class="upd-btn ' + cls + '" data-acao="rodar" title="' + esc(titulo) + '"' +
+        (DIARIAS.rodando ? ' disabled' : '') + '>' + rotulo + '</button>' + msg;
+
+      document.getElementById('diarias-lista').innerHTML =
+        '<button class="diarias-toggle" data-acao="toggle" type="button">' +
+        (DIARIAS.aberto ? '− esconder as tabelas' : '+ ver as ' + lista.length + ' tabelas') + '</button>' +
+        (DIARIAS.aberto ? '<ul class="diarias-lista">' + lista.map(linhaDiaria).join('') + '</ul>' : '');
+    }
+
+    function rodarDiarias() {
+      if (DIARIAS.rodando) return Promise.resolve();
+      DIARIAS.rodando = true;
+      DIARIAS.msg = { texto: 'buscando ' + (REPORT_DATA.diarias || []).length + ' tabelas...', erro: false };
+      renderDiarias();
+      return fetch('/api/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ continuous: true })
+      }).then(function(r) { return r.json(); }).then(function(res) {
+        if (res.erro) throw new Error(res.erro);
+        var partes = [(res.n_ok || 0) + ' script(s) OK'];
+        if (res.n_erro) partes.push(res.n_erro + ' falhou: ' +
+          (res.resultados || []).filter(function(r) { return !r.ok; })
+            .map(function(r) { return r.label; }).join(', '));
+        if (res.sem_script && res.sem_script.length) partes.push('sem script: ' + res.sem_script.join(', '));
+        DIARIAS.msg = { texto: partes.join(' · '), erro: !!res.n_erro };
+      }).catch(function(err) {
+        DIARIAS.msg = { texto: String(err.message || err), erro: true };
+      }).then(function() {
+        DIARIAS.rodando = false;
+        return refreshStatus().then(function() { renderTable(); });
+      });
+    }
+
+    document.getElementById('diarias-card').addEventListener('click', function(ev) {
+      var btn = ev.target.closest ? ev.target.closest('[data-acao]') : null;
+      if (!btn) return;
+      var acao = btn.dataset ? btn.dataset.acao : btn.getAttribute('data-acao');
+      if (acao === 'toggle') { DIARIAS.aberto = !DIARIAS.aberto; renderDiarias(); return; }
+      if (acao !== 'rodar' || DIARIAS.rodando) return;
+      if (LIVE.on) { rodarDiarias(); return; }
+      var cmd = 'uv run python jobs/update_db.py --continuous';
+      copiarTexto(cmd,
+        function() { DIARIAS.msg = { texto: 'comando copiado', erro: false }; renderDiarias(); },
+        function(c) { DIARIAS.msg = { texto: c, erro: false }; renderDiarias(); });
     });
 
     document.getElementById('table-body').addEventListener('click', function(ev) {

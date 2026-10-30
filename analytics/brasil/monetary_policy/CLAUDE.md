@@ -714,8 +714,20 @@ formato da série semanal, com **todo dia dos últimos `DIARIO_ANOS` = 2 anos** 
 comparação lê a semanal. Três regras: a data digitada **encaixa na disponível mais recente até ela**,
 a caixa passa a mostrar a usada e uma nota diz a troca (sábado → sexta); comparar com a própria data
 de hoje não desenha nada; e o harness exige que, nas datas que as duas séries têm, a diária e a
-semanal deem o mesmo caminho (105 por fonte hoje). O gráfico de opções continua com "N semanas
-antes" — o pedido foi sobre este.
+semanal deem o mesmo caminho (105 por fonte hoje). **No dia seguinte a regra virou geral** (*"essa
+mudança deve ser aplicada em todos os gráficos com esse padrão"*): o gráfico de opções de Copom
+passou a comparar com um **pregão** escolhido (default o anterior), e o controle saiu daqui para
+`analytics/report_structure/date_compare.{js,css}`, que este relatório e o de Expectativas inlinam.
+
+**A aba tem sub-abas** (2026-10-30, pedido do usuário: *"Nesse relatório, tem como fazer sub
+tabs?"*, e ele escolheu esta aba só): *Caminho de hoje · Uma reunião · Ao longo do tempo · Opções de
+Copom · Como ler*, uma pill por `<section id="ej-sub-KEY" class="subtab-panel">`. A lista mora em
+`EJ_SUBS` (os botões são montados em JS, não no HTML, para ter um lugar só) e cada sub-aba desenha os
+gráficos dela **na primeira vez que abre** (`ejAtivarSub()`), pela mesma razão do render preguiçoso
+das abas: num div escondido o Plotly desenha com largura zero. Os textos e a tabela saem todos na
+abertura da aba, porque não dependem de div visível. O teste exige que toda `<section>` da aba seja
+sub-aba — uma seção nova fora delas ficaria visível em todas. Conferido no Chrome: 1374 px nos
+gráficos de cada sub-aba aberta depois.
 
 **A tabela abaixo do caminho de hoje** (2026-10-27, pedido do usuário, formato aprovado num
 exemplo em .md antes): uma linha por reunião ainda à frente, e para a curva e para a pesquisa a
@@ -747,7 +759,51 @@ passou de 3% em algum pregão, o resto somado numa linha para fechar 100) — e 
   próprio dia da decisão ainda cota a reunião (o anúncio sai depois do fechamento), o seguinte não.
 
 O gráfico de barras é o único da aba que não passa por `_reactPreserveX`: o X são decisões, não
-datas. Coberto por `tests/test_opcoes_copom.py` (layout do arquivo com linhas reais, conta do
+datas.
+
+**Negócios e posição em aberto** (2026-10-30, pedido do usuário: *"seria interessante uma tabela
+abaixo ou algo assim para vermos esses dados"*, e no mesmo dia *"estender para todo o histórico"* e
+*"um gráfico, como o de preço, com histórico de volume, por contrato"*). Tudo segue a reunião do
+seletor, desde 2020-05 (`pm_copom_opcoes_negocios`):
+
+- **Gráfico de volume** (`renderEjOpVol`), embaixo do histórico de probabilidade, com o MESMO
+  agrupamento e as mesmas cores dele (decisão com linha própria lá tem barra própria aqui; o resto,
+  "Outras decisões, somadas"). Pills: contratos, volume (R$ mi), posição em aberto (barras
+  empilhadas: a pilha é o total da reunião) e variação da posição (fim − início, barras
+  `relative`, sem "fatia do dia" porque soma sinais trocados). O hover dá a fatia de cada decisão.
+- **Decisão a decisão**, no pregão das barras. A posição em aberto **nunca fica em branco**
+  (pedido do usuário): com a do fim do pregão, ela e a variação no pregão; sem ela (o pregão mais
+  recente, até o arquivo seguinte sair), a do início — que é a do fim do anterior — e a variação
+  naquele pregão (abertura de hoje − abertura de ontem). O cabeçalho nomeia o pregão de referência.
+- **Pregão a pregão**, a vida inteira da reunião, com rolagem e cabeçalho fixo. **Clicar na data
+  abre as decisões daquele pregão** (`EJ.opDiaAb`, por reunião), cada uma com a fatia no total do
+  dia. Formatação condicional por barra de fundo (`ejBarra`): dourada no dia, contra o maior pregão
+  da reunião; na cor da decisão, a fatia dela.
+- **Reuniões do Copom no caminho** (`ejMarcasCopom`): linha pontilhada e "281ª · −25" no topo, no
+  histórico de probabilidade e no de volume. Passadas sempre (vazias quando não há), pela regra do
+  `Plotly.react` que herda shapes.
+
+Payload compacto: por reunião `{d: pregões, r: [índice em d, decisão, negócios, contratos, volume,
+posição início, posição fim, último]}` — a data repetida em cada linha era metade do peso. Contratos
+e posição vão **em contratos de R$ 100**: até 2025-05-23 o contrato pagava R$ 10.000 e a B3 o
+trocou de uma vez (ver `pm_copom_opcoes_negocios.py`), então o payload multiplica os de antes por
+100 e marca `troca`; sem isso a série salta 100 vezes e a nota (`ejOpNotaTamanho`) não teria o que
+explicar. Volume em R$ não muda. O relatório passou de 1,9 para 2,6 MB com a história inteira.
+Verde na variação da posição é aumento (`ej-oi-up`), laranja é queda — não as cores de alta/corte
+da Selic.
+`fmtMil()` é o formatador com ponto de milhar (o `fmtBR` do relatório não tem).
+
+**O seletor de reunião alcança as decididas** (2026-10-30, pedido do usuário: *"coloque para que eu
+possa selecionar a reunião (inclusive que já passaram) para ver como se desenrolou a
+precificação"*). Era um grupo de pills com as ~3 reuniões que o pregão de hoje cota; virou um
+`<select>` com **todas** as 54 que já tiveram opção (desde mai/2020), em dois `optgroup` — *A
+decidir*, da mais próxima, e *Já decididas*, da mais recente, com o passo decidido no rótulo. Numa
+decidida: as barras são as do **último pregão dela** (`ejOpPonta()`, o do dia da decisão, véspera do
+anúncio), a comparação anda só dentro dos pregões dela (`ejOpDatasReu()`, e volta ao anterior à
+ponta a cada troca de reunião), a decisão tomada ganha contorno dourado e o rótulo "decidido" (e
+entra no gráfico mesmo que o mercado não lhe desse probabilidade visível), e a legenda diz quanto o
+mercado dava a ela. O passo decidido sai do calendário (`ejOpPassoDecidido()`, Selic da reunião
+menos a da anterior). Coberto por §38 do teste JS e conferido no Chrome. Coberto por `tests/test_opcoes_copom.py` (layout do arquivo com linhas reais, conta do
 payload) e §38 de `tests/test_monetary_policy_js.js` (probabilidade somando 100, Selic esperada
 refeita, nenhum pregão depois da reunião, prosa refeita).
 
@@ -878,10 +934,6 @@ estao em `.claude/rules/lis-dashboards.md`, secao "Every chart carries its own h
   (medido com cProfile; a função sozinha, 53 s). A geração inteira foi de 73 a 111 s no mesmo dia.
   Não vem das mudanças daquele dia (`todas_reunioes()` leva 0,4 s); vale vetorizar se a geração
   passar a incomodar.
-- **Aba Expectativas de Juros — volume e posição em aberto das opções de Copom.** Estão no boletim
-  de preços (arquivo `PR`), mas o cache de `b3_precos` guarda só os `PRODUTOS` de dólar, juros e
-  bolsa: pôr o `CPM` lá pede rebaixar ~1.600 boletins de ~127 MB. Valeria para mostrar quanto
-  dinheiro há atrás de cada probabilidade.
 - **Aba Expectativas de Juros — o resto do relatório de Expectativas que é política monetária.**
   Candidatos: a ancoragem das expectativas de inflação (Focus para o ano seguinte e o outro contra
   a meta, a leitura "t+1 rolando" que está pendente lá) e o juro real ex-ante em série (hoje só

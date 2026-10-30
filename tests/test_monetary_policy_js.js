@@ -295,8 +295,8 @@ const EXPORTS = ['fmtBR', 'cnDataBR', 'fmtTrunc', 'fmtDate', 'lastValid', 'growt
                  'renderCnSelicTextos',
                  'renderExpectativas', 'renderEjHoje', 'renderEjHojeTextos', 'renderEjReuniao',
                  'renderEjReuniaoTextos', 'renderEjHz', 'renderEjHzTextos', 'EJ',
-                 'ejDatasComp', 'ejNaData', 'ejVizinha', 'ejCmpPadrao', 'ejComparadas', 'ejSegunda', 'ejGap', 'ejTabelaLinhas', 'renderEjTabela', 'ejNumero',
-                 'ejOp', 'ejOpReunioes', 'ejOpDist', 'ejOpHist', 'ejOpPregaoAtras', 'renderEjOpDist',
+                 'ejDatasComp', 'ejNaData', 'ejComparadas', 'dcNaData', 'dcVizinha', 'dcPadrao', 'ejSegunda', 'ejGap', 'ejTabelaLinhas', 'renderEjTabela', 'ejNumero',
+                 'ejOp', 'ejOpNeg', 'ejOpNegPregao', 'ejOpNegDias', 'renderEjOpVol', 'renderEjOpNeg', 'ejMarcasCopom', 'EJ_OP_VOL_MED', 'ejD', 'fmtMil', 'ejOpReunioes', 'ejOpTodas', 'ejOpPonta', 'ejOpDecidida', 'ejOpDatasReu', 'ejOpPassoDecidido', 'ejOpDist', 'ejOpHist', 'ejOpPregaoCmp', 'renderEjOpDist',
                  'renderEjOpHist', 'renderEjOpTextos', 'EJ_OP_COR', 'EJ_OP_MIN', 'ejSerieReuniao'];
 let MP;
 try {
@@ -2026,6 +2026,34 @@ console.log('\n36. Aba Expectativas de Juros: a pesquisa e a curva, reuniao a re
   ok(!_e, 'renderExpectativas executa', _e && String(_e.stack || _e));
   const ult = (id) => chamadas.filter((c) => c.tipo === 'react' && c.divId === id).pop();
 
+  // 0. Sub-abas (2026-10-30): abre em "Caminho de hoje", e cada uma desenha os graficos dela
+  // na primeira vez que abre -- num div escondido o Plotly desenharia com largura zero.
+  const subNav = doc.getElementById('ej-subtabs'), subBtn = (k) => subNav.children.find((b) => b.dataset.sub === k);
+  ok(subNav.children.map((b) => b.dataset.sub).join(',') === 'hoje,reuniao,tempo,opcoes,notas',
+     'cinco sub-abas, na ordem da aba', subNav.children.map((b) => b.textContent).join(' | '));
+  ok(subBtn('hoje').classList._set.active && doc.getElementById('ej-sub-hoje').classList._set.active &&
+     !doc.getElementById('ej-sub-reuniao').classList._set.active, 'abre na sub-aba do caminho de hoje');
+  ok(!!ult('chart-ej-hoje') && !ult('chart-ej-reuniao') && !ult('chart-ej-hz') && !ult('chart-ej-op-dist'),
+     'so os graficos da sub-aba aberta sao desenhados');
+  ok(doc._els['ej-lead-reu'].innerHTML.length > 50 && doc._els['ej-lead-op'].innerHTML.length > 50,
+     'os textos das outras sub-abas ja saem escritos');
+  subBtn('reuniao').fire('click');
+  const nReu = chamadas.filter((c) => c.tipo === 'react' && c.divId === 'chart-ej-reuniao').length;
+  ok(nReu === 1 && doc.getElementById('ej-sub-reuniao').classList._set.active &&
+     !doc.getElementById('ej-sub-hoje').classList._set.active && !subBtn('hoje').classList._set.active,
+     'clicar abre a sub-aba, esconde a anterior e desenha os graficos dela');
+  subBtn('hoje').fire('click'); subBtn('reuniao').fire('click');
+  ok(chamadas.filter((c) => c.tipo === 'react' && c.divId === 'chart-ej-reuniao').length === nReu,
+     'voltar a uma sub-aba ja aberta nao redesenha');
+  ['tempo', 'opcoes', 'notas', 'hoje'].forEach((k) => subBtn(k).fire('click'));
+  ok(!!ult('chart-ej-hz') && !!ult('chart-ej-op-dist') && !!ult('chart-ej-op-hist'), 'abertas todas, todos desenhados');
+  {
+    const ini = RAW.indexOf('id="tab-expectativas"'), fimA = RAW.indexOf('</main>', ini);
+    const fat = RAW.slice(ini, fimA);
+    ok((fat.match(/<section class="subtab-panel/g) || []).length === 5 && (fat.match(/<section>/g) || []).length === 0,
+       'toda secao da aba e uma sub-aba (nenhuma fica fora, sempre visivel)');
+  }
+
   // 1. O caminho de hoje, refeito do payload.
   const cam = (f, i) => {
     const S = X[f], campo = f === 'di' ? 'v' : 'm', pts = [];
@@ -2335,8 +2363,11 @@ console.log('\n36. Aba Expectativas de Juros: a pesquisa e a curva, reuniao a re
      MP.ejDatasComp('focus').map((e) => e.d).join(','));
   ok(MP.ejNaData('focus', '2027-01-13').d === '2027-01-12' && MP.ejNaData('focus', '2027-01-10').d === '2027-01-08' &&
      MP.ejNaData('focus', '2026-12-01').d === '2027-01-01', 'sintetico: data sem dado encaixa na anterior; antes do comeco, a primeira');
-  ok(MP.ejVizinha('focus', '2027-01-11', -1) === '2027-01-08' && MP.ejVizinha('focus', '2027-01-15', 1) === null &&
-     MP.ejCmpPadrao('focus') === '2027-01-14', 'sintetico: o vizinho atravessa a troca de serie, e o default e o dia anterior');
+  const Ls = MP.ejDatasComp('focus').map((e) => e.d);
+  ok(MP.dcVizinha(Ls, '2027-01-11', -1) === '2027-01-08' && MP.dcVizinha(Ls, '2027-01-15', 1) === null &&
+     MP.dcVizinha(Ls, '2027-01-13', 1) === '2027-01-14' && MP.dcPadrao(Ls) === '2027-01-14',
+     'sintetico: o vizinho atravessa a troca de serie, parte da data usada, e o default e o dia anterior');
+  ok(MP.dcNaData([], '2027-01-01') === -1 && MP.dcNaData(Ls, null) === -1, 'sintetico: sem datas ou sem data, nada');
   MP.D.expectativas = Xreal;
 
   // Sintetico: cada fonte degrada sozinha.
@@ -2864,10 +2895,11 @@ console.log('\n38. Aba Expectativas de Juros: as opcoes de Copom');
       ok(dist.filter((x) => x.p >= 0.5).length === tH.x.length, 'entram as decisoes com probabilidade visivel, e so elas');
       ok(tH.marker.color.every((c, k) => c === (MP.EJ_OP_COR[String(bDe(tH.x[k]))] || '#9E9E9E')),
          'cor pela decisao, a mesma em qualquer reuniao');
-      const iC = MP.ejOpPregaoAtras(4);
-      ok(rD.traces.length === 2 && rD.traces[0].name.indexOf(O.datas[iC].split('-').reverse().join('/')) >= 0,
-         'com a comparacao default, as barras de 4 semanas antes ao lado, com a data', rD.traces[0] && rD.traces[0].name);
-      ok(Date.parse(O.datas[iH]) - Date.parse(O.datas[iC]) >= 28 * 86400000, 'e "4 semanas antes" e por data');
+      const iC = MP.ejOpPregaoCmp();
+      ok(iC === O.datas.length - 2 && MP.EJ.opCmp === O.datas[O.datas.length - 2],
+         'a comparacao default e o pregao anterior ao mais recente', MP.EJ.opCmp);
+      ok(rD.traces.length === 2 && rD.traces[0].name === 'Pregão de ' + O.datas[iC].split('-').reverse().join('/'),
+         'as barras da comparacao ao lado, com a data do pregao', rD.traces[0] && rD.traces[0].name);
       ok(rD.layout.xaxis.type === 'category', 'o X sao as decisoes, eixo de categoria');
     }
     const rHi = ultOp('chart-ej-op-hist');
@@ -2887,18 +2919,201 @@ console.log('\n38. Aba Expectativas de Juros: as opcoes de Copom');
          'linha propria so para a decisao que passou de ' + MP.EJ_OP_MIN + '% em algum pregao');
       ok(T[0].x[0] === O.datas[O.por_reuniao[String(js[0])].i0], 'o historico comeca no primeiro pregao com opcao da reuniao');
     }
-    // A segunda reuniao pela pill: redesenha.
+    // O seletor de reuniao (2026-10-30): todas as que ja tiveram opcao, as decididas inclusive.
+    const todas = MP.ejOpTodas();
+    ok(todas.length === Object.keys(O.por_reuniao).length && new Set(todas).size === todas.length,
+       'o seletor lista toda reuniao com opcao no payload, uma vez cada', String(todas.length));
+    const nFut = todas.filter((j) => !MP.ejOpDecidida(j)).length;
+    ok(todas.slice(0, nFut).every((j, k) => k === 0 || j > todas[k - 1]) &&
+       todas.slice(nFut).every((j, k) => k === 0 || j < todas[nFut + k - 1]) &&
+       todas.slice(nFut).every((j) => MP.ejOpDecidida(j)),
+       'as a decidir primeiro (da mais proxima), depois as decididas (da mais recente)');
+    ok(JSON.stringify(todas.slice(0, nFut)) === JSON.stringify(js), 'as a decidir sao as que o pregao de hoje cota');
+    const sel = doc.getElementById('sel-ej-op-reu');
+    const grupos = sel.children.filter((c) => c.tag === 'optgroup');
+    ok(grupos.length === 2 && grupos[0].label === 'A decidir' && grupos[1].label === 'Já decididas' &&
+       grupos[0].children.length === nFut && grupos[1].children.length === todas.length - nFut,
+       'o <select> separa a decidir e ja decididas', grupos.map((g) => g.label + ':' + g.children.length).join(' '));
     if (js.length > 1) {
-      const pg = doc.getElementById('pg-ej-op-reu');
-      pg.children[1].fire('click');
-      ok(MP.EJ.opReu === js[1] && ultOp('chart-ej-op-dist') !== rD, 'a pill troca a reuniao e redesenha');
-      pg.children[0].fire('click');
+      sel.value = String(js[1]); sel.fire('change');
+      ok(MP.EJ.opReu === js[1] && ultOp('chart-ej-op-dist') !== rD, 'o seletor troca a reuniao e redesenha');
     }
-    // "Nenhuma" tira as barras de comparacao.
-    const pc = doc.getElementById('pg-ej-op-comp');
-    pc.children.find((b) => b.textContent === 'Nenhuma').fire('click');
-    ok(ultOp('chart-ej-op-dist').traces.length === 1, '"Nenhuma" deixa so as barras de hoje');
-    pc.children.find((b) => b.textContent.indexOf('4 semanas') === 0).fire('click');
+    // Uma reuniao ja decidida: a ponta e o ultimo pregao dela, a comparacao anda dentro dos
+    // pregoes dela, e a decisao tomada fica marcada.
+    const jP = todas[nFut];
+    if (jP != null) {
+      sel.value = String(jP); sel.fire('change');
+      const iP = MP.ejOpPonta(jP), dP = MP.ejOpPassoDecidido(jP), dRe = MP.ejOpDatasReu(jP);
+      ok(iP < O.datas.length - 1 && O.datas[iP] <= R[jP].d && dRe[dRe.length - 1] === O.datas[iP],
+         'decidida: a ponta e o ultimo pregao com opcao, ate o dia da decisao', O.datas[iP] + ' / ' + R[jP].d);
+      ok(dP != null && Math.abs(dP) % 25 === 0 || dP === 0, 'a decisao tomada sai do calendario, em p.b.', String(dP));
+      const rP = ultOp('chart-ej-op-dist'), tP = rP.traces[rP.traces.length - 1];
+      ok(tP.name === 'Pregão de ' + O.datas[iP].split('-').reverse().join('/'), 'as barras sao as do ultimo pregao dela', tP.name);
+      const kD = tP.x.indexOf(rot(dP));
+      ok(kD >= 0 && tP.marker.line.width[kD] === 3 && tP.marker.line.width.filter((w) => w).length === 1 &&
+         rP.layout.annotations.length === 1 && rP.layout.annotations[0].x === rot(dP),
+         'a decisao tomada tem contorno e o rotulo "decidido", e so ela');
+      ok(MP.EJ.opCmp === dRe[dRe.length - 2] && rP.traces.length === 2 && rP.traces[0].name.indexOf(dRe[dRe.length - 2].split('-').reverse().join('/')) >= 0,
+         'trocar a reuniao volta a comparacao ao pregao anterior a ponta DELA', MP.EJ.opCmp);
+      const pcP = doc.getElementById('ej-op-cmp').children.find((c) => c.tag === 'input');
+      ok(pcP.max === dRe[dRe.length - 1] && pcP.min === dRe[0], 'a caixa de data vai so ate os pregoes dela');
+      const hP = ultOp('chart-ej-op-hist');
+      ok(hP.traces[0].x[hP.traces[0].x.length - 1] === O.datas[iP], 'o historico termina no ultimo pregao antes do anuncio');
+      ok(doc._els['ej-cap-op'].innerHTML.indexOf('já foi decidida') >= 0, 'a legenda diz a decisao tomada');
+    }
+    sel.value = String(js[0]); sel.fire('change');
+    ok(MP.EJ.opReu === js[0] && MP.EJ.opCmp === O.datas[O.datas.length - 2], 'de volta a proxima reuniao');
+    // Negocios e posicao em aberto (2026-10-30): a tabela segue a reuniao e o pregao das barras.
+    const NG = O.negocios;
+    ok(NG && NG.desde && NG.desde >= '2020-05-01', 'o payload traz os negocios', NG && NG.desde);
+    // A B3 trocou o contrato de R$ 10.000 por R$ 100 em 2025-05-26; o payload ja vem em contratos
+    // de R$ 100, entao toda contagem de antes da troca e multipla de 100.
+    if (NG.desde < '2025-05-26') {
+      ok(NG.troca === '2025-05-26', 'o payload marca a troca de tamanho do contrato', NG.troca);
+      const antes = Object.keys(NG.por_reuniao).reduce((a2, j) => {
+        const R = NG.por_reuniao[j];
+        return a2.concat(R.r.filter((r) => R.d[r[0]] < NG.troca));
+      }, []);
+      ok(antes.length > 100 && antes.every((r) => r[3] % 100 === 0 && r[5] % 100 === 0 && (r[6] == null || r[6] % 100 === 0)),
+         'antes da troca, contratos e posicoes vem convertidos (x100)', String(antes.length));
+      const jT = Object.keys(NG.por_reuniao).find((j) => { const d = NG.por_reuniao[j].d; return d[0] < NG.troca && d[d.length - 1] >= NG.troca; });
+      ok(jT != null, 'ha reuniao que atravessa a troca', jT);
+      const L = MP.ejOpNeg(Number(jT)), oiDia = (d) => L.filter((r) => r[0] === d).reduce((a2, r) => a2 + r[5], 0);
+      const dA = L.filter((r) => r[0] < NG.troca).pop()[0], dB = L.find((r) => r[0] >= NG.troca)[0];
+      ok(oiDia(dB) / oiDia(dA) > 0.5 && oiDia(dB) / oiDia(dA) < 2, 'a posicao nao salta 100 vezes na troca', oiDia(dA) + ' -> ' + oiDia(dB));
+    }
+    // Formato compacto: {d: pregoes, r: [indice em d, ...]}; ejOpNeg devolve a data no lugar do indice.
+    const linhasNG = Object.keys(NG.por_reuniao).reduce((a2, j) => {
+      const R = NG.por_reuniao[j];
+      return a2.concat(R.r.map((r) => [j, R.d[r[0]]].concat(r.slice(1))));
+    }, []);
+    ok(linhasNG.length > 50 && linhasNG.every((r) => O.por_reuniao[r[0]] && r[1] && r[4] >= 0 && r[5] >= 0 && r[6] >= 0),
+       'toda linha de negocio cai numa reuniao com probabilidade, num pregao, sem numero negativo', String(linhasNG.length));
+    ok(Object.keys(NG.por_reuniao).every((j) => { const d = NG.por_reuniao[j].d; return d.every((x, k) => k === 0 || x > d[k - 1]); }),
+       'os pregoes de cada reuniao vem em ordem e sem repeticao');
+    const LNG = MP.ejOpNeg(js[0]), dNG = MP.ejOpNegPregao(js[0]);
+    ok(LNG.length === NG.por_reuniao[String(js[0])].r.length && LNG.every((r) => /^\d{4}-\d\d-\d\d$/.test(r[0])),
+       'ejOpNeg devolve uma linha por registro, com a data do pregao');
+    ok(dNG === O.datas[O.datas.length - 1], 'a tabela abre no pregao das barras', dNG);
+    const tabNG = doc._els['ej-op-neg'].innerHTML, doDia = LNG.filter((r) => r[0] === dNG);
+    const nLinhas = (tabNG.match(/<tr>/g) || []).length - 1;
+    ok(nLinhas === doDia.length, 'uma linha por decisao com negocio ou posicao no pregao', nLinhas + ' / ' + doDia.length);
+    const totQ = doDia.reduce((a2, r) => a2 + r[3], 0);
+    ok(tabNG.indexOf('Total da reunião') >= 0 && tabNG.indexOf(MP.fmtMil(totQ)) >= 0, 'o total soma os contratos das linhas', MP.fmtMil(totQ));
+    const iN = O.datas.indexOf(dNG), dD = MP.ejOpDist(js[0], iN), mais = dD.slice().sort((x, y) => y.p - x.p)[0];
+    ok(tabNG.indexOf(mais.p.toFixed(1).replace('.', ',') + '%') >= 0, 'a probabilidade e a das barras, do mesmo pregao');
+    ok(MP.fmtMil(1671868) === '1.671.868' && MP.fmtMil(-9414) === '-9.414' && MP.fmtMil(0) === '0', 'milhar com ponto');
+    // A posicao em aberto nunca sai em branco: sem a do fim do pregao, a do fim do anterior e a
+    // variacao naquele pregao (abertura de hoje menos a de ontem).
+    const DIAS = MP.ejOpNegDias(js[0]), kU = DIAS.length - 1, U = DIAS[kU];
+    ok(DIAS.length === new Set(LNG.map((r) => r[0])).size && DIAS.every((x, k) => k === 0 || x.d > DIAS[k - 1].d),
+       'ejOpNegDias: um registro por pregao, em ordem');
+    if (!U.temFim && kU > 0) {
+      const A = DIAS[kU - 1], ddmm = A.d.slice(8, 10) + '/' + A.d.slice(5, 7);
+      ok(tabNG.indexOf('Posição em aberto no fim de ' + ddmm) >= 0 && tabNG.indexOf('Variação em ' + ddmm) >= 0,
+         'sem a posicao do fim, o cabecalho nomeia o pregao anterior', ddmm);
+      ok(tabNG.indexOf(MP.fmtMil(U.oi0)) >= 0, 'a posicao mostrada e a do inicio do pregao (= fim do anterior)', MP.fmtMil(U.oi0));
+      const dTot = U.oi0 - A.oi0;
+      ok(tabNG.indexOf((dTot > 0 ? '+' : '') + MP.fmtMil(dTot)) >= 0, 'a variacao total e abertura de hoje menos a de ontem', String(dTot));
+      ok(doc._els['ej-op-neg-nota'].innerHTML.indexOf('ainda não saiu') >= 0, 'a nota explica de que pregao e a posicao');
+    }
+    const celsPos = tabNG.split('<tr').slice(2).map((tr) => tr.split('<td').slice(7, 8)[0] || '');
+    ok(celsPos.length > 0 && celsPos.every((c) => c.indexOf('>—<') < 0), 'nenhuma celula de posicao em branco');
+    // Pregao a pregao: a vida inteira da reuniao, e clicar na data abre as decisoes com a fatia de cada uma.
+    const tabD = doc._els['ej-op-dia'];
+    ok((tabD.innerHTML.match(/class="ej-dia/g) || []).length === DIAS.length, 'pregao a pregao: uma linha por dia', String(DIAS.length));
+    ok((tabD.innerHTML.match(/class="ej-sub"/g) || []).length === 0, 'nenhum pregao abre sozinho');
+    const D2 = DIAS[kU - 1] || U;
+    tabD.fire('click', {target: {closest: () => ({getAttribute: () => D2.d})}});
+    const subs = (tabD.innerHTML.match(/class="ej-sub"/g) || []).length;
+    ok(subs === D2.linhas.length, 'clicar na data abre uma linha por decisao do pregao', subs + ' / ' + D2.linhas.length);
+    const topR = D2.linhas.slice().sort((x, y) => y[3] - x[3])[0], pctTop = (100 * topR[3] / D2.q).toFixed(1).replace('.', ',') + '%';
+    ok(D2.q > 0 && tabD.innerHTML.indexOf(MP.fmtMil(topR[3]) + ' <span class="ej-pct">' + pctTop) >= 0,
+       'a decisao mostra a fatia dela nos contratos do dia', pctTop);
+    ok(/linear-gradient\(to left,rgba\(\d+,\d+,\d+,0\.2\) \d/.test(tabD.innerHTML), 'formatacao condicional: barra na cor da decisao');
+    if (D2.temFim) {
+      const dv = D2.oi - D2.oi0;
+      ok(tabD.innerHTML.indexOf((dv > 0 ? '+' : '') + MP.fmtMil(dv)) >= 0, 'o dia traz a variacao da posicao (fim menos inicio)', String(dv));
+    }
+    ok(!/ej-alta|ej-corte/.test(tabD.innerHTML + tabNG) && /class="col-value ej-oi-up">\+/.test(tabD.innerHTML) &&
+       !/ej-oi-up">-|ej-oi-dn">\+/.test(tabD.innerHTML + tabNG),
+       'variacao da posicao: verde quando cresce, laranja quando cai (nao as cores da Selic)');
+    tabD.fire('click', {target: {closest: () => ({getAttribute: () => D2.d})}});
+    ok((tabD.innerHTML.match(/class="ej-sub"/g) || []).length === 0, 'clicar de novo fecha');
+    tabD.fire('click', {target: {closest: () => null}});
+    ok((tabD.innerHTML.match(/class="ej-sub"/g) || []).length === 0, 'clique fora de uma linha de dia nao abre nada');
+    // O grafico de volume: barras empilhadas por decisao, com as cores do historico de probabilidade.
+    MP.renderEjOpHist(); MP.renderEjOpVol();
+    let gV = ultOp('chart-ej-op-vol');
+    ok(gV && gV.layout.barmode === 'stack' && gV.traces.every((t) => t.type === 'bar'), 'volume: barras empilhadas');
+    const hH = ultOp('chart-ej-op-hist');
+    ok(gV.traces.filter((t) => t.name !== 'Outras decisões, somadas').every((t) => hH.traces.some((h2) => h2.name === t.name && h2.line.color === t.marker.color)),
+       'cada decisao tem a mesma cor do historico de probabilidade');
+    const kx = gV.traces[0].x.indexOf(D2.d), somaQ = gV.traces.reduce((a2, t) => a2 + (t.y[kx] || 0), 0);
+    ok(Math.abs(somaQ - D2.q / 1000) < 1e-6, 'a pilha do dia e o total de contratos da reuniao', somaQ + ' / ' + D2.q / 1000);
+    const pillsV = doc.getElementById('pg-ej-op-vol').children;
+    ok(pillsV.length === 4 && pillsV[0].classList.contains('active'), 'quatro medidas, abre em contratos');
+    pillsV[1].fire('click');
+    gV = ultOp('chart-ej-op-vol');
+    ok(Math.abs(gV.traces.reduce((a2, t) => a2 + (t.y[kx] || 0), 0) - D2.v / 1e6) < 1e-6 && /R\$ milhões/.test(gV.layout.yaxis.title.text),
+       'volume: a pilha e o volume do dia, em R$ milhoes');
+    pillsV[2].fire('click');
+    gV = ultOp('chart-ej-op-vol');
+    ok(gV.traces.every((t) => t.y[t.y.length - 1] == null) === !U.temFim, 'posicao: o ultimo pregao fica sem barra ate sair a do fim');
+    pillsV[3].fire('click');
+    gV = ultOp('chart-ej-op-vol');
+    ok(gV.layout.barmode === 'relative', 'variacao da posicao: barras relativas (ha sinal negativo)');
+    if (D2.temFim) {
+      const sV = gV.traces.reduce((a2, t) => a2 + (t.y[kx] || 0), 0);
+      ok(Math.abs(sV - (D2.oi - D2.oi0) / 1000) < 1e-6, 'a soma das barras e a variacao da posicao no dia', String(sV));
+    }
+    pillsV[0].fire('click');
+    // Reunioes do Copom no caminho: uma linha e um rotulo por reuniao dentro da janela, nos dois graficos.
+    const R0 = MP.ejOpHist(js[0]).datas, reuDentro = MP.ejD().reunioes.filter((r) => r && !r.est && r.d >= R0[0] && r.d <= R0[R0.length - 1]);
+    ok(hH.layout.shapes && hH.layout.shapes.length === reuDentro.length && hH.layout.annotations.length === reuDentro.length,
+       'historico: uma marca por reuniao do Copom dentro da janela', String(reuDentro.length));
+    ok(hH.layout.shapes.every((sh, k) => sh.x0 === reuDentro[k].d && sh.yref === 'paper'), 'a marca cai na data da reuniao');
+    ok(Array.isArray(ultOp('chart-ej-op-vol').layout.shapes), 'o grafico de volume tambem leva as marcas');
+    const mc0 = MP.ejMarcasCopom('1900-01-01', '1900-01-02');
+    ok(Array.isArray(mc0.shapes) && mc0.shapes.length === 0 && Array.isArray(mc0.annotations),
+       'sem reuniao na janela, as marcas vao vazias (nunca omitidas)');
+    if (jP != null) {
+      sel.value = String(jP); sel.fire('change');
+      if (MP.ejOpNeg(jP).length) {
+        const dP = MP.ejOpNegPregao(jP);
+        ok(dP && dP <= MP.ejD().reunioes[jP].d && dP === O.datas[MP.ejOpPonta(jP)] && doc._els['ej-op-neg'].innerHTML.indexOf('Total da reunião') >= 0,
+           'reuniao passada: a tabela abre no ultimo pregao antes do anuncio (o do dia da reuniao, que anuncia depois do fechamento)', dP);
+        const hPm = ultOp('chart-ej-op-hist');
+        ok(hPm.layout.annotations.every((a3) => /· (manteve|[−+]\d)/.test(a3.text)),
+           'reuniao decidida no caminho leva a decisao no rotulo');
+      } else {
+        ok(doc._els['ej-op-neg'].innerHTML === '' && doc._els['ej-op-neg-nota'].innerHTML.indexOf('começa no pregão de') >= 0,
+           'reuniao sem negocio carregado: tabela vazia e a nota diz desde quando ha dado', doc._els['ej-op-neg-nota'].innerHTML);
+      }
+      sel.value = String(js[0]); sel.fire('change');
+    }
+    // A comparacao por data: um pregao escolhido, "‹" recua um pregao, "×" tira as barras.
+    const pc = doc.getElementById('ej-op-cmp');
+    const pcb = (t) => pc.children.find((b) => b.tag === 'button' && b.textContent === t);
+    const pci = pc.children.find((b) => b.tag === 'input');
+    ok(pci && pci.type === 'date' && pci.value === O.datas[O.datas.length - 2], 'a caixa de data mostra o pregao comparado');
+    pcb('‹').fire('click');
+    ok(MP.EJ.opCmp === O.datas[O.datas.length - 3] &&
+       ultOp('chart-ej-op-dist').traces[0].name.indexOf(O.datas[O.datas.length - 3].split('-').reverse().join('/')) >= 0,
+       '"‹" recua um pregao e redesenha com a data nova');
+    const dR0 = MP.ejOpDatasReu(js[0]), iSexO = O.datas.findIndex((d, k) => k < O.datas.length - 2 && d >= dR0[0] && new Date(d + 'T12:00:00Z').getUTCDay() === 5);
+    if (iSexO >= 0) {
+      const sabO = new Date(Date.parse(O.datas[iSexO] + 'T12:00:00Z') + 86400000).toISOString().slice(0, 10);
+      pci.value = sabO; pci.fire('change');
+      ok(MP.EJ.opCmp === O.datas[iSexO] && doc._els['ej-op-cmp-nota'].innerHTML.indexOf('Sem pregão') === 0,
+         'um sabado encaixa na sexta, e a nota diz isso', doc._els['ej-op-cmp-nota'].innerHTML);
+    }
+    pcb('×').fire('click');
+    ok(MP.EJ.opCmp === null && ultOp('chart-ej-op-dist').traces.length === 1, '"×" deixa so as barras de hoje');
+    pci.value = O.datas[O.datas.length - 1]; pci.fire('change');
+    ok(ultOp('chart-ej-op-dist').traces.length === 1, 'comparar com o proprio pregao de hoje nao desenha barra duplicada');
+    pci.value = O.datas[O.datas.length - 2]; pci.fire('change');
+    ok(ultOp('chart-ej-op-dist').traces.length === 2, 'de volta ao default');
 
     // A linha das opcoes na secao "Uma reuniao": a Selic esperada do payload, pregao a pregao.
     const jRe = MP.EJ.reuniao;
@@ -2926,7 +3141,7 @@ console.log('\n38. Aba Expectativas de Juros: as opcoes de Copom');
     });
   }
   const ids = new Set();
-  const re = /(?:getElementById|ejPut|wireDlToggle|setupPillGroup)\(\s*'((?:ej-lead-op|ej-cap-op|pg-ej-op|dl-chart-ej-op|ej-ap-op|chart-ej-op)[\w-]*)'/g;
+  const re = /(?:getElementById|ejPut|wireDlToggle|setupPillGroup|setupDateCompare)\(\s*'((?:ej-lead-op|ej-cap-op|pg-ej-op|sel-ej-op|ej-op-cmp|dl-chart-ej-op|ej-ap-op|chart-ej-op)[\w-]*)'/g;
   let m; while ((m = re.exec(SRC))) ids.add(m[1]);
   ok(ids.size >= 6, 'a checagem de ids achou os alvos da secao', String(ids.size));
   const falta = [...ids].filter((id) => RAW.indexOf('id="' + id + '"') < 0);

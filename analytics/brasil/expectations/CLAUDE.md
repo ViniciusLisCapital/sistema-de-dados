@@ -27,10 +27,10 @@ Editar `report.html`, nunca o gerado.
 
 | Aba | Tabela | O que responde |
 |---|---|---|
-| Boletim | `expc_focus_periodo` (anual) | mediana de hoje × 1/4/12/52 semanas, por indicador e ano de referência. **Clicar na linha plota a série dela**; o botão `i` abre a definição do indicador. + barra de maiores revisões |
+| Boletim | `expc_focus_periodo` (anual) | mediana de hoje × 1/4/12/52 semanas, por indicador e ano de referência (a tabela segue o formato do Boletim publicado). **Clicar na linha plota a série dela**; o botão `i` abre a definição do indicador. + barra do que se moveu **desde uma data escolhida** |
 | Revisão | `expc_focus_periodo` (3 periodicidades) | fixa o período previsto e varre as datas de pesquisa. Eixo X alternável: data da pesquisa ou **meses até o período** (sobrepõe anos diferentes na mesma escala) |
 | Horizonte Móvel | `expc_focus` | IPCA/IGP-M e componentes a 12m/24m, toggles suavizada e base, + inclinação 24m−12m |
-| Trajetória | `expc_focus_periodo` | a curva à frente inteira numa semana (X = período previsto), com fotografias antigas sobrepostas + deslocamento |
+| Trajetória | `expc_focus_periodo` | a curva à frente inteira hoje (X = período previsto), com até 4 pesquisas antigas sobrepostas, **cada uma por data** + deslocamento contra uma data |
 | Dispersão | as duas | desvio-padrão, coef. de variação, amplitude (só onde há min/max), tamanho do painel |
 | Bases | `expc_focus` | base 0 (30 dias) × base 1 (4 dias úteis) e o gap entre elas — uma fonte só, então sem seletor de fonte |
 | Apêndice | cobertura medida no banco | as 4 reformulações, definição das bases, grade semanal, o que ficou de fora |
@@ -60,6 +60,33 @@ nas três periodicidades.
 **"Há 4 semanas" anda por data, não por posição na grade**: `gidxBackWeeks()` procura o ponto mais
 recente ≤ hoje − 28 dias. Contar 4 posições daria 35 dias numa semana de feriado. A coluna
 equivalente do Boletim publicado pelo BCB usa a data exata, então pode haver diferença de dias.
+
+## Comparação por data, e a grade diária (2026-10-30)
+
+Pedido do usuário, depois da mesma troca no relatório de Política Monetária: *"essa mudança deve
+ser aplicada em todos os gráficos com esse padrão '1 semana antes'"*. Três gráficos daqui tinham o
+padrão e passaram a comparar com uma **data**, pelo controle compartilhado
+(`analytics/report_structure/date_compare.{js,css}`, `‹ [data] › ×`):
+
+- **Boletim, "o que se moveu"**: desde a pesquisa da data escolhida (default o dia anterior), sem
+  `×` — sem data o gráfico não existe. O título e o eixo nomeiam a data. Achado no caminho: o título
+  da unidade ia para o eixo Y (o das categorias) e era apagado pelo `yaxis` do `extra`, então o
+  gráfico **nunca** mostrou unidade; foi para o X, que é o eixo dos valores.
+- **Trajetória**: até 4 pesquisas sobrepostas à de hoje, cada uma com a sua barra de data e a cor da
+  linha ao lado; `+ data` acrescenta, `×` tira. Abre em ~1 e ~6 meses atrás (a curva muda devagar),
+  mas como datas.
+- **Deslocamento**: hoje menos a pesquisa da data escolhida (default o dia anterior), sem `×`.
+
+**A tabela do Boletim não mudou**: ela reproduz as colunas "há 1/4/12/52 semanas" do Boletim que o
+BC publica, e é tabela, não gráfico.
+
+Para "o que mudou de ontem" existir, o payload ganhou **`diario`**: a mediana do
+`expc_focus_periodo` em **todo dia dos últimos `_DIARIO_ANOS` = 2 anos**, numa grade própria e no
+mesmo formato de bloco. As datas comparáveis (`DATAS_CMP`) são a grade semanal antes dela mais a
+diária inteira, e `pValorEm()` lê de uma ou de outra. Custo: 502 dias, 221 mil pontos, payload de
+5,2 para **6,7 MB**. O teste exige que, nas 105 datas que as duas grades têm, elas deem a mesma
+mediana em toda série anual. `SNAPS`/`snapGi()` saíram; `gidxBackWeeks()` ficou, porque a tabela do
+Boletim e os KPIs de revisão continuam em semanas.
 
 ## Aba Boletim: a linha chama o gráfico (2026-08-27)
 

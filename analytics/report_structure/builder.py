@@ -27,6 +27,8 @@ _ASSETS = {
     "/*Y_AUTOFIT_JS*/": "y_autofit.js",
     "/*CHART_HEAD_CSS*/": "chart_head.css",
     "/*CHART_HEAD_JS*/": "chart_head.js",
+    "/*DATE_COMPARE_CSS*/": "date_compare.css",
+    "/*DATE_COMPARE_JS*/": "date_compare.js",
 }
 
 

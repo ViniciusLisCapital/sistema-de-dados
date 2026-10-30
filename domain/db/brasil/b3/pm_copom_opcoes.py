@@ -31,8 +31,8 @@ Conferido contra duas decisoes conhecidas: na vespera da 281a (corte de 25) a op
   no piso de 0,02-0,03 pontos, nao em zero: a soma carrega esses pisos, e a
   probabilidade de uma decisao fora da grade de strikes listados nao aparece.
 - So calls: o arquivo nao traz put de Copom.
-- A posicao em aberto e o volume estao no boletim de precos (arquivo PR), que o cache de
-  `b3_precos` hoje nao guarda para o CPM. Ficaram de fora.
+- A posicao em aberto e o volume estao no boletim de precos (arquivo PR): tabela irma
+  `pm_copom_opcoes_negocios`, com a mesma chave, desde 2020-05.
 
 Banco: macro_brasil.pm_copom_opcoes -- PRIMARY KEY (date, vencimento, variacao_bps)
 """

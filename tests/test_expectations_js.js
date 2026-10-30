@@ -237,9 +237,10 @@ global.window = { scrollX: 0, scrollY: 0 };
 global.Option = function (label, value) { const o = new El('option'); o.textContent = label; o.value = value; return o; };
 global.Plotly = makePlotly(doc, chamadas);
 
-const EXPORTS = ['D', 'GRADE', 'NG', 'SNAPS', 'RENDERERS', 'activateTab',
+const EXPORTS = ['D', 'GRADE', 'NG', 'GRADE_D', 'DATAS_CMP', 'pValorEm', 'cmpHoje', 'cmpSemanasAtras',
+                 'dcNaData', 'dcPadrao', '_bolMovimento', 'RENDERERS', 'activateTab',
                  'fmtBR', 'fmtTrunc', 'fmtSig', 'clsDelta', 'fmtDataBR', 'dlText', 'lineTrace', 'barTrace',
-                 'gidxOnOrBefore', 'gidxBackWeeks', 'snapGi', 'blkSerie', 'blkAt', 'pBlk', 'pMeta',
+                 'gidxOnOrBefore', 'gidxBackWeeks', 'blkSerie', 'blkAt', 'pBlk', 'pMeta',
                  'movBlk', 'indsDe', 'difSemanas', '_quickRangeOptions', '_defaultXRange',
                  '_traceAllDates', 'mkTsLayout', 'mkCatLayout', '_reactPreserveX', '_reactPlain',
                  '_resetChartAxis', '_PLOTLY_CONFIG',
@@ -266,7 +267,7 @@ ok(doc._els['hdr-ultima'].textContent === R.fmtDataBR(R.GRADE[R.NG - 1]),
    'header mostra a ultima data da grade', doc._els['hdr-ultima'].textContent);
 // Escopo: so as duas tabelas do Focus que ficaram. Qualquer grupo novo em D e sinal de que
 // alguem trouxe fonte de fora sem atualizar o Apendice.
-ok(Object.keys(R.D).sort().join(',') === 'cobertura,generated_at,indice,meta,movel,periodo',
+ok(Object.keys(R.D).sort().join(',') === 'cobertura,diario,generated_at,indice,meta,movel,periodo',
    'payload tem so os grupos do Focus (nada de meta/realizado)', Object.keys(R.D).sort().join(','));
 ok(R.NG > 1000 && R.GRADE[0] < R.GRADE[R.NG - 1], 'grade semanal ordenada e longa', R.NG + ' semanas');
 
@@ -284,8 +285,36 @@ ok(R.gidxOnOrBefore('2999-01-01') === R.NG - 1, 'data futura cai na ultima seman
      `gidxBackWeeks(${w}) cai entre ${w * 7} e ${w * 7 + 21} dias atras`, dias + 'd');
 });
 ok(R.gidxBackWeeks(0) === R.NG - 1, 'gidxBackWeeks(0) e a semana corrente');
-ok(R.SNAPS.length === 7 && R.SNAPS[0].key === 'w0' && R.SNAPS.every((s) => s.gi >= 0),
-   'os 7 snapshots resolvidos na grade', JSON.stringify(R.SNAPS.map((s) => s.data)));
+// A comparacao por data (2026-10-30): a grade diaria dos ultimos dois anos e a lista de datas
+// com que um grafico pode comparar -- a semanal antes dela, a diaria inteira.
+ok(R.GRADE_D.length > 400 && R.GRADE_D.every((d, k) => k === 0 || d > R.GRADE_D[k - 1]),
+   'grade diaria dos ultimos dois anos, em ordem', String(R.GRADE_D.length));
+ok(R.DATAS_CMP.every((d, k) => k === 0 || d > R.DATAS_CMP[k - 1]) &&
+   R.DATAS_CMP.length === R.GRADE.filter((d) => d < R.GRADE_D[0]).length + R.GRADE_D.length,
+   'datas de comparacao: a semanal antes da diaria e a diaria inteira, sem repetir');
+ok(R.cmpHoje() === R.GRADE_D[R.GRADE_D.length - 1], 'a data de hoje da comparacao e o ultimo dia da grade diaria');
+{
+  // Nas datas que as duas grades tem, a diaria e a semanal dao o mesmo numero -- a diaria e a
+  // mesma tabela, todo dia.
+  let comuns = 0, dif = 0;
+  R.GRADE_D.forEach((d) => {
+    const gi = R.GRADE.indexOf(d);
+    if (gi < 0) return;
+    comuns++;
+    Object.keys(R.D.periodo.anual).forEach((k) => {
+      const semanal = R.blkAt(R.D.periodo.anual[k], 'm', gi);
+      const diario = R.blkAt(R.D.diario.periodo.anual[k], 'm', R.GRADE_D.indexOf(d));
+      if (semanal != null && diario !== semanal) dif++;
+    });
+  });
+  ok(comuns > 50 && dif === 0, 'nas ' + comuns + ' datas comuns, diaria e semanal dao a mesma mediana', String(dif));
+}
+const wDia = R.GRADE_D[R.GRADE_D.length - 2];
+ok(R.pValorEm('anual', 'IPCA|', '2026', wDia) === R.blkAt(R.D.diario.periodo.anual['IPCA||2026'], 'm', R.GRADE_D.length - 2),
+   'pValorEm le a diaria dentro da janela');
+const wVelha = R.GRADE.filter((d) => d < R.GRADE_D[0]).pop();
+ok(R.pValorEm('anual', 'IPCA|', '2026', wVelha) === R.blkAt(R.pBlk('anual', 'IPCA|', '2026'), 'm', R.GRADE.indexOf(wVelha)),
+   'e a semanal antes dela');
 
 console.log('\n3. Blocos comprimidos: offset e alinhamento');
 const blkIpca = R.pBlk('anual', 'IPCA|', '2026');
@@ -349,7 +378,7 @@ ok(R.fmtSig(0.5, 2) === '+0,50' && R.fmtSig(-0.5, 2) === '-0,50', 'delta assinad
 console.log('\n7. Trajetoria: fotografia da curva a frente');
 // _traFoto depende do estado global _traPer/_traInd; renderTrajetoria e quem os define.
 R.RENDERERS.trajetoria();
-const foto = R._traFoto(R.NG - 1);
+const foto = R._traFoto(R.cmpHoje());
 ok(foto.dates.length > 6, 'fotografia mensal de hoje tem varios meses a frente', String(foto.dates.length));
 let crescente = true;
 for (let i = 1; i < foto.dates.length; i++) if (foto.dates[i] <= foto.dates[i - 1]) crescente = false;
@@ -500,10 +529,76 @@ ok(reactTra && reactTra.layout.xaxis.autorange === false && !!reactTra.layout.xa
 ok(reactTra && reactTra.layout.xaxis.title.text === 'Período de referência',
    'e o titulo do eixo X sobrevive ao merge');
 
-// (7) Destaque na fotografia mais recente SELECIONADA, mesmo sem "Hoje" marcado.
+// (7) Hoje solido, as pesquisas comparadas pontilhadas, cada uma com a sua data.
 const traces0 = reactTra ? reactTra.traces : [];
 ok(traces0.length && traces0[0].line.dash === 'solid' && traces0.slice(1).every((t) => t.line.dash === 'dot'),
-   'so a primeira fotografia e solida', traces0.map((t) => t.line.dash).join(','));
+   'so a de hoje e solida', traces0.map((t) => t.line.dash).join(','));
+const d4 = R.cmpSemanasAtras(4), d26 = R.cmpSemanasAtras(26);
+ok(traces0.length === 3 && traces0[1].name === 'Pesquisa (' + R.fmtDataBR(d4) + ')' &&
+   traces0[2].name === 'Pesquisa (' + R.fmtDataBR(d26) + ')',
+   'default: duas pesquisas antigas, nomeadas pela data', traces0.map((t) => t.name).join(' | '));
+
+// (7b) As fotografias por data: cada uma com a sua barra, "+ data" acrescenta, "×" tira.
+const fotos = doc._els['tra-fotos'];
+const slots = () => fotos.children.filter((c) => c.className === 'tra-foto');
+const ctl = (k) => slots()[k].children[1];
+const btn = (el, t) => el.children.find((c) => c.tag === 'button' && c.textContent === t);
+ok(slots().length === 2 && ctl(0).children.find((c) => c.tag === 'input').value === d4,
+   'uma barra de data por fotografia, mostrando a data usada');
+const ultTra = () => chamadas.filter((c) => c.tipo === 'react' && c.divId === 'chart-tra').pop();
+btn(fotos, '+ data').fire('click');
+ok(slots().length === 3 && ultTra().traces.length === 4 &&
+   ultTra().traces[3].name === 'Pesquisa (' + R.fmtDataBR(R.dcPadrao(R.DATAS_CMP)) + ')',
+   '"+ data" acrescenta a pesquisa do dia anterior', ultTra().traces.map((t) => t.name).join(' | '));
+btn(ctl(2), '‹').fire('click');
+ok(ultTra().traces[3].name === 'Pesquisa (' + R.fmtDataBR(R.DATAS_CMP[R.DATAS_CMP.length - 3]) + ')',
+   '"‹" recua a fotografia um dia');
+btn(ctl(0), '×').fire('click');
+ok(slots().length === 2 && ultTra().traces.length === 3 &&
+   ultTra().traces.every((t) => t.name.indexOf(R.fmtDataBR(d4)) < 0),
+   '"×" tira so aquela fotografia', ultTra().traces.map((t) => t.name).join(' | '));
+const inp0 = ctl(0).children.find((c) => c.tag === 'input');
+inp0.value = R.cmpHoje(); inp0.fire('change');
+ok(ultTra().traces.length === 2, 'uma fotografia na data de hoje nao desenha a mesma linha duas vezes');
+while (slots().length < 4) btn(fotos, '+ data').fire('click');
+ok(!btn(fotos, '+ data'), 'no maximo 4 fotografias: o "+ data" some');
+R.RENDERERS.trajetoria();
+
+// (7c) Deslocamento: hoje menos a pesquisa da data escolhida (default: o dia anterior).
+const ultDesl = () => chamadas.filter((c) => c.tipo === 'react' && c.divId === 'chart-tra-desl').pop();
+ok(ultDesl().traces[0].name === 'Hoje − pesquisa de ' + R.fmtDataBR(R.dcPadrao(R.DATAS_CMP)),
+   'deslocamento contra o dia anterior, com a data no nome', ultDesl().traces[0].name);
+const dl = doc._els['tra-desl-cmp'];
+ok(!btn(dl, '×'), 'o deslocamento nao tem "sem comparacao": sem data ele nao existe');
+const dlInp = dl.children.find((c) => c.tag === 'input');
+dlInp.value = wVelha; dlInp.fire('change');
+{
+  const t = ultDesl().traces[0], hojeF = R._traFoto(R.cmpHoje()), antesF = R._traFoto(wVelha);
+  const k = t.x.length - 1, ki = hojeF.dates.indexOf(t.x[k]), ka = antesF.dates.indexOf(t.x[k]);
+  ok(t.name.indexOf(R.fmtDataBR(wVelha)) >= 0 && Math.abs(t.y[k] - (hojeF.values[ki] - antesF.values[ka])) < 1e-9,
+     'uma data antiga: a barra e hoje menos a mediana daquela pesquisa', t.name);
+}
+
+// (7d) Boletim, "o que se moveu": desde a pesquisa da data escolhida (default: o dia anterior).
+{
+  chamadas.length = 0;
+  R.RENDERERS.boletim();
+  const ultBol = () => chamadas.filter((c) => c.tipo === 'react' && c.divId === 'chart-bol-mov').pop();
+  const bc = doc._els['bol-cmp'];
+  const bInp = bc.children.find((c) => c.tag === 'input');
+  ok(bInp.value === R.dcPadrao(R.DATAS_CMP) && !btn(bc, '×'), 'Boletim: default o dia anterior, e sem "×"', bInp.value);
+  bInp.value = wVelha; bInp.fire('change');
+  const r = ultBol(), linhas = R._bolMovimento();
+  ok(r && r.traces.length === 1 && linhas.length === r.traces[0].x.length &&
+     linhas.every((l, k) => r.traces[0].x[k] === l.dCmp && Math.abs(l.dCmp - (l.hoje - l.antes)) < 1e-4),
+     'cada barra e a mediana de hoje menos a da pesquisa escolhida');
+  const ano = doc._els['pg-bol-ano'].children.find((b) => b.classList._set.active).textContent;
+  ok(linhas.length && linhas.every((l) => l.antes === R.pValorEm('anual', l.ind.key, ano, wVelha)),
+     'o "antes" e lido na data escolhida, para o ano do pill', ano);
+  ok(JSON.stringify(r.layout).indexOf(R.fmtDataBR(wVelha)) >= 0, 'o eixo diz desde quando', '');
+  btn(bc, '›').fire('click');
+  ok(ultBol() !== r && bInp.value > wVelha, '"›" avanca e redesenha', bInp.value);
+}
 
 console.log('\n8c. Boletim: a linha da tabela chama o grafico');
 // Os retangulos de KPI sairam a pedido do usuario -- a checagem e no HTML cru porque o

@@ -91,6 +91,14 @@ porque as operações **não comutam**: trocá-la muda o número, não o rótulo
 - **Teste com um helper que resolve os dois formatos** e varra TODOS os grupos exigindo que nenhum em pills passe do orçamento — o defeito nasce de uma opção acrescentada a um grupo que hoje cabe
 - Código, o corte medido e as três armadilhas: `references/design-system.md#metricas` (seção "A forma do controle segue a LARGURA")
 
+### Comparar com uma data anterior: por DATA, nunca por defasagem
+- **Gráfico que põe "hoje" ao lado de "antes" escolhe o antes por DATA**: `‹ [data] › ×`, nunca pills de "1 semana antes / 4 semanas / 52 semanas". A defasagem relativa esconde qual dia está na tela e não alcança "o que mudou de ontem para hoje"
+- **Uma data por fonte.** Duas fontes no mesmo gráfico (pesquisa e curva, por exemplo) têm cada uma o seu controle — elas não publicam nos mesmos dias, e uma defasagem comum as amarra
+- **O default é a data anterior disponível** ("o que mudou"). Em gráfico de mudança lenta (uma curva inteira sobreposta), o default pode ser mais antigo, mas **entra como data** e é a data que o leitor vê e mexe
+- **A data digitada encaixa na disponível mais recente até ela** (fim de semana, feriado, dia sem pesquisa), a caixa passa a mostrar a usada e uma nota diz a troca. Comparar com a própria data de hoje não desenha nada por cima
+- **O dado tem de existir na resolução do controle**: se o payload só tem a última data de cada semana, "ontem" não existe. Guarde todo dia numa janela recente e a grade grossa antes dela
+- Data no nome da linha/barra de comparação, no subtítulo e na legenda; e ‹ › × com `disabled` nas pontas. Código: `references/design-system.md#comparacao-data`
+
 ### Layout
 - **Página**: `padding: 24px 32px`, sem `max-width` (full-width)
 - **Header**: logo "LIS CAPITAL", título central, badge + data à direita

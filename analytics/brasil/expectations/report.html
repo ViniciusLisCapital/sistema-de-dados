@@ -10,6 +10,10 @@
     /*THEME_CSS*/
 
     /*CHART_HEAD_CSS*/
+    /*DATE_COMPARE_CSS*/
+    .tra-fotos { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+    .tra-foto { display: inline-flex; align-items: center; gap: 5px; }
+    .tra-foto-cor { width: 14px; height: 3px; border-radius: 2px; }
 
     /* ── Header ── */
     header {
@@ -358,16 +362,17 @@
       </div>
       <p class="chart-caption" id="bol-serie-cap">—</p>
 
-      <h3 style="margin-top:22px">O que se moveu nas últimas 4 semanas</h3>
+      <h3 style="margin-top:22px">O que se moveu desde uma data</h3>
       <div class="ctrl-bar">
         <span class="ctrl-label">Unidade</span>
         <div class="pill-group" id="pg-bol-unidade"></div>
         <div class="ctrl-sep"></div>
-        <span class="ctrl-label">Janela</span>
-        <div class="pill-group" id="pg-bol-janela"></div>
+        <span class="ctrl-label">Desde a pesquisa de</span>
+        <div id="bol-cmp"></div>
         <div class="ctrl-sep"></div>
         <div class="dl-toggle" id="dl-bol"><span class="toggle-icon"></span> Dados no gráfico</div>
       </div>
+      <p class="dc-nota" id="bol-cmp-nota"></p>
       <div class="chart-card"><div id="chart-bol-mov" class="chart-div"></div></div>
       <p class="chart-caption">Só indicadores da mesma unidade entram no mesmo gráfico — somar p.p.
         de IPCA com R$ de câmbio não significa nada.</p>
@@ -489,21 +494,21 @@
         <span class="ctrl-label">Indicador</span>
         <select class="ind-select" id="sel-tra-ind"></select>
         <div class="ctrl-sep"></div>
-        <span class="ctrl-label">Fotografias</span>
-        <div class="multiselect">
-          <button class="multiselect-btn" id="ms-tra-btn">—</button>
-          <div class="multiselect-panel" id="ms-tra-panel"></div>
-        </div>
-        <div class="ctrl-sep"></div>
         <div class="dl-toggle" id="dl-tra"><span class="toggle-icon"></span> Dados no gráfico</div>
       </div>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Comparar com as pesquisas de</span>
+        <div class="tra-fotos" id="tra-fotos"></div>
+      </div>
+      <p class="dc-nota" id="tra-nota"></p>
       <div class="chart-card"><div id="chart-tra" class="chart-div"></div></div>
 
       <h3 style="margin-top:22px">Deslocamento da curva</h3>
       <div class="ctrl-bar">
-        <span class="ctrl-label">Hoje menos</span>
-        <div class="pill-group" id="pg-tra-comp"></div>
+        <span class="ctrl-label">Hoje menos a pesquisa de</span>
+        <div id="tra-desl-cmp"></div>
       </div>
+      <p class="dc-nota" id="tra-desl-nota"></p>
       <div class="chart-card"><div id="chart-tra-desl" class="chart-div short"></div></div>
       <p class="chart-caption">Barra por período de referência: quanto a mediana daquele período
         mudou entre as duas fotografias.</p>
@@ -788,6 +793,8 @@ var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true}
 
 /*CHART_HEAD_JS*/
 
+/*DATE_COMPARE_JS*/
+
 // -- Titulo e fonte de cada grafico: os DOIS unicos textos fixos do cabecalho -------
 // O subtitulo e o periodo sao reescritos a cada render por describeChart(), chamado de
 // dentro dos DOIS pontos de entrada de grafico deste relatorio -- e o que faz um grafico
@@ -796,7 +803,7 @@ var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true}
 var SRC_FOCUS = 'BCB — Sistema de Expectativas de Mercado (Focus)';
 var CHART_META = {
   'chart-bol-serie':  {title: 'Boletim Focus — Consenso do Ano de Referência', source: SRC_FOCUS},
-  'chart-bol-mov':    {title: 'O Que se Moveu nas Últimas 4 Semanas', source: SRC_FOCUS},
+  'chart-bol-mov':    {title: 'O Que se Moveu desde uma Data', source: SRC_FOCUS},
   'chart-rev':        {title: 'Revisão — Como o Consenso sobre um Período se Moveu', source: SRC_FOCUS},
   'chart-rev-ritmo':  {title: 'Ritmo da Revisão — Variação em 4 Semanas', source: SRC_FOCUS},
   'chart-mov':        {title: 'Horizonte Móvel — 12 e 24 Meses à Frente', source: SRC_FOCUS},
@@ -874,19 +881,32 @@ function gidxBackWeeks(w) {
   var i = gidxOnOrBefore(alvo);
   return i < 0 ? 0 : i;
 }
-var SNAPS = [
-  {key: 'w0',  semanas: 0,  label: 'Hoje'},
-  {key: 'w1',  semanas: 1,  label: '1 semana'},
-  {key: 'w4',  semanas: 4,  label: '4 semanas'},
-  {key: 'w12', semanas: 12, label: '12 semanas'},
-  {key: 'w26', semanas: 26, label: '26 semanas'},
-  {key: 'w52', semanas: 52, label: '52 semanas'},
-  {key: 'w104', semanas: 104, label: '2 anos'},
-];
-SNAPS.forEach(function(s) { s.gi = gidxBackWeeks(s.semanas); s.data = GRADE[s.gi]; });
-function snapGi(key) {
-  for (var i = 0; i < SNAPS.length; i++) if (SNAPS[i].key === key) return SNAPS[i].gi;
-  return NG - 1;
+
+// ── Comparação por data ─────────────────────────────────────────────────────────
+// D.diario: a mediana do expc_focus_periodo em TODO dia dos últimos dois anos, numa grade
+// própria. As datas com que um gráfico pode comparar são a grade semanal antes dela e a diária
+// inteira -- é o que deixa ver o que mudou de um dia para o outro sem carregar a história
+// inteira em diário. A escolha dentro dessa lista é do compartilhado (date_compare.js).
+var GRADE_D = (D.diario && D.diario.grade) || [];
+var PD = (D.diario && D.diario.periodo) || {};
+var DATAS_CMP = GRADE.filter(function(d) { return !GRADE_D.length || d < GRADE_D[0]; }).concat(GRADE_D);
+function datasCmp() { return DATAS_CMP; }
+// A data mais recente com pesquisa: a comparação com ela seria a própria linha de hoje.
+function cmpHoje() { return DATAS_CMP.length ? DATAS_CMP[DATAS_CMP.length - 1] : null; }
+// A mediana de uma série na data disponível mais recente até `data`.
+function pValorEm(per, indKey, ref, data) {
+  if (!data) return null;
+  if (GRADE_D.length && data >= GRADE_D[0]) {
+    return blkAt((PD[per] || {})[indKey + '|' + ref], 'm', dcNaData(GRADE_D, data));
+  }
+  return blkAt(pBlk(per, indKey, ref), 'm', gidxOnOrBefore(data));
+}
+// Uma data N semanas antes da mais recente, já como data da lista -- só para escolher o
+// default de um gráfico de mudança lenta; o que o leitor vê e mexe é a data.
+function cmpSemanasAtras(w) {
+  if (!DATAS_CMP.length) return null;
+  var alvo = new Date(Date.parse(cmpHoje()) - w * 7 * 86400000).toISOString().slice(0, 10);
+  return DATAS_CMP[dcNaData(DATAS_CMP, alvo)];
 }
 
 // ── Leitura dos blocos comprimidos ────────────────────────────────────────────
@@ -1572,7 +1592,7 @@ function attachInfo(hostEl, key, label) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // ABA — BOLETIM
 // ═══════════════════════════════════════════════════════════════════════════════
-var _bolAno = null, _bolUnidade = '%', _bolJanela = 4, _bolLabels = false;
+var _bolAno = null, _bolUnidade = '%', _bolCmp = null, _bolLabels = false;
 // Linhas da tabela que estão plotadas no gráfico logo abaixo dela. A ORDEM é a ordem
 // de clique, e é ela que define a cor de cada série -- o quadradinho na tabela usa a
 // mesma cor pela mesma posição.
@@ -1596,10 +1616,11 @@ function renderBoletim() {
     {key: '%', label: '%'}, {key: 'R$/US$', label: 'R$/US$'},
     {key: 'US$ bi', label: 'US$ bi'}, {key: '% do PIB', label: '% do PIB'},
   ], '%', function(k) { _bolUnidade = k; _bolGrafico(); });
-  setupPillGroup('pg-bol-janela', [
-    {key: '1', label: '1 sem'}, {key: '4', label: '4 sem'},
-    {key: '12', label: '12 sem'}, {key: '52', label: '52 sem'},
-  ], '4', function(k) { _bolJanela = parseInt(k, 10); _bolGrafico(); });
+  _bolCmp = dcPadrao(DATAS_CMP);
+  setupDateCompare('bol-cmp', {
+    datas: datasCmp, valor: _bolCmp, nome: 'a pesquisa', semDado: 'pesquisa', vazio: false,
+    notaId: 'bol-cmp-nota', onChange: function(d) { _bolCmp = d; _bolGrafico(); },
+  });
   wireDlToggle('dl-bol', function(on) { _bolLabels = on; _bolGrafico(); });
 }
 // Linha do Boletim para um indicador: mediana de hoje e as variações contra os pontos
@@ -1790,13 +1811,21 @@ function _bolSerie() {
   }
 }
 
+// O que se moveu entre a pesquisa escolhida e a de hoje, por indicador do ano de referência.
+function _bolMovimento() {
+  return indsDe('anual').map(_bolLinha).filter(function(l) {
+    return l && l.unidade === _bolUnidade;
+  }).map(function(l) {
+    var v = pValorEm('anual', l.ind.key, _bolAno, _bolCmp);
+    l.antes = v;
+    l.dCmp = (v == null) ? null : Math.round((l.hoje - v) * 10000) / 10000;
+    return l;
+  }).filter(function(l) { return l.dCmp != null; }).sort(function(a, b) { return a.dCmp - b.dCmp; });
+}
 function _bolGrafico() {
-  var w = _bolJanela;
-  var linhas = indsDe('anual').map(_bolLinha).filter(function(l) {
-    return l && l.unidade === _bolUnidade && l['d' + w] != null;
-  }).sort(function(a, b) { return a['d' + w] - b['d' + w]; });
+  var linhas = _bolMovimento();
   var y = linhas.map(function(l) { return l.ind.label; });
-  var x = linhas.map(function(l) { return l['d' + w]; });
+  var x = linhas.map(function(l) { return l.dCmp; });
   var dec = linhas.length ? linhas[0].dec : 2;
   var trace = {
     type: 'bar', orientation: 'h', x: x, y: y,
@@ -1808,14 +1837,20 @@ function _bolGrafico() {
     hovertemplate: '%{y}: %{customdata}<extra></extra>',
   };
   var alt = Math.max(280, 34 * y.length + 90);
-  var lay = mkCatLayout('Δ em ' + w + ' semana(s), ' + _bolUnidade, alt, {
+  // Barras horizontais: o eixo dos VALORES é o X, então a unidade vai nele -- no Y ela era
+  // apagada pelo `yaxis` abaixo e o gráfico não dizia em que unidade estava.
+  var unid = 'Δ desde a pesquisa de ' + fmtDataBR(_bolCmp) + ', ' + _bolUnidade;
+  var lay = mkCatLayout('', alt, {
     hovermode: 'closest', showlegend: false,
-    margin: {l: 240, r: 60, t: 20, b: 44},
+    margin: {l: 240, r: 60, t: 20, b: 52},
     yaxis: {automargin: true, gridcolor: '#eee'},
-    xaxis: {zeroline: true, zerolinecolor: '#999', gridcolor: '#eee'},
+    xaxis: {title: {text: unid, font: {size: 11}}, zeroline: true, zerolinecolor: '#999', gridcolor: '#eee'},
   });
   document.getElementById('chart-bol-mov').style.height = alt + 'px';
-  _reactPlain('chart-bol-mov', y.length ? [trace] : [], lay);
+  _reactPlain('chart-bol-mov', y.length ? [trace] : [], lay, null, {
+    titulo: 'O Que se Moveu desde ' + fmtDataBR(_bolCmp) + ' — ' + _bolAno,
+    bits: ['uma barra por indicador, em ordem', unid],
+    periodo: 'pesquisa de ' + fmtDataBR(GRADE[NG - 1]) + ' contra a de ' + fmtDataBR(_bolCmp)});
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -2012,19 +2047,24 @@ function _movKpis() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // ABA — TRAJETÓRIA
 // ═══════════════════════════════════════════════════════════════════════════════
-var _traPer = 'mensal', _traInd = null, _traSnaps = ['w0', 'w4', 'w26'], _traComp = 'w4', _traLabels = false;
+// _traFotos: as datas de pesquisa sobrepostas à de hoje; _traDesl: a do deslocamento.
+var _traPer = 'mensal', _traInd = null, _traFotos = [], _traDesl = null, _traLabels = false;
+var TRA_MAX_FOTOS = 4;
 
 function renderTrajetoria() {
   setupPillGroup('pg-tra-per', [
     {key: 'mensal', label: 'Mensal'}, {key: 'trimestral', label: 'Trimestral'},
     {key: 'anual', label: 'Anual'},
   ], 'mensal', function(k) { _traPer = k; _traMontaInd(); });
-  setupMultiselect('ms-tra-btn', 'ms-tra-panel',
-    [{header: 'Data de pesquisa', items: SNAPS.filter(function(s) { return s.gi >= 0; }).map(function(s) {
-      return {key: s.key, label: s.label + ' — ' + fmtDataBR(s.data)};
-    })}], _traSnaps, function(sel) { _traSnaps = sel; _traDesenha(); }, 'data(s)');
-  setupPillGroup('pg-tra-comp', SNAPS.slice(1).map(function(s) { return {key: s.key, label: s.label}; }),
-    'w4', function(k) { _traComp = k; _traDeslocamento(); });
+  // Default: duas pesquisas antigas (~1 e ~6 meses), porque a curva à frente muda devagar e
+  // é a rotação dela que se quer ver. As duas entram como DATA, e é a data que se mexe.
+  _traFotos = [cmpSemanasAtras(4), cmpSemanasAtras(26)].filter(Boolean);
+  _traMontaFotos();
+  _traDesl = dcPadrao(DATAS_CMP);
+  setupDateCompare('tra-desl-cmp', {
+    datas: datasCmp, valor: _traDesl, nome: 'a pesquisa', semDado: 'pesquisa', vazio: false,
+    notaId: 'tra-desl-nota', onChange: function(d) { _traDesl = d; _traDeslocamento(); },
+  });
   wireDlToggle('dl-tra', function(on) { _traLabels = on; _traDesenha(); });
 }
 function _traMontaInd() {
@@ -2032,28 +2072,63 @@ function _traMontaInd() {
 }
 // Fotografia: a curva a frente inteira numa data da grade. X = ref_date do período, o
 // que faz das três periodicidades o mesmo tipo de gráfico.
-function _traFoto(gi) {
+function _traFoto(data) {
   var meta = pMeta(_traPer, _traInd);
   if (!meta) return {dates: [], values: []};
   var d = [], v = [];
   meta.refs.forEach(function(ref, i) {
-    var val = blkAt(pBlk(_traPer, _traInd, ref), 'm', gi);
+    var val = pValorEm(_traPer, _traInd, ref, data);
     if (val == null) return;
     d.push(meta.refDates[i]); v.push(val);
   });
   return {dates: d, values: v, refs: meta.refs};
 }
+// Uma barra de data por fotografia, cada uma com a cor da linha dela; "×" tira a fotografia e
+// "+ data" acrescenta uma, até TRA_MAX_FOTOS.
+function _traMontaFotos() {
+  var box = document.getElementById('tra-fotos'), nota = document.getElementById('tra-nota');
+  if (!box) return;
+  box.innerHTML = '';
+  if (nota) { nota.innerHTML = ''; nota._dcNotas = {}; }
+  _traFotos.forEach(function(d, k) {
+    var slot = document.createElement('div');
+    slot.className = 'tra-foto';
+    var sw = document.createElement('span');
+    sw.className = 'tra-foto-cor'; sw.style.background = cor(k + 1);
+    slot.appendChild(sw);
+    var c = document.createElement('div');
+    slot.appendChild(c);
+    box.appendChild(slot);
+    setupDateCompare(c, {
+      datas: datasCmp, valor: d, nome: 'a fotografia ' + (k + 1), semDado: 'pesquisa', notaId: 'tra-nota',
+      onChange: function(v) {
+        if (v == null) { _traFotos.splice(k, 1); _traMontaFotos(); } else _traFotos[k] = v;
+        _traDesenha();
+      },
+    });
+  });
+  if (_traFotos.length < TRA_MAX_FOTOS) {
+    var b = document.createElement('button');
+    b.className = 'dc-btn'; b.type = 'button'; b.textContent = '+ data';
+    b.title = 'Sobrepor mais uma pesquisa à de hoje';
+    b.addEventListener('click', function() {
+      _traFotos.push(dcPadrao(DATAS_CMP));
+      _traMontaFotos(); _traDesenha();
+    });
+    box.appendChild(b);
+  }
+}
 function _traDesenha() {
   var meta = pMeta(_traPer, _traInd);
   if (!meta) return;
-  var traces = [], primeira = true;
-  SNAPS.forEach(function(s, i) {
-    if (_traSnaps.indexOf(s.key) < 0 || s.gi < 0) return;
-    var f = _traFoto(s.gi);
+  var traces = [], hoje = cmpHoje();
+  [hoje].concat(_traFotos).forEach(function(data, i) {
+    // Uma fotografia na data de hoje seria a mesma linha desenhada duas vezes.
+    if (!data || (i > 0 && data === hoje)) return;
+    var f = _traFoto(data);
     if (!f.dates.length) return;
-    var destaque = primeira;
-    primeira = false;
-    traces.push(lineTrace(f, s.label + ' (' + fmtDataBR(s.data) + ')', cor(i), _traLabels,
+    var destaque = i === 0;
+    traces.push(lineTrace(f, (destaque ? 'Hoje' : 'Pesquisa') + ' (' + fmtDataBR(data) + ')', cor(i), _traLabels,
       meta.dec, meta.unidade === '%' ? '%' : '',
       {mode: _traLabels ? 'lines+markers+text' : 'lines+markers', marker: {size: 5, color: cor(i)},
        line: {color: cor(i), width: destaque ? 3 : 2, dash: destaque ? 'solid' : 'dot'}}));
@@ -2069,7 +2144,7 @@ function _traDesenha() {
 function _traDeslocamento() {
   var meta = pMeta(_traPer, _traInd);
   if (!meta) return;
-  var hoje = _traFoto(NG - 1), antes = _traFoto(snapGi(_traComp));
+  var hoje = _traFoto(cmpHoje()), antes = _traFoto(_traDesl);
   var mapa = {};
   for (var i = 0; i < antes.dates.length; i++) mapa[antes.dates[i]] = antes.values[i];
   var d = [], v = [];
@@ -2078,7 +2153,7 @@ function _traDeslocamento() {
     if (a == null || hoje.values[j] == null) continue;
     d.push(hoje.dates[j]); v.push(Math.round((hoje.values[j] - a) * 10000) / 10000);
   }
-  var lab = 'Hoje − ' + (SNAPS.filter(function(s) { return s.key === _traComp; })[0] || {}).label;
+  var lab = 'Hoje − pesquisa de ' + fmtDataBR(_traDesl);
   var trace = barTrace({dates: d, values: v}, lab, C.azulCl, false, meta.dec, meta.unidade === '%' ? ' p.p.' : '', {
     marker: {color: v.map(function(x) { return x >= 0 ? C.laranja : C.verde; })},
   });

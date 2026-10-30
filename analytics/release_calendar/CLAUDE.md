@@ -564,7 +564,32 @@ botão registra). Verificado contra 23 mutantes, e confirmado em Chrome headless
 zero exceções, sem rolagem horizontal, `Atualizar` no RPM rodou 7 scripts em 39 s e a linha passou
 de "sem registro" a "atualizado 24/09 11:50" sem recarregar.
 
+## Cartão "Séries diárias" (2026-10-30)
+
+Pedido do usuário: um botão para as séries diárias. Elas mudam a cada pregão e não têm data
+de divulgação, então não têm linha na lista — e nenhum botão da página as alcançava. O cartão
+fica acima da lista, na aba Divulgações.
+
+- **A lista é `REPORT_DATA.diarias`**, a `sync.continuas()` do YAML — a mesma que a tarefa
+  agendada e o `update_db.py --continuous` rodam (26 tabelas desde 2026-10-30, quando entraram o Focus e o CDS). Nada é listado no template.
+- **O botão manda `{"continuous": true}` ao mesmo `/api/run`**, e o servidor resolve as tabelas.
+  O booleano é a única coisa que a página escolhe; qualquer outro valor é 400. Só busca o dado:
+  regerar os dashboards continua na outra aba. No modo arquivo, copia
+  `uv run python jobs/update_db.py --continuous`, que pela linha de comando também regera.
+- **Fatos, não veredito**, como nas linhas: a busca mais antiga entre as 22 e quantas trouxeram
+  dado novo hoje. Laranja quando alguma não foi buscada hoje; o botão fica em todo estado. Para
+  isso `fatos_por_tabela()` passou a incluir as contínuas, que em geral não estão em grupo.
+- **Custo medido: 280 s** (um POST real em 2026-10-30, 22/22 OK) — os boletins da B3 pesam. A
+  frase do cartão diz 3 a 5 minutos; `POST /api/run` é síncrono, sem progresso no meio.
+
+Coberto por `testeDiarias()` em `tests/test_release_calendar_js.js` e pela allowlist de
+`tests/test_serve_calendar.py`.
+
 ## Pending
+
+- `tests/test_release_calendar_js.js` tem **uma falha anterior a 2026-10-30** ("e a futura nao
+  fica", no cenário do recorte padrão): falha igual sem as mudanças do cartão diário, então é de
+  data (a semana corrente do fim de outubro), não deste código. Não investigada.
 
 - Add the remaining gaps listed in `domain/release_calendar/CLAUDE.md`'s "Known gaps" (international
   BIS/NOAA series, `atv_pib_usd`, `cmb_risco_pais`, `fisc_investimento`) once that research is done —

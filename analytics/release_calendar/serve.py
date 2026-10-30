@@ -17,7 +17,8 @@ Ctrl+C para parar.
 
 Seguranca — o que existe e por que:
   * escuta so em 127.0.0.1 (nao 0.0.0.0), entao nada na rede alcanca
-  * ha DOIS POST e so dois: /api/run recebe um SLUG DE GRUPO e /api/gerar uma KEY de
+  * ha DOIS POST e so dois: /api/run recebe um SLUG DE GRUPO (ou `continuous: true`,
+    as series diarias do YAML) e /api/gerar uma KEY de
     dashboard, e os dois resolvem script/modulo do nosso lado, pelo YAML e pelo
     manifesto — nunca recebe nome de modulo, caminho ou comando da pagina. Id fora da
     lista = 400. Nao ha shell envolvido em nenhum ponto. Os botoes de "pendentes" de
@@ -177,6 +178,27 @@ class Handler(BaseHTTPRequestHandler):
 
         if rota == "/api/gerar":
             self._gerar_dashboard(corpo)
+            return
+
+        # As series diarias (2026-10-30): `{"continuous": true}` roda a mesma lista da
+        # tarefa agendada, `continuas()` do YAML. Continua sem nome vindo da pagina --
+        # o booleano e a unica coisa que ela escolhe. So o ETL: a regeracao dos
+        # dashboards fica com a outra aba, como em todo botao desta.
+        if "continuous" in corpo:
+            if corpo.get("continuous") is not True:
+                self._json(400, {"erro": "'continuous' tem de ser true"})
+                return
+            from domain.release_calendar.sync import carregar, continuas
+            from jobs.update_db import executar_tabelas
+            tabelas = continuas(carregar())
+            try:
+                resultado = executar_tabelas(tabelas)
+            except Exception as exc:
+                self._json(500, {"erro": f"{type(exc).__name__}: {exc}"})
+                return
+            resultado["tabelas"] = tabelas
+            resultado["ok"] = resultado["n_erro"] == 0 and not resultado["sem_script"]
+            self._json(200, resultado)
             return
 
         slug = corpo.get("group")

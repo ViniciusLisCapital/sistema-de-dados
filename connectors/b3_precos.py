@@ -59,6 +59,12 @@ CACHE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "domain", "db", "brasil", "b3", "cache_precos",
 )
+# As opcoes de Copom (CPM) num cache PROPRIO, e nao em PRODUTOS: os ~2.300 pregoes ja no
+# cache acima foram gravados sem elas, e um dia sem CPM ali diria "nao houve negocio" quando
+# a verdade e "nao foi lido". Aqui, arquivo ausente = nao lido. Todo download do boletim
+# enche os dois (2026-10-30), entao o passe diario de qualquer tabela de contratos traz o CPM
+# de graca; a historia anterior so com um passe proprio (ver precos_cpm()).
+CACHE_CPM = CACHE + "_cpm"
 
 # campo do cache -> tag do XML. `FinInstrmQty`, `NtlFinVol` e `IntlFinVol` sao os
 # totais do dia (pregao regular + fora dele: o dolar tem negocio "nao regular").
@@ -124,15 +130,15 @@ def classificar(ticker: str) -> dict | None:
     return None
 
 
-def parse_xml(xml: str) -> pd.DataFrame:
-    """Os instrumentos de PRODUTOS de UMA versao do boletim, campos crus."""
+def parse_xml(xml: str, produtos: tuple = PRODUTOS) -> pd.DataFrame:
+    """Os instrumentos de `produtos` (default PRODUTOS) de UMA versao do boletim, campos crus."""
     linhas = []
     for bloco in xml.split("</PricRpt>"):
         i = bloco.find("<TckrSymb>")
         if i < 0:
             continue
         ticker = bloco[i + 10:bloco.find("<", i + 10)]
-        if ticker[:3] not in PRODUTOS:
+        if ticker[:3] not in produtos:
             continue
         linha = [ticker]
         for c, rx in _RE.items():
@@ -196,28 +202,60 @@ def precos(data, usar_cache: bool = True) -> pd.DataFrame | None:
     if usar_cache and os.path.exists(caminho):
         D = pd.read_csv(caminho)
         return D if len(D) else None
+    return _baixar_e_gravar(data)[0]
+
+
+def _baixar_e_gravar(data) -> tuple[pd.DataFrame | None, pd.DataFrame | None]:
+    """Baixa o boletim do pregao e grava os DOIS caches (PRODUTOS e CPM). Devolve
+    (PRODUTOS, CPM). Ausencia so e gravada quando a B3 diz que nao houve sessao, e nunca
+    para o dia corrente -- as regras do modulo, iguais para os dois."""
+    os.makedirs(CACHE, exist_ok=True)
+    os.makedirs(CACHE_CPM, exist_ok=True)
     xml, sem_sessao = _baixar_com_retry(pd.Timestamp(data).strftime("%y%m%d"))
-    D = None
+    D = C = None
     if xml:
         dt = re.search(r"<TradDt>\s*<Dt>([^<]+)</Dt>", xml)
         if dt and pd.Timestamp(dt.group(1)) != pd.Timestamp(data).normalize():
             raise ValueError(f"b3_precos: arquivo de {data:%Y-%m-%d} traz o pregao {dt.group(1)}")
         D = parse_xml(xml)
         D = D if len(D) else None
-    if D is None and not sem_sessao:
-        return None
-    if D is None and pd.Timestamp(data).normalize() >= pd.Timestamp.today().normalize():
-        return None
-    (D if D is not None else pd.DataFrame(columns=COLUNAS)).to_csv(caminho, index=False)
-    return D
+        C = parse_xml(xml, ("CPM",))
+        C = C if len(C) else None
+    if not xml and not sem_sessao:
+        return None, None
+    if not xml and pd.Timestamp(data).normalize() >= pd.Timestamp.today().normalize():
+        return None, None
+    (D if D is not None else pd.DataFrame(columns=COLUNAS)).to_csv(caminho_cache(data), index=False)
+    (C if C is not None else pd.DataFrame(columns=COLUNAS)).to_csv(caminho_cache_cpm(data), index=False)
+    return D, C
 
 
-def baixar_muitos(datas, workers: int = 2) -> None:
-    """Preenche o cache. 2 workers pelo mesmo motivo de b3_curvas: com mais, a
-    B3 throttla."""
-    faltando = [d for d in datas if not os.path.exists(caminho_cache(d))]
+def caminho_cache_cpm(data) -> str:
+    return os.path.join(CACHE_CPM, pd.Timestamp(data).strftime("%y%m%d") + ".csv.gz")
+
+
+def precos_cpm(data, usar_cache: bool = True) -> pd.DataFrame | None:
+    """As opcoes de Copom (CPM) naquele pregao, do cache proprio ou da fonte. None = sem
+    arquivo, ou pregao sem CPM listado.
+
+    Codigo `CPM` + letra do MES do vencimento + ano + `C` + strike em seis digitos com tres
+    decimais: CPMX26C099750 e a call de novembro/2026 no strike 99,750 (corte de 25 p.b.).
+    Contratos em pontos de R$ 1 (volume = contratos x preco medio, conferido em 29/10/2026).
+    Um pregao fora do cache CPM baixa o boletim inteiro (~11 MB, ~130 MB de XML)."""
+    caminho = caminho_cache_cpm(data)
+    if usar_cache and os.path.exists(caminho):
+        C = pd.read_csv(caminho)
+        return C if len(C) else None
+    return _baixar_e_gravar(data)[1]
+
+
+def baixar_muitos(datas, workers: int = 2, cpm: bool = False) -> None:
+    """Preenche o cache (o do CPM com `cpm=True`). 2 workers pelo mesmo motivo de
+    b3_curvas: com mais, a B3 throttla."""
+    caminho, fn = (caminho_cache_cpm, precos_cpm) if cpm else (caminho_cache, precos)
+    faltando = [d for d in datas if not os.path.exists(caminho(d))]
     if not faltando:
         return
-    logger.info("b3_precos: baixando %d pregoes", len(faltando))
+    logger.info("b3_precos: baixando %d pregoes%s", len(faltando), " (CPM)" if cpm else "")
     with ThreadPoolExecutor(workers) as ex:
-        list(ex.map(precos, faltando))
+        list(ex.map(fn, faltando))

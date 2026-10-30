@@ -7,7 +7,7 @@ contínua).
 
 | arquivo | o que roda |
 |---|---|
-| `update_db.py` | `macro_brasil`. Passe completo (54 scripts) ou recorte: `--continuous` (as 11 séries diárias, ~45s), `--group <slug>` (o que o botão do calendário chama), `--tables a,b`, `--list` |
+| `update_db.py` | `macro_brasil`. Passe completo (54 scripts) ou recorte: `--continuous` (as 26 séries diárias, ~5 min com os arquivos da B3), `--group <slug>` (o que o botão do calendário chama), `--tables a,b`, `--list` |
 | `update_us.py` | `macro_us`, 10 passos, **e a ORDEM importa** — ver a docstring do arquivo. O 7º (JOLTS), o 8º (CES), o 9º (CPS) e o 10º (produtividade) ignoram `--full` de propósito |
 | `update_international.py` | `macro_international`, 3 scripts (REER do BIS, COT da CFTC, diferenciais de juros do FRED) |
 | `update_oraculo.py` | recalcula as notas 1–10 do termômetro macro |
@@ -43,8 +43,10 @@ página **não** passa por este caminho) está em
 ## A tarefa agendada
 
 **Há uma tarefa agendada deste projeto desde 2026-09-03**: `Macro - series diarias`, no Agendador
-do Windows, rodando **de 30 em 30 minutos das 09:30 às 12:00** (seis disparos: 09:30, 10:00, 10:30,
-11:00, 11:30, 12:00), todos os dias. Não confundir com a "Atualizacao da base de dados" das 09:30,
+do Windows, rodando **uma vez por dia, às 09:00**, todos os dias. Até 2026-10-30 eram seis disparos
+(de 30 em 30 minutos das 09:30 às 12:00); o usuário reduziu para um porque, se precisar de mais, usa
+o botão **Atualizar diárias** do calendário, que roda a mesma lista. `StartWhenAvailable` está
+ligado: com a máquina desligada às 09:00, o passe roda quando ela voltar. Não confundir com a "Atualizacao da base de dados" das 09:30,
 que é do CentralManagement.
 
 O que ela chama é **`.venv\Scripts\pythonw.exe jobs/atualizar_diario.py`**, um envelope fino em
@@ -56,7 +58,7 @@ a tarefa **não** passa por ele.
 
 **`pythonw` é o pedido do usuário — "para não criar a janela interativa" — e o motivo é que a janela
 vinha do `.bat`**: arquivo de lote é executado pelo cmd.exe, que é binário de console, então cada um
-dos seis disparos pipocaria um prompt preto na frente de quem estivesse usando a máquina.
+disparo pipocaria um prompt preto na frente de quem estivesse usando a máquina.
 `pythonw.exe` é a variante compilada para o subsistema GUI e não aloca console. **E é aí que está a
 armadilha, medida em 2026-09-03**: sem console não há stdout, e sob `pythonw` `sys.stdout` e
 `sys.stderr` são literalmente `None`. O que isso produz **não é exceção, é silêncio** — `print()` com
@@ -69,7 +71,7 @@ arquivo ser load-bearing: abrir o log, apontar `sys.stdout`/`sys.stderr` para el
 `basicConfig` com `stream=` (o do `update_db` vira no-op, porque o root logger já tem handler) e só
 então importar o `update_db`.
 
-**Nenhuma janela retroativa é configurada na tarefa, e é por isso que seis disparos não são
+**Nenhuma janela retroativa é configurada na tarefa, e é por isso que rodar de novo pelo botão não é
 desperdício nem risco**: cada script tem a sua no default do próprio `run()`, e toda inserção é
 upsert (`ON DUPLICATE KEY UPDATE`), então reescrever um dia que não mudou não produz linha nova. As
 janelas, auditadas por introspecção das assinaturas em 2026-09-03: **`cmb_dollar_index` (1971),
@@ -82,9 +84,10 @@ dias **úteis** nas curvas da B3 e 60 corridos na POLICY; `inter_interest_rate` 
 Custo medido: **~45s a ~100s** quando nada mudou e **~280s** quando há dado novo o suficiente para
 regerar — a regeração é gatilhada por `status.estado()`, então um passe que não trouxe linha nova
 não regera nada (o log diz *"Dashboards que leem estas tabelas: 2, nenhum desatualizado"*). O
-`ExecutionTimeLimit` é de 25 min, deliberadamente **menor que o intervalo de 30**, e
-`MultipleInstances` é `IgnoreNew`: um passe travado é morto antes do próximo disparar, e dois nunca
-se sobrepõem.
+`ExecutionTimeLimit` é de 25 min (escolhido quando o intervalo era de 30) e `MultipleInstances` é
+`IgnoreNew`: um passe travado é morto, e dois nunca se sobrepõem. Com um disparo por dia, um pregão
+da B3 que só chegue depois das 09:00 entra no passe seguinte ou pelo botão — a janela de 10 dias
+úteis por upsert cobre isso.
 
 O que motivou não foi teoria: no dia em que a tarefa foi criada, **8 das 11 tabelas contínuas estavam
 7 a 16 dias atrás** (`comm_brent` 16, `cmb_dollar_index_em` 13, `cmb_cambio_contratado` 13,

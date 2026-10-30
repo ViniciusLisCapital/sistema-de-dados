@@ -191,6 +191,10 @@ def run(output: str = "reports/release_calendar.html") -> None:
     # itens, e a ordem em que se pensa neles nao e a do alfabeto.
     countries = [p for p in _ORDEM_PAIS if p in set(paises.values())]
     dashboards = _load_dashboards()
+    # As series diarias do cartao proprio da aba Divulgacoes: a mesma lista que a
+    # tarefa agendada e o `update_db.py --continuous` rodam, lida do mesmo lugar.
+    from domain.release_calendar.sync import carregar, continuas
+    diarias = continuas(carregar(_YAML_PATH))
 
     data = {
         "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -201,6 +205,7 @@ def run(output: str = "reports/release_calendar.html") -> None:
         "institutions": institutions,
         "countries": countries,
         "dashboards": dashboards,
+        "diarias": diarias,
     }
     por_pais = {p: sum(1 for g in groups if paises[g["group"]] == p) for p in countries}
     print(f"  {len(groups)} grupos, {len(entries)} divulgacoes datadas, {len(recurring)} recorrentes (sem data fixa)")

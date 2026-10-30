@@ -31,6 +31,7 @@ The view that monetary policy, and shocks originating in the financial system, a
 | [[monetary_policy/synthesis/monetary_policy_shocks_survey (Christiano, Eichenbaum & Evans, 1999)]] | Survey of VAR evidence: after a contractionary shock bank deposits fall, banks sell securities before loans fall; consumer and real estate loans fall but commercial and industrial loans do not; small firms bear a disproportionate share |
 | [[monetary_policy/synthesis/liquidity_trap_japan (Krugman, 1998)]] | Argues against a bank-centred reading of Japan: in a trap base expansion cannot raise broad money and may shrink bank credit even with healthy banks; insolvent banks with guaranteed deposits overlend; the credit crunch came only with new capital adequacy standards |
 | [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] | BCB staff judge the credit channel negligible in Brazil up to 1999 (low corporate leverage, tight Real-plan policies) and expect it to grow as bank spreads fall |
+| [[labor_market/synthesis/credit_market_shocks_real_economy (Greenstone et al., 2014)]] | Quasi-experimental US county test of bank credit-supply shocks: they cut local small business lending (switching lenders is costly) but explain at most a small share of the 2007–2010 employment fall, and nothing in 1997–2007 |
 
 ## BRL / application to the current analysis
 
@@ -46,4 +47,5 @@ The linked sources say nothing about Brazil.
 - [[monetary_policy/synthesis/monetary_policy_shocks_survey (Christiano, Eichenbaum & Evans, 1999)]] — VAR evidence on borrowing and lending after a policy shock, used to assess credit-market theories of transmission
 - [[monetary_policy/synthesis/liquidity_trap_japan (Krugman, 1998)]] — monetary aggregates and bank credit in a liquidity trap, and why weak banks need not be the cause of the slump
 - [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — why the credit channel was left out of the BCB's first transmission models
+- [[labor_market/synthesis/credit_market_shocks_real_economy (Greenstone et al., 2014)]] — the real effects of bank lending supply shocks, identified with a demand-purged shift-share instrument: significant but small in the Great Recession, absent in normal times
 - [[financial_channel_exchange_rate]] — the open-economy analogue: an exchange-rate move, not the policy rate, changes borrowers' net worth and lenders' risk capacity through currency mismatch

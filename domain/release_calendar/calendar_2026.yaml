@@ -36,11 +36,23 @@
 # `not_a_series` nao roda por calendario nem por dia, so quando algo mudar a mao.
 no_release:
   # Serie continua de mercado: um dado novo por dia util, sem anuncio para apontar.
-  # Criterio para entrar aqui: run() busca da fonte sozinho. Por isso cmb_risco_pais
-  # NAO esta na lista, apesar de ser serie de mercado -- o run() dele le uma planilha
-  # exportada a mao da Bloomberg (CDS 5Y e serie paga), entao um job diario nao
-  # traria dado novo nenhum.
+  # Criterio original para entrar aqui: run() busca da fonte sozinho. Desde 2026-10-30,
+  # a pedido do usuario ("coloque as series diarias que nao estao no fluxo"), entra
+  # TODA tabela de conteudo diario. EXCETO cmb_risco_pais (CDS 5Y), tirada no mesmo dia
+  # a pedido do usuario: o run() dela TRUNCA e recarrega o xlsx Bloomberg mais recente
+  # de bloomberg/raw/, entao no passe diario, sem export novo, ela apagou os 34 pregoes
+  # provisorios do investing.com (09/09-26/10) as 11:14 de 2026-10-30. Fica fora daqui
+  # e de `max_age_days` (que tambem poe a tabela no passe diario) ate o run() deixar de
+  # truncar com um export mais velho que o banco.
   continuous:
+    # Focus: conteudo DIARIO (uma linha por data de coleta) publicado toda segunda.
+    # Continuam no grupo bcb_focus, que da a expectativa de frescor delas
+    # (`expectation_overrides`); aqui e so para entrarem no passe diario. Fora da
+    # segunda o passe nao traz linha nova -- o upsert reescreve os 90 dias do default.
+    # 2026-10-30.
+    - expc_focus
+    - expc_focus_periodo
+    - expc_focus_copom
     - cmb_ptax               # PTAX + volume interbancario, diario
     - cmb_dollar_index       # DXY, diario
     - cmb_dollar_index_em    # indice do dolar vs. EM, diario
@@ -64,6 +76,10 @@ no_release:
     # Opcoes digitais de Copom (CPM), do MESMO arquivo RE: o premio de cada decisao
     # possivel em cada reuniao. Um download enche o cache das duas. 2026-10-29.
     - pm_copom_opcoes
+    # Negocios e posicao em aberto das mesmas opcoes, do boletim de precos (arquivo PR):
+    # o passe diario das tabelas de contratos da B3 ja baixa o arquivo e enche o cache do
+    # CPM junto. Carregada desde 2026-10 (a historia e run(full=True)). 2026-10-30.
+    - pm_copom_opcoes_negocios
     # Curva futura do dolar em prazos fixos, derivada do mesmo TaxaSwap (DI e cupom
     # cambial) mais a PTAX de D-1. Mesma janela de 10 dias uteis. 2026-10-28.
     - cmb_dol_futuro
@@ -181,6 +197,7 @@ max_age_days:
   # Arquivo RE da B3, solto depois do fechamento (medido em 2026-10-27: ultimo 26/10).
   cmb_vol_implicita: 5        # lag medido 1d
   pm_copom_opcoes: 5          # mesmo arquivo RE, lag 1d
+  pm_copom_opcoes_negocios: 5 # boletim de precos (PR), lag 1d
   cmb_dol_futuro: 5           # lag medido 1d (o arquivo da B3 sai depois do fechamento)
   # Boletim de precos da B3: sai depois do fechamento, e a posicao em aberto do
   # ultimo pregao so chega com o arquivo do seguinte (fica NULL ate la).

@@ -25,6 +25,7 @@ Referência completa de CSS, componentes HTML e padrões de código para dashboa
 19. [Texto explicativo: justificado e na largura do bloco](#prosa)
 20. [O texto explicativo e para quem nunca viu o dashboard](#audiencia)
 21. [Organizacao de metricas - as 7 camadas](#metricas)
+22. [Comparar com uma data anterior: por data, nunca por defasagem](#comparacao-data)
 
 ---
 
@@ -1495,6 +1496,96 @@ naqueles arquivos para o próximo dashboard herdar.
 
 ---
 
+## Comparar com uma data anterior: por data, nunca por defasagem <a name="comparacao-data"></a>
+
+Pedido do usuário (2026-10-29), sobre um gráfico que punha o caminho de hoje ao lado do de "1
+semana antes": *"essa forma de comparar com '1 semana antes' é ruim, eu quero poder comparar por
+data mesmo e separado entre focus e curva ... às vezes quero ver o que mudou de um dia para o
+outro"*. E no dia seguinte: *"essa mudança deve ser aplicada em todos os gráficos com esse
+padrão"*.
+
+### A regra
+
+- **O "antes" é uma DATA escolhida, não uma defasagem.** O controle é `‹ [data] › ×`: recuar uma
+  data disponível, a data, avançar uma, sem comparação. Pills "1 sem / 4 sem / 52 sem" saem.
+- **Uma data por fonte.** Duas fontes no mesmo gráfico não publicam nos mesmos dias (a pesquisa
+  sai em dia útil de pesquisa, a curva em pregão); uma defasagem comum amarra as duas e esconde
+  que estão em dias diferentes.
+- **Default: a data anterior disponível** — é a resposta para "o que mudou". Um gráfico de mudança
+  lenta (a curva à frente inteira, sobreposta) pode abrir em datas mais antigas, mas elas entram
+  **como datas**, mostradas nos controles.
+- **Encaixe**: a data digitada vale a disponível mais recente até ela. A caixa passa a mostrar a
+  usada, e uma nota abaixo da barra diz a troca (*"Sem pregão em 24/10/2026: a curva comparada é a
+  de 23/10/2026"*). Sem isso a caixa diz uma data e o gráfico desenha outra.
+- **Comparar com a própria data de hoje não desenha nada** — seria a mesma linha duas vezes.
+- **A data aparece onde o gráfico é lido**: no nome da linha/barra de comparação (`Curva DI —
+  23/10/2026`, `Pregão de 28/10/2026`), no subtítulo e na legenda. "1 semana antes" no nome é
+  justamente o que se está tirando.
+- **`×` só onde o gráfico existe sem comparação.** Um gráfico de deslocamento ("hoje menos X") ou
+  de movimento ("o que mudou desde X") não tem leitura sem data: ali o controle não tem `×`.
+
+### O dado tem de existir na resolução do controle
+
+Um payload reduzido a uma observação por semana não tem "ontem". A solução que não explode o
+arquivo: **todo dia numa janela recente** (dois anos aqui) e a grade grossa antes dela, no mesmo
+formato de bloco. A lista de datas comparáveis é a grossa antes da janela mais a diária inteira.
+Medido nos dois relatórios em que isto entrou: +~500 datas por fonte, +1,5 MB num payload de 5,2 MB,
+e a geração não mudou de tempo de forma mensurável. **Afirme no teste que, nas datas que as duas
+grades têm, a diária e a grossa dão o mesmo número** — é o que garante que são a mesma conta.
+
+### O código
+
+Self-contained (os relatórios do repositório inlinam a mesma coisa de
+`analytics/report_structure/date_compare.{js,css}`):
+
+```js
+// Índice da última data <= data; antes da primeira, 0; sem datas ou sem data, -1.
+function dcNaData(datas, data) {
+  if (!datas || !datas.length || !data) return -1;
+  var lo = 0, hi = datas.length - 1, best = -1;
+  while (lo <= hi) {
+    var mid = (lo + hi) >> 1;
+    if (datas[mid] <= data) { best = mid; lo = mid + 1; } else { hi = mid - 1; }
+  }
+  return best < 0 ? 0 : best;
+}
+function dcVizinha(datas, data, passo) {
+  var k = dcNaData(datas, data);
+  if (k < 0) return null;
+  var n = k + passo;
+  return (n >= 0 && n < datas.length) ? datas[n] : null;
+}
+function dcPadrao(datas) { return datas && datas.length >= 2 ? datas[datas.length - 2] : null; }
+
+// setupDateCompare(box, {datas: fn, valor, nome, semDado, vazio, notaId, onChange})
+//   datas()  -> array ISO crescente das datas que AQUELA fonte tem
+//   vazio:false tira o "×" (gráfico que só existe com uma data)
+//   onChange(dataUsada) -- a cada mudança, nunca na montagem
+// Monta ‹ [input type=date] › ×, com min/max da lista, disabled nas pontas, e escreve a nota
+// de encaixe em notaId. Implementação completa: analytics/report_structure/date_compare.js.
+```
+
+```html
+<div class="ctrl-bar">
+  <span class="ctrl-label">Comparar a curva com</span>
+  <div id="cmp-curva"></div>
+</div>
+<p class="dc-nota" id="cmp-nota"></p>   <!-- some sozinha quando vazia (:empty) -->
+<div class="chart-card">...</div>
+```
+
+### Testes que valem
+
+- O default é a penúltima data; `‹` recua **uma data disponível**, não 7 dias; trocar uma fonte
+  **não mexe** na outra.
+- Um sábado encaixa na sexta, e a nota cita as duas datas.
+- Uma data anterior à janela diária cai na grade grossa, e a janela X do gráfico **alarga** até o
+  caminho antigo (senão ele aparece cortado ao meio).
+- `×` tira só aquela comparação; com a data de hoje, nada é desenhado por cima.
+- O nome do trace de comparação traz a data, e a legenda/subtítulo também.
+
+---
+
 ## Checklist antes de entregar
 
 - [ ] Camadas de métrica derivadas do descritor do dado (não escolhidas na conversa), na ordem `BASE -> AJUSTE -> JANELA -> DENOMINADOR -> COMPARAÇÃO -> SUAVIZAÇÃO -> GRÁFICO`; janela e suavização em camadas **separadas**; `Δ` e `%` como opções distintas. Ver [Organização de métricas](#metricas)
@@ -1511,6 +1602,7 @@ naqueles arquivos para o próximo dashboard herdar.
 - [ ] Todo gráfico com cabeçalho de 3 linhas — título, subtítulo e fonte+período — e o subtítulo/período **recalculados a cada render**, nunca fixos no HTML. Ver [Cabeçalho do gráfico](#cabecalho)
 - [ ] Subtítulo reflete o estado dos seletores e não repete o que o título do eixo já diz
 - [ ] Botões de range **abaixo** do gráfico, dentro do mesmo card
+- [ ] Comparação com o passado escolhida **por data** (`‹ [data] › ×`), uma por fonte, default a data anterior disponível, data no nome da linha de comparação — nunca pills de "N semanas antes". E o payload tem a resolução que o controle promete (todo dia na janela recente). Ver [Comparar com uma data anterior](#comparacao-data)
 - [ ] Eixo Y diz o que a série mede (`desocupados / força de trabalho, %`), não só a unidade — e MUDA com a métrica selecionada (na visão de variação, `p.p./% contra o mesmo período do ano anterior`, nunca a unidade do nível). Unidade fora do rótulo da série. Ver [Unidade no eixo Y](#unidades)
 - [ ] Gráficos que não são série temporal (ranking horizontal, heatmap categórico) ficam com a interação padrão do Plotly — não force `_bindYAutofit` neles
 - [ ] Cada gráfico é um `<div id="...">` vazio, nunca `<canvas>`

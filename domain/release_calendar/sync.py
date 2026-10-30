@@ -706,12 +706,17 @@ def fatos_por_tabela(path: Path | str = _YAML_DEFAULT) -> dict[str, dict]:
     de "atualizado", porque o botao nunca a alcanca.
 
     O veredito antigo (`status()` e companhia) continua existindo para a linha de comando.
+
+    Entram tambem as series diarias (`continuas()`), que em geral nao estao em grupo
+    nenhum: e delas que o cartao "Series diarias" da pagina le quando cada uma foi
+    buscada (2026-10-30).
     """
     from domain.db import execucoes
     from domain.db.registry import tabelas as mapa_registry
 
     doc = carregar(path)
-    tabs = sorted({t for ts in tabelas_por_grupo(doc).values() for t in ts})
+    tabs = sorted({t for ts in tabelas_por_grupo(doc).values() for t in ts}
+                  | set(continuas(doc)))
     banco = execucoes.medir(tabs)
     regs = execucoes.ler(tabs)
     mapa = mapa_registry()

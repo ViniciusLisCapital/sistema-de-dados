@@ -66,6 +66,19 @@
     main { max-width: 1440px; margin: 0 auto; padding: 26px 28px 48px; }
     .tab-panel { display: none; flex-direction: column; gap: 32px; }
     .tab-panel.active { display: flex; }
+    /* Sub-abas (aba Expectativas de Juros): uma segunda fileira, em pills, dentro da aba. Cada
+       uma desenha os gráficos dela na primeira vez que abre -- o Plotly dimensiona errado um div
+       escondido, a mesma razão do render preguiçoso das abas. */
+    .subtab-nav { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: -10px; }
+    .subtab-btn {
+      font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 6px 14px; border: 1px solid var(--border); border-radius: 999px; background: var(--card-bg);
+      color: var(--muted); cursor: pointer; white-space: nowrap; transition: color .15s, border-color .15s;
+    }
+    .subtab-btn:hover { color: var(--text); }
+    .subtab-btn.active { color: var(--text); border-color: var(--lis-dourado); background: rgba(187,155,29,0.10); }
+    .subtab-panel { display: none; }
+    .subtab-panel.active { display: block; }
 
     /* ── Section headings ── */
     section { display: flex; flex-direction: column; gap: 12px; }
@@ -169,17 +182,7 @@
       min-width: 110px;
     }
     .date-select:focus-visible { outline: none; border-color: var(--lis-azul-cl); }
-    /* A comparacao por data da aba Expectativas de Juros: dia anterior, data, dia seguinte, sem. */
-    .ej-cmp { display: inline-flex; align-items: center; gap: 4px; }
-    .ej-cmp input[type="date"] { min-width: 0; cursor: text; }
-    .ej-cmp-btn {
-      font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--text); padding: 5px 7px;
-      border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); cursor: pointer;
-    }
-    .ej-cmp-btn:hover:not(:disabled) { border-color: var(--lis-azul-cl); }
-    .ej-cmp-btn:disabled { color: var(--muted); cursor: not-allowed; opacity: 0.5; }
-    .ej-cmp-nota { font-family: var(--mono); font-size: 11px; color: var(--muted); margin: -4px 0 8px; min-height: 0; }
-    .ej-cmp-nota:empty { display: none; }
+    /*DATE_COMPARE_CSS*/
     .period-ctrl-bar { margin-bottom: 12px; }
 
     /* ── Toggle "Dados no gráfico" (padrão da skill lis-dashboard) ── */
@@ -212,10 +215,30 @@
        lado a lado. Mesma razao do col-value na regra que as de cima. */
     .hier-table td.col-value.ej-alta { color: var(--lis-laranja); }
     .hier-table td.col-value.ej-corte { color: var(--lis-azul-cl); }
+    /* Variacao da posicao em aberto: verde quando ela cresce, laranja quando encolhe -- nao as
+       cores de alta/corte da Selic, que dizem outra coisa. */
+    .hier-table td.col-value.ej-oi-up { color: var(--lis-verde); }
+    .hier-table td.col-value.ej-oi-dn { color: var(--lis-laranja); }
     .hier-table td.col-value.ej-acima { color: var(--lis-dourado); font-weight: 600; }
     .hier-table td.col-value.ej-abaixo { color: var(--lis-azul); font-weight: 600; }
     .hier-table th.ej-grp { text-align: center; color: var(--text); }
     .hier-table .ej-sep { border-left: 1px solid var(--border); }
+    .hier-table tr.ej-op-total td { font-weight: 600; border-top: 2px solid var(--border); }
+    .hier-table td.ej-op-dec { font-weight: 600; }
+    /* Pregao a pregao: a linha do dia abre as decisoes daquele pregao. A barra de fundo e a
+       formatacao condicional -- no dia, contra o maior pregao da reuniao; na decisao, a fatia
+       dela no dia, na cor da decisao. */
+    .hier-table tr.ej-dia { cursor: pointer; }
+    .hier-table tr.ej-dia:hover td.col-label { color: var(--lis-dourado); }
+    .hier-table tr.ej-dia td.col-label .ej-caret {
+      display: inline-block; width: 14px; font-family: var(--mono); color: var(--muted);
+    }
+    .hier-table tr.ej-dia.aberto td { font-weight: 600; }
+    .hier-table tr.ej-sub td { font-size: 11.5px; border-bottom-style: dashed; }
+    .hier-table tr.ej-sub td.col-label { padding-left: 34px; font-weight: 600; }
+    .hier-table td .ej-pct { display: inline-block; min-width: 46px; color: var(--muted); font-size: 10.5px; }
+    .tbl-fold .hier-table-wrap.ej-scroll { max-height: 560px; overflow-y: auto; }
+    .ej-scroll .hier-table thead th { position: sticky; top: 0; background: var(--card-bg); z-index: 1; }
 
     /* -- Tabela em click-drop: <details>/<summary> nativo, mesma mecanica do apendice --
        As duas tabelas da aba Projecoes tem 17 e 107 linhas; abertas por default elas empurram
@@ -973,20 +996,21 @@
        aba Curva do Copom do relatorio de Expectativas (2026-09-24).
   ═══════════════════════════════════════════ -->
   <div class="tab-panel" id="tab-expectativas">
-    <section>
+    <nav class="subtab-nav" id="ej-subtabs"></nav>
+    <section class="subtab-panel active" id="ej-sub-hoje">
       <h2>O caminho da Selic hoje — a pesquisa e a curva</h2>
       <p class="lead" id="ej-lead">—</p>
 
       <div class="ctrl-bar chart-ctrl-bar">
         <span class="ctrl-label">Comparar a pesquisa com</span>
-        <div class="ej-cmp" id="ej-cmp-focus"></div>
+        <div id="ej-cmp-focus"></div>
         <div class="ctrl-sep"></div>
         <span class="ctrl-label">Comparar a curva com</span>
-        <div class="ej-cmp" id="ej-cmp-di"></div>
+        <div id="ej-cmp-di"></div>
         <div class="ctrl-sep"></div>
         <div class="dl-toggle" id="dl-chart-ej-hoje"><span class="toggle-icon"></span> Dados no gráfico</div>
       </div>
-      <p class="ej-cmp-nota" id="ej-cmp-nota"></p>
+      <p class="dc-nota" id="ej-cmp-nota"></p>
       <div class="chart-card"><div id="chart-ej-hoje"></div></div>
       <p class="chart-caption" id="ej-cap-hoje">—</p>
       <details class="tbl-fold" open style="margin-top:14px">
@@ -996,7 +1020,7 @@
       </details>
     </section>
 
-    <section>
+    <section class="subtab-panel" id="ej-sub-reuniao">
       <h2>Uma reunião — como a expectativa para ela se formou</h2>
       <p class="lead" id="ej-lead-reu">—</p>
 
@@ -1010,7 +1034,7 @@
       <p class="chart-caption" id="ej-cap-reu">—</p>
     </section>
 
-    <section>
+    <section class="subtab-panel" id="ej-sub-tempo">
       <h2>Selic esperada por reunião à frente, ao longo do tempo</h2>
       <p class="lead" id="ej-lead-hz">—</p>
 
@@ -1025,25 +1049,42 @@
       <p class="chart-caption" id="ej-cap-hz">—</p>
     </section>
 
-    <section>
+    <section class="subtab-panel" id="ej-sub-opcoes">
       <h2>As opções de Copom — a probabilidade de cada decisão</h2>
       <p class="lead" id="ej-lead-op">—</p>
 
       <div class="ctrl-bar chart-ctrl-bar">
         <span class="ctrl-label">Reunião</span>
-        <div class="pill-group" id="pg-ej-op-reu"></div>
+        <select class="date-select" id="sel-ej-op-reu"></select>
         <div class="ctrl-sep"></div>
-        <span class="ctrl-label">Comparar com</span>
-        <div class="pill-group" id="pg-ej-op-comp"></div>
+        <span class="ctrl-label">Comparar com o pregão de</span>
+        <div id="ej-op-cmp"></div>
         <div class="ctrl-sep"></div>
         <div class="dl-toggle" id="dl-chart-ej-op"><span class="toggle-icon"></span> Dados no gráfico</div>
       </div>
+      <p class="dc-nota" id="ej-op-cmp-nota"></p>
       <div class="chart-card"><div id="chart-ej-op-dist"></div></div>
       <div class="chart-card"><div id="chart-ej-op-hist"></div></div>
       <p class="chart-caption" id="ej-cap-op">—</p>
+      <div class="ctrl-bar chart-ctrl-bar" style="margin-top:14px">
+        <span class="ctrl-label">Medida</span>
+        <div class="pill-group" id="pg-ej-op-vol"></div>
+      </div>
+      <div class="chart-card"><div id="chart-ej-op-vol"></div></div>
+      <p class="chart-caption" id="ej-cap-op-vol">—</p>
+      <details class="tbl-fold" open style="margin-top:14px">
+        <summary>Negócios e posição em aberto, decisão a decisão<span class="tbl-fold-n" id="ej-op-neg-sum">—</span></summary>
+        <div class="hier-table-wrap"><table class="hier-table" id="ej-op-neg"></table></div>
+        <p class="chart-caption" id="ej-op-neg-nota">—</p>
+      </details>
+      <details class="tbl-fold" style="margin-top:10px">
+        <summary>Negócios pregão a pregão<span class="tbl-fold-n" id="ej-op-dia-sum">—</span></summary>
+        <div class="hier-table-wrap ej-scroll"><table class="hier-table" id="ej-op-dia"></table></div>
+        <p class="chart-caption" id="ej-op-dia-nota">—</p>
+      </details>
     </section>
 
-    <section>
+    <section class="subtab-panel" id="ej-sub-notas">
       <h2>Como ler estes gráficos</h2>
       <div style="margin-top:6px">
         <details class="appendix-item"><summary>Pesquisa e curva: por que não são o mesmo número</summary>
@@ -1194,6 +1235,8 @@ var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true}
 
 /*CHART_HEAD_JS*/
 
+/*DATE_COMPARE_JS*/
+
 // -- Titulo e fonte de cada grafico: os DOIS unicos textos fixos do cabecalho -------
 // O subtitulo e o periodo saem de describeChart() a cada render. Um grafico daqui sai da
 // pagina como print e circula sozinho, longe do <h2> da secao e das notas de metodologia:
@@ -1204,6 +1247,7 @@ var SRC_COPOM = 'BCB — comunicados do Copom e Relatório de Política Monetár
 var SRC_RPM = 'BCB — anexo estatístico do Relatório de Política Monetária (Relatório de Inflação até 2024), cenário de referência';
 var SRC_EJ = 'BCB — pesquisa Focus, Selic esperada por reunião do Copom; B3 — curva DI × pré do arquivo de pregão';
 var SRC_EJ_OP = 'B3 — opções de Copom, prêmio de referência do arquivo de pregão';
+var SRC_EJ_OP_NEG = 'B3 — opções de Copom, boletim de preços do pregão (negócios e posição em aberto)';
 // O cenário de juros vai no subtítulo, que muda com a edição escolhida -- aqui ele mentiria
 // quando a escolhida é de juros constantes.
 var SRC_RPM_PROJ = 'BCB — Relatório de Política Monetária (Relatório de Inflação até 2024); IBGE — IPCA realizado';
@@ -1225,6 +1269,7 @@ var CHART_META = {
   // A reuniao e um seletor: titulo derivado nos dois.
   'chart-ej-op-dist': {title: '', source: SRC_EJ_OP},
   'chart-ej-op-hist': {title: '', source: SRC_EJ_OP},
+  'chart-ej-op-vol':  {title: '', source: SRC_EJ_OP_NEG},
 };
 
 
@@ -3602,8 +3647,8 @@ function renderCondicionais() {
 //  a comparação por data do primeiro gráfico lê. O JS só escolhe, recorta e desenha.
 // ═══════════════════════════════════════════════════════════════════════════════
 // cmp: a data com que cada fonte compara o caminho de hoje -- uma por fonte, null = nenhuma.
-var EJ = {dlHoje: false, dlReu: false, dlHz: false, cmp: {focus: null, di: null}, cmpNota: {}, reuniao: null, hz: 4,
-          dlOp: false, opReu: null, opComp: 4};
+var EJ = {dlHoje: false, dlReu: false, dlHz: false, cmp: {focus: null, di: null}, sub: null, reuniao: null, hz: 4,
+          dlOp: false, opReu: null, opCmp: null, opVol: 'q', opDiaAb: {}};
 var EJ_HOJE = 'chart-ej-hoje', EJ_REU = 'chart-ej-reuniao', EJ_HZ = 'chart-ej-hz', EJ_GAP = 'chart-ej-gap';
 var EJ_UNID = 'meta Selic, % ao ano';
 var EJ_UNID_GAP = 'curva DI menos pesquisa Focus, pontos-base';
@@ -3633,7 +3678,6 @@ function ejQuandoEntre(j) {
   if (!r) return '—';
   return r.est ? cnMesAno(r.d) + ', data estimada' : cnDataBR(r.d);
 }
-function ejSemanas(n) { return n === 1 ? '1 semana' : n + ' semanas'; }
 // A pesquisa pode cair num oitavo de ponto (13,625); a curva e as opções são preços contínuos e
 // saem com duas casas -- a terceira seria precisão que a conta não tem.
 function ejFmt(fonte, v) { return fonte === 'focus' ? cnSel(v) : fmtBR(v, 2); }
@@ -3670,26 +3714,10 @@ function ejDatasComp(fonte) {
   if (Dd) Dd.datas.forEach(function(d, i) { out.push({d: d, S: Dd, i: i}); });
   return out;
 }
-// A data disponível mais recente até `data` -- num fim de semana, feriado ou dia sem pesquisa,
-// a anterior; antes do começo da série, a primeira.
+// A entrada da data disponível mais recente até `data` (dcNaData, do compartilhado).
 function ejNaData(fonte, data) {
-  var L = ejDatasComp(fonte);
-  if (!L.length || !data) return null;
-  for (var k = L.length - 1; k >= 0; k--) if (L[k].d <= data) return L[k];
-  return L[0];
-}
-// O passo de "dia anterior"/"dia seguinte": a data disponível vizinha.
-function ejVizinha(fonte, data, passo) {
-  var L = ejDatasComp(fonte);
-  if (!L.length) return null;
-  var e = ejNaData(fonte, data), k = e ? L.map(function(x) { return x.d; }).indexOf(e.d) : L.length - 1;
-  var n = k + passo;
-  return (n >= 0 && n < L.length) ? L[n].d : null;
-}
-// O default: a data imediatamente anterior à mais recente -- o que mudou de um dia para o outro.
-function ejCmpPadrao(fonte) {
-  var L = ejDatasComp(fonte);
-  return L.length >= 2 ? L[L.length - 2].d : null;
+  var L = ejDatasComp(fonte), k = dcNaData(L.map(function(e) { return e.d; }), data);
+  return k < 0 ? null : L[k];
 }
 function ejNomeFonte(f) { return f === 'di' ? 'Curva DI' : 'Pesquisa Focus'; }
 
@@ -4173,8 +4201,8 @@ function ejPbSinal(x) { return (x > 0 ? '+' : x < 0 ? '−' : '') + fmtBR(Math.a
 // da reunião), `d` (a variação esperada, p.b.), `v` (a Selic esperada) e `soma` (a soma dos
 // prêmios, 100 × o fator de desconto). O JS só escolhe e desenha.
 var EJ_OP_DIST = 'chart-ej-op-dist', EJ_OP_HIST = 'chart-ej-op-hist';
+var EJ_OP_CMP = null;  // o controle de data da comparação (setupDateCompare), refeito por reunião
 var EJ_OP_UNID = 'probabilidade da decisão, % (prêmio da opção ÷ soma dos prêmios da reunião)';
-var EJ_OP_COMP = [0, 1, 4];
 // Cor pela DECISÃO, não pela posição: a mesma decisão tem a mesma cor nas duas vistas e em
 // qualquer reunião. Todas da paleta de séries (ΔE2000 ≥ 20 entre si).
 var EJ_OP_COR = {'-100': '#B39DDB', '-75': '#64B5F6', '-50': '#1565C0', '-25': '#418791', '0': '#1F2853',
@@ -4200,6 +4228,50 @@ function ejOpReunioes() {
     return k >= 0 && k < b.v.length && b.d[k] != null;
   }).sort(function(a, b) { return a - b; });
 }
+// TODAS as reuniões que já tiveram opção listada (desde 2020), as decididas inclusive: as por
+// decidir primeiro, da mais próxima para a mais distante, e depois as decididas, da mais recente
+// para a mais antiga -- é a ordem do seletor.
+function ejOpTodas() {
+  var O = ejOp();
+  if (!O) return [];
+  var js = Object.keys(O.por_reuniao).map(Number);
+  var fut = js.filter(function(j) { return !ejOpDecidida(j); }).sort(function(a, b) { return a - b; });
+  var pas = js.filter(ejOpDecidida).sort(function(a, b) { return b - a; });
+  return fut.concat(pas);
+}
+// O último pregão com opção da reunião: o mais recente, se ela ainda está por decidir; o da
+// véspera do anúncio (o do próprio dia da decisão), se já foi decidida.
+function ejOpPonta(j) {
+  var O = ejOp(), b = O && O.por_reuniao[String(j)];
+  if (!b) return -1;
+  for (var k = b.d.length - 1; k >= 0; k--) if (b.d[k] != null) return b.i0 + k;
+  return -1;
+}
+// Decidida: já tem Selic no calendário, ou a data dela ficou para trás do pregão mais recente
+// (o calendário pode estar um dia atrás do anúncio).
+function ejOpDecidida(j) {
+  var O = ejOp(), r = ejReu(j);
+  return r.selic != null || r.d < O.datas[O.datas.length - 1];
+}
+// Os pregões em que a reunião tinha opção -- as datas com que a distribuição pode ser comparada.
+function ejOpDatasReu(j) {
+  var O = ejOp(), b = O && O.por_reuniao[String(j)];
+  if (!b) return [];
+  var out = [];
+  b.d.forEach(function(v, k) { if (v != null) out.push(O.datas[b.i0 + k]); });
+  return out;
+}
+// O passo que o Copom de fato decidiu, em p.b. (null se a reunião não foi decidida ou se a
+// decisão anterior não está no calendário).
+function ejOpPassoDecidido(j) {
+  var r = ejReu(j);
+  if (!r || r.selic == null) return null;
+  for (var k = j - 1; k >= 0; k--) {
+    var a = ejReu(k);
+    if (a && a.selic != null) return Math.round((r.selic - a.selic) * 100);
+  }
+  return null;
+}
 // A distribuição de uma reunião num pregão (índice i do eixo de pregões): [{b, p}] em ordem.
 function ejOpDist(j, i) {
   var O = ejOp(), b = O && O.por_reuniao[String(j)];
@@ -4208,14 +4280,13 @@ function ejOpDist(j, i) {
   if (k < 0 || k >= b.d.length || b.d[k] == null) return null;
   return b.dec.map(function(x) { return {b: x, p: b.p[String(x)][k]}; });
 }
-// O pregão mais recente com data até `semanas` semanas antes do último -- por data, como na
-// comparação do caminho de hoje.
-function ejOpPregaoAtras(semanas) {
+// O pregão da comparação: o da data escolhida, ou o anterior disponível a ela. -1 sem
+// comparação, e também quando é o próprio pregão mais recente (as barras se sobreporiam).
+function ejOpPregaoCmp() {
   var O = ejOp();
-  if (!O) return -1;
-  var alvo = Date.parse(O.datas[O.datas.length - 1]) - semanas * 7 * 86400000;
-  for (var i = O.datas.length - 1; i >= 0; i--) if (Date.parse(O.datas[i]) <= alvo) return i;
-  return -1;
+  if (!O || !EJ.opCmp || EJ.opReu == null) return -1;
+  var i = dcNaData(O.datas, EJ.opCmp);
+  return i >= ejOpPonta(EJ.opReu) ? -1 : i;
 }
 function ejOpTitulo(j) {
   var r = ejReu(j);
@@ -4232,20 +4303,26 @@ function ejOpDecVisiveis(dists) {
 function renderEjOpDist() {
   var el = document.getElementById(EJ_OP_DIST), O = ejOp(), j = EJ.opReu;
   if (!O || j == null) { if (el) el.innerHTML = ''; return; }
-  var iH = O.datas.length - 1, iC = EJ.opComp ? ejOpPregaoAtras(EJ.opComp) : -1;
+  var iH = ejOpPonta(j), iC = ejOpPregaoCmp(), dec = ejOpPassoDecidido(j);
   var dH = ejOpDist(j, iH), dC = iC >= 0 ? ejOpDist(j, iC) : null;
   var decs = ejOpDecVisiveis([dH, dC]);
+  // A decisão tomada entra mesmo que o mercado não lhe desse probabilidade visível -- é o caso
+  // em que ela mais importa.
+  if (dec != null && decs.indexOf(dec) < 0 && (dH || []).some(function(x) { return x.b === dec; })) {
+    decs.push(dec); decs.sort(function(a, b) { return a - b; });
+  }
   var val = function(D0, x) { var e = (D0 || []).filter(function(y) { return y.b === x; })[0]; return e ? e.p : null; };
   var cats = decs.map(ejOpRotulo), traces = [];
   if (dC) {
     traces.push({x: cats, y: decs.map(function(x) { return val(dC, x); }), type: 'bar',
-                 name: ejSemanas(EJ.opComp) + ' antes — ' + cnDataBR(O.datas[iC]),
+                 name: 'Pregão de ' + cnDataBR(O.datas[iC]),
                  marker: {color: '#D5D7E3'},
                  hovertemplate: '<b>%{x}</b> — ' + cnDataBR(O.datas[iC]) + ': %{y:.1f}%<extra></extra>'});
   }
   var tH = {x: cats, y: decs.map(function(x) { return val(dH, x); }), type: 'bar',
             name: 'Pregão de ' + cnDataBR(O.datas[iH]),
-            marker: {color: decs.map(ejOpCor)},
+            marker: {color: decs.map(ejOpCor),
+                     line: {color: C.dourado, width: decs.map(function(x) { return x === dec ? 3 : 0; })}},
             hovertemplate: '<b>%{x}</b> — ' + cnDataBR(O.datas[iH]) + ': %{y:.1f}%<extra></extra>'};
   if (EJ.dlOp) {
     tH.text = tH.y.map(function(v) { return v == null ? '' : fmtBR(v, 1) + '%'; });
@@ -4253,8 +4330,11 @@ function renderEjOpDist() {
     tH.textfont = {family: 'JetBrains Mono,monospace', size: 10, color: C.azul};
   }
   traces.push(tH);
+  var kDec = dec == null ? -1 : decs.indexOf(dec);
   // Não é série temporal: o X são as decisões, sem régua de período nem preservação de janela.
   var layout = {
+    annotations: kDec < 0 ? [] : [{x: cats[kDec], y: tH.y[kDec] || 0, yshift: 18, showarrow: false,
+      text: 'decidido', font: {family: 'JetBrains Mono,monospace', size: 10, color: C.dourado}}],
     height: 380, margin: {l: 55, r: 30, t: 20, b: 60}, barmode: 'group', bargap: 0.25,
     hovermode: 'closest',
     hoverlabel: {bgcolor: C.azul, font: {family: 'Barlow,sans-serif', size: 12, color: '#fff'}},
@@ -4269,9 +4349,30 @@ function renderEjOpDist() {
   Plotly.react(EJ_OP_DIST, traces, layout, _PLOTLY_CONFIG);
   describeChart(EJ_OP_DIST, ejSemNome(traces), [
     'uma barra por decisão possível',
-    dC ? 'cinza: ' + ejSemanas(EJ.opComp) + ' antes' : '',
+    dec != null ? 'decidido: ' + ejOpRotulo(dec).toLowerCase() + ', contorno dourado' : '',
+    dC ? 'cinza: pregão de ' + cnDataBR(O.datas[iC]) : (iC >= 0 ? 'sem opção desta reunião em ' + cnDataBR(O.datas[iC]) : ''),
   ], EJ_OP_UNID, {titulo: 'Probabilidade de Cada Decisão na ' + ejOpTitulo(j),
                   periodo: 'pregão de ' + cnDataBR(O.datas[iH]) + (dC ? ' contra ' + cnDataBR(O.datas[iC]) : '')});
+}
+
+// As reuniões do Copom dentro da janela de um gráfico de pregões: linha pontilhada vertical e, no
+// topo, o número e o que se decidiu. Vão SEMPRE no layout, vazias quando não há nenhuma: sem a
+// chave, o Plotly.react herda as marcas da reunião desenhada antes.
+function ejOpRotuloCurto(b) {
+  return b === 0 ? 'manteve' : (b < 0 ? '−' : '+') + fmtBR(Math.abs(b), b % 1 ? 1 : 0);
+}
+function ejMarcasCopom(d0, d1) {
+  var shapes = [], ann = [];
+  (ejD().reunioes || []).forEach(function(r, k) {
+    if (!r || r.est || r.d < d0 || r.d > d1) return;
+    var dec = ejOpPassoDecidido(k);
+    shapes.push({type: 'line', xref: 'x', yref: 'paper', x0: r.d, x1: r.d, y0: 0, y1: 1, layer: 'below',
+                 line: {color: 'rgba(31,40,83,0.45)', width: 1, dash: 'dot'}});
+    ann.push({xref: 'x', yref: 'paper', x: r.d, y: 1, yanchor: 'bottom', showarrow: false,
+              text: (r.nro ? r.nro + 'ª' : 'Copom') + (dec != null ? ' · ' + ejOpRotuloCurto(dec) : ''),
+              font: {family: 'JetBrains Mono,monospace', size: 9.5, color: '#5a6177'}});
+  });
+  return {shapes: shapes, annotations: ann};
 }
 
 // O histórico da reunião escolhida: uma linha por decisão relevante e as outras somadas.
@@ -4319,12 +4420,16 @@ function renderEjOpHist() {
   });
   layout.xaxis.hoverformat = '%d/%m/%Y';
   layout.yaxis.range = [-3, 103];
+  var mc = ejMarcasCopom(H.datas[0], H.datas[H.datas.length - 1]);
+  layout.shapes = mc.shapes; layout.annotations = mc.annotations;
   // A reunião muda pelo seletor: a janela da anterior não serve para esta.
   delete _chartXRange[EJ_OP_HIST];
   _reactPreserveX(EJ_OP_HIST, traces, layout);
   describeChart(EJ_OP_HIST, ejSemNome(traces), [
     'pregão a pregão, desde que a reunião foi listada',
     H.resto.length ? 'decisões que nunca passaram de ' + EJ_OP_MIN + '% somadas numa linha' : '',
+    ejOpPassoDecidido(j) != null ? 'decidido: ' + ejOpRotulo(ejOpPassoDecidido(j)).toLowerCase() : '',
+    mc.shapes.length ? 'linhas pontilhadas: reuniões do Copom no caminho, com a decisão em p.b.' : '',
   ], EJ_OP_UNID, {freq: 'dia', titulo: 'Como a Probabilidade de Cada Decisão Andou — ' + ejOpTitulo(j)});
 }
 function renderEjOpTextos() {
@@ -4363,13 +4468,308 @@ function renderEjOpTextos() {
   }
   ejPut('ej-lead-op', txt);
   ejPut('ej-cap-op',
-    'Em cima: a probabilidade de cada decisão na reunião escolhida, no pregão mais recente' +
-    (EJ.opComp ? ', e em cinza a de ' + ejSemanas(EJ.opComp) + ' antes' : '') + '. Embaixo: como essas ' +
+    'Em cima: a probabilidade de cada decisão na reunião escolhida, ' +
+    (ejOpDecidida(EJ.opReu) ? 'no último pregão antes do anúncio' : 'no pregão mais recente') +
+    ejOpCmpLegenda() + '. ' + ejOpDecididaFrase() + 'Embaixo: como essas ' +
     'probabilidades andaram desde que a reunião passou a ter opção listada, uma linha por decisão; as que ' +
     'nunca passaram de ' + EJ_OP_MIN + '% entram somadas, para as linhas continuarem somando 100%. As ' +
     'probabilidades são de mercado, lidas do preço: carregam o que se cobra para correr o risco, como a curva.');
 }
 
+// ── 4b. Negócios e posição em aberto ────────────────────────────────────────────
+// D.expectativas.opcoes.negocios.por_reuniao[j] = {d: pregões, r: linhas [índice em d, decisão,
+// negócios, contratos, volume R$, posição no início do pregão, posição no fim (null até o arquivo
+// seguinte sair), último preço]}. ejOpNeg devolve as linhas com a data no lugar do índice. Reunião
+// decidida antes de `negocios.desde` não tem linha, e a nota diz isso em vez de uma tabela vazia.
+function ejOpNeg(j) {
+  var O = ejOp(), N = O && O.negocios, R = N && N.por_reuniao && N.por_reuniao[String(j)];
+  if (!R || !R.r) return [];
+  if (!R._linhas) R._linhas = R.r.map(function(x) { return [R.d[x[0]]].concat(x.slice(1)); });
+  return R._linhas;
+}
+// O total da reunião em cada pregão, com as linhas de cada decisão: o que a tabela pregão a
+// pregão e o gráfico de volume leem.
+function ejOpNegDias(j) {
+  var dias = {}, ks = [];
+  ejOpNeg(j).forEach(function(r) {
+    var x = dias[r[0]];
+    if (!x) { x = dias[r[0]] = {d: r[0], n: 0, q: 0, v: 0, oi: 0, oi0: 0, temFim: false, top: null, linhas: []}; ks.push(r[0]); }
+    x.n += r[2]; x.q += r[3]; x.v += r[4]; x.oi0 += r[5];
+    if (r[6] != null) { x.oi += r[6]; x.temFim = true; }
+    if (r[3] > 0 && (x.top == null || r[3] > x.top[1])) x.top = [r[1], r[3]];
+    x.linhas.push(r);
+  });
+  ks.sort();
+  return ks.map(function(k) { return dias[k]; });
+}
+// A B3 trocou o tamanho do contrato em `negocios.troca` (R$ 10.000 -> R$ 100). O payload já vem
+// em contratos de R$ 100; esta frase avisa quando a reunião tem pregão de antes da troca.
+function ejOpNotaTamanho(j) {
+  var O = ejOp(), T = O && O.negocios && O.negocios.troca, L = ejOpNeg(j);
+  if (!T || !L.length || L[0][0] >= T) return '';
+  return ' Até ' + cnDataBR(L.filter(function(r) { return r[0] < T; }).pop()[0]) + ' um contrato pagava R$ 10.000, e a ' +
+    'B3 passou a R$ 100 em ' + cnDataBR(T) + ': os contratos e as posições de antes estão contados em contratos de ' +
+    'hoje (cada um dos antigos vale 100), para a série se comparar.';
+}
+function ejHexA(hex, a) {
+  var h = hex.replace('#', '');
+  return 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' + parseInt(h.slice(2, 4), 16) + ',' +
+    parseInt(h.slice(4, 6), 16) + ',' + a + ')';
+}
+// Barra de fundo de uma célula alinhada à direita: cresce da direita, como o número.
+function ejBarra(frac, cor) {
+  var w = Math.max(0, Math.min(100, (frac || 0) * 100)).toFixed(1);
+  return ' style="background:linear-gradient(to left,' + cor + ' ' + w + '%,transparent ' + w + '%)"';
+}
+// O pregão da tabela: o das barras (a ponta da reunião), ou o último com negócio antes dele.
+function ejOpNegPregao(j) {
+  var L = ejOpNeg(j), ponta = ejOp().datas[ejOpPonta(j)], best = null;
+  L.forEach(function(r) { if (r[0] <= ponta && (best == null || r[0] > best)) best = r[0]; });
+  return best;
+}
+function fmtMil(v) {
+  if (v == null || isNaN(v)) return '—';
+  var s = String(Math.round(Math.abs(v))).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return (v < 0 ? '-' : '') + s;
+}
+function renderEjOpNeg() {
+  var tab = document.getElementById('ej-op-neg'), tabD = document.getElementById('ej-op-dia');
+  var j = EJ.opReu, O = ejOp();
+  if (!tab || !O || j == null) return;
+  var N = O.negocios || {}, L = ejOpNeg(j), d = ejOpNegPregao(j);
+  if (!L.length || !d) {
+    tab.innerHTML = ''; if (tabD) tabD.innerHTML = '';
+    ejPut('ej-op-neg-sum', 'sem dado'); ejPut('ej-op-dia-sum', 'sem dado');
+    ejPut('ej-op-neg-nota', N.desde
+      ? 'Sem negócios carregados para a ' + ejNome(j) + ': a série de negócios e posição em aberto começa no pregão de ' +
+        cnDataBR(N.desde) + '.'
+      : 'Os negócios das opções de Copom não carregaram.');
+    return;
+  }
+  // Decisão a decisão, no pregão escolhido. A probabilidade é a das barras, do mesmo pregão.
+  var iD = O.datas.indexOf(d), dist = iD >= 0 ? (ejOpDist(j, iD) || []) : [];
+  var prob = {}; dist.forEach(function(x) { prob[x.b] = x.p; });
+  var linhas = L.filter(function(r) { return r[0] === d; }).sort(function(a, b) { return a[1] - b[1]; });
+  var dec = ejOpPassoDecidido(j);
+  // A posição em aberto nunca fica em branco: com a do fim do pregão (que só sai com o arquivo
+  // seguinte), mostra-se ela e a variação no pregão; sem ela, a do INÍCIO -- que é a do fim do
+  // pregão anterior -- e a variação naquele pregão, contra a abertura dele.
+  var dias = ejOpNegDias(j), iDia = -1;
+  dias.forEach(function(x, k) { if (x.d === d) iDia = k; });
+  var temFim = linhas.length > 0 && linhas.every(function(r) { return r[6] != null; });
+  var ant = iDia > 0 ? dias[iDia - 1] : null, oiAnt = {};
+  if (ant) ant.linhas.forEach(function(r) { oiAnt[r[1]] = r[5]; });
+  var dRef = temFim ? d : (ant ? ant.d : null);
+  var pos = function(r) { return temFim ? r[6] : r[5]; };
+  var vari = function(r) { return temFim ? r[6] - r[5] : (ant ? r[5] - (oiAnt[r[1]] || 0) : null); };
+  var tot = [0, 0, 0, 0, 0];
+  var h = '<thead><tr><th class="col-label">Decisão</th><th>Probabilidade</th><th class="ej-sep">Negócios</th>' +
+    '<th>Contratos</th><th>Volume (R$)</th><th>Último preço</th>' +
+    '<th class="ej-sep">Posição em aberto' + (dRef ? ' no fim de ' + cnDataBR(dRef).slice(0, 5) : ' no início do pregão') + '</th>' +
+    '<th>Variação' + (dRef ? ' em ' + cnDataBR(dRef).slice(0, 5) : '') + '</th></tr></thead><tbody>';
+  var cVar = function(v) {
+    return '<td class="col-value' + (v > 0 ? ' ej-oi-up' : v < 0 ? ' ej-oi-dn' : '') + '">' +
+      (v == null ? '—' : (v > 0 ? '+' : '') + fmtMil(v)) + '</td>';
+  };
+  linhas.forEach(function(r) {
+    var dv = vari(r);
+    tot[0] += r[2]; tot[1] += r[3]; tot[2] += r[4]; tot[3] += pos(r); tot[4] += dv || 0;
+    h += '<tr><td class="col-label ej-op-dec" style="color:' + ejOpCor(r[1]) + '">' + ejOpRotulo(r[1]) +
+      (dec === r[1] ? ' · decidido' : '') + '</td>' +
+      '<td class="col-value">' + (prob[r[1]] == null ? '—' : fmtBR(prob[r[1]], 1) + '%') + '</td>' +
+      '<td class="col-value ej-sep">' + fmtMil(r[2]) + '</td><td class="col-value">' + fmtMil(r[3]) + '</td>' +
+      '<td class="col-value">' + fmtMil(r[4]) + '</td>' +
+      '<td class="col-value">' + (r[7] == null ? '—' : fmtBR(r[7], 2)) + '</td>' +
+      '<td class="col-value ej-sep">' + fmtMil(pos(r)) + '</td>' + cVar(dv) + '</tr>';
+  });
+  h += '<tr class="ej-op-total"><td class="col-label">Total da reunião</td><td class="col-value">—</td>' +
+    '<td class="col-value ej-sep">' + fmtMil(tot[0]) + '</td><td class="col-value">' + fmtMil(tot[1]) + '</td>' +
+    '<td class="col-value">' + fmtMil(tot[2]) + '</td><td class="col-value">—</td>' +
+    '<td class="col-value ej-sep">' + fmtMil(tot[3]) + '</td>' + cVar(dRef ? tot[4] : null) + '</tr>';
+  tab.innerHTML = h + '</tbody>';
+  ejPut('ej-op-neg-sum', ejNome(j) + ' · pregão de ' + cnDataBR(d));
+  ejPut('ej-op-neg-nota',
+    'Pregão de ' + cnDataBR(d) + ', o mesmo das barras coloridas. Cada contrato paga R$ 100 se a decisão for a ' +
+    'dele, e o preço é em pontos de R$ 1 — então o último preço é, aproximadamente, a probabilidade em %, e o ' +
+    'volume é contratos vezes preço. A posição em aberto é o número de contratos ainda vivos, e a B3 a publica ' +
+    'no arquivo do pregão seguinte' +
+    (temFim ? '; por isso ela e a variação são as do fim de ' + cnDataBR(d) + '.'
+      : (ant ? ': para ' + cnDataBR(d) + ' ela ainda não saiu, e a tabela mostra a do fim de ' + cnDataBR(ant.d) +
+             ' e quanto ela andou naquele pregão.' : '.')) +
+    ' A série de negócios começa em ' + cnDataBR(N.desde) + '.' + ejOpNotaTamanho(j));
+  renderEjOpDias();
+}
+
+// Pregão a pregão, toda a vida da reunião. Clicar na data abre as decisões daquele pregão, com a
+// fatia de cada uma no dia; o estado aberto é por reunião e sobrevive à troca de reunião.
+var EJ_BARRA_DIA = 'rgba(187,155,29,0.16)';
+function ejCelPct(v, tot, cor, extra) {
+  var f = tot > 0 ? v / tot : null;
+  return '<td class="col-value' + (extra || '') + '"' + (f != null ? ejBarra(f, cor) : '') + '>' + fmtMil(v) +
+    ' <span class="ej-pct">' + (f != null ? fmtBR(f * 100, 1) + '%' : '') + '</span></td>';
+}
+function renderEjOpDias() {
+  var tabD = document.getElementById('ej-op-dia'), j = EJ.opReu, O = ejOp();
+  if (!tabD || !O || j == null) return;
+  var dias = ejOpNegDias(j);
+  if (!dias.length) {
+    tabD.innerHTML = ''; ejPut('ej-op-dia-sum', 'sem dado'); ejPut('ej-op-dia-nota', '');
+    return;
+  }
+  if (!tabD._ejLigada) {
+    tabD._ejLigada = true;
+    tabD.addEventListener('click', function(ev) {
+      var tr = ev.target && ev.target.closest ? ev.target.closest('tr.ej-dia') : null;
+      if (!tr) return;
+      var k = EJ.opReu + '|' + tr.getAttribute('data-d');
+      if (EJ.opDiaAb[k]) delete EJ.opDiaAb[k]; else EJ.opDiaAb[k] = true;
+      renderEjOpDias();
+    });
+  }
+  var mx = {n: 0, q: 0, v: 0, oi: 0};
+  dias.forEach(function(x) { ['n', 'q', 'v', 'oi'].forEach(function(c) { if (x[c] > mx[c]) mx[c] = x[c]; }); });
+  var h = '<thead><tr><th class="col-label">Pregão</th><th>Negócios</th><th>Contratos</th><th>Volume (R$)</th>' +
+    '<th class="ej-sep">Posição no fim</th><th>Variação no dia</th><th class="col-label ej-sep">Decisão mais negociada</th>' +
+    '</tr></thead><tbody>';
+  var cVar = function(v) {
+    return '<td class="col-value' + (v > 0 ? ' ej-oi-up' : v < 0 ? ' ej-oi-dn' : '') + '">' +
+      (v == null ? '—' : (v > 0 ? '+' : '') + fmtMil(v)) + '</td>';
+  };
+  dias.slice().reverse().forEach(function(x) {
+    var ab = !!EJ.opDiaAb[j + '|' + x.d];
+    var cel = function(c, extra) {
+      return '<td class="col-value' + (extra || '') + '"' + (mx[c] > 0 ? ejBarra(x[c] / mx[c], EJ_BARRA_DIA) : '') + '>' +
+        fmtMil(x[c]) + '</td>';
+    };
+    h += '<tr class="ej-dia' + (ab ? ' aberto' : '') + '" data-d="' + x.d + '">' +
+      '<td class="col-label"><span class="ej-caret">' + (ab ? '−' : '+') + '</span>' + cnDataBR(x.d) + '</td>' +
+      cel('n') + cel('q') + cel('v') +
+      (x.temFim ? cel('oi', ' ej-sep') : '<td class="col-value ej-sep">—</td>') + cVar(x.temFim ? x.oi - x.oi0 : null) +
+      '<td class="col-label ej-sep">' + (x.top ? ejOpRotulo(x.top[0]) + ' · ' + fmtMil(x.top[1]) + ' contratos' : 'sem negócio') +
+      '</td></tr>';
+    if (!ab) return;
+    var iD = O.datas.indexOf(x.d), prob = {};
+    (iD >= 0 ? (ejOpDist(j, iD) || []) : []).forEach(function(z) { prob[z.b] = z.p; });
+    x.linhas.slice().sort(function(p, q) { return p[1] - q[1]; }).forEach(function(r) {
+      var cor = ejOpCor(r[1]), corA = ejHexA(cor, 0.2);
+      h += '<tr class="ej-sub"><td class="col-label" style="color:' + cor + '">' + ejOpRotulo(r[1]) + '</td>' +
+        ejCelPct(r[2], x.n, corA) + ejCelPct(r[3], x.q, corA) + ejCelPct(r[4], x.v, corA) +
+        (r[6] == null ? '<td class="col-value ej-sep">—</td>' : ejCelPct(r[6], x.oi, corA, ' ej-sep')) +
+        cVar(r[6] == null ? null : r[6] - r[5]) +
+        '<td class="col-label ej-sep">' + (r[7] == null ? 'sem negócio' : 'último preço ' + fmtBR(r[7], 2)) +
+        (prob[r[1]] != null ? ' · probabilidade ' + fmtBR(prob[r[1]], 1) + '%' : '') + '</td></tr>';
+    });
+  });
+  tabD.innerHTML = h + '</tbody>';
+  ejPut('ej-op-dia-sum', dias.length + ' pregões, desde ' + cnDataBR(dias[0].d));
+  ejPut('ej-op-dia-nota',
+    'Clique na data para abrir as decisões daquele pregão, cada uma com a fatia dela no total do dia. A barra ' +
+    'dourada de fundo compara o pregão com o maior da reunião naquela coluna; a colorida mede a fatia da decisão no dia. ' +
+    'A variação é a posição do fim menos a do início do pregão; o mais recente fica sem as duas até a B3 publicar o ' +
+    'arquivo do pregão seguinte.' + ejOpNotaTamanho(j));
+}
+
+// Quanto se negociou em cada decisão, pregão a pregão: o mesmo agrupamento do histórico de
+// probabilidade (decisão com linha própria lá tem barra própria aqui, na mesma cor), em barras
+// empilhadas -- contratos, volume e posição somam entre decisões, então a pilha é o total da reunião.
+var EJ_OP_VOL = 'chart-ej-op-vol';
+// `val` lê a linha [pregão, decisão, negócios, contratos, volume, posição no início, no fim, último].
+// A variação da posição não tem fatia do dia (soma de sinais trocados), então vai em barras relativas.
+var EJ_OP_VOL_MED = {
+  q:   {label: 'Contratos', titulo: 'Contratos Negociados', div: 1e3, dec: 1, u: 'mil',
+        val: function(r) { return r[3]; },
+        unid: 'contratos negociados no dia, mil'},
+  v:   {label: 'Volume (R$)', titulo: 'Volume Negociado', div: 1e6, dec: 2, u: 'R$ mi',
+        val: function(r) { return r[4]; },
+        unid: 'volume negociado no dia, R$ milhões (contratos × preço)'},
+  oi:  {label: 'Posição em aberto', titulo: 'Posição em Aberto', div: 1e3, dec: 1, u: 'mil', fim: true,
+        val: function(r) { return r[6]; },
+        unid: 'posição em aberto no fim do pregão, mil contratos'},
+  doi: {label: 'Variação da posição', titulo: 'Variação da Posição em Aberto', div: 1e3, dec: 1, u: 'mil', fim: true,
+        rel: true, val: function(r) { return r[6] == null ? null : r[6] - r[5]; },
+        unid: 'variação da posição em aberto no pregão, mil contratos (fim menos início)'},
+};
+function renderEjOpVol() {
+  var el = document.getElementById(EJ_OP_VOL), j = EJ.opReu, O = ejOp();
+  if (!el || !O || j == null) return;
+  var med = EJ.opVol, M = EJ_OP_VOL_MED[med], dias = ejOpNegDias(j), N = O.negocios || {};
+  if (!dias.length) {
+    el.innerHTML = '';
+    ejPut('ej-cap-op-vol', N.desde
+      ? 'Sem negócios carregados para a ' + ejNome(j) + ': a série começa no pregão de ' + cnDataBR(N.desde) + '.'
+      : 'Os negócios das opções de Copom não carregaram.');
+    return;
+  }
+  var H = ejOpHist(j), prin = H ? H.prin.slice() : [];
+  var grupos = prin.map(function(b) { return {nome: ejOpRotulo(b), cor: ejOpCor(b), tem: function(x) { return x === b; }}; });
+  var temOutras = dias.some(function(x) { return x.linhas.some(function(r) { return prin.indexOf(r[1]) < 0 && M.val(r); }); });
+  if (temOutras) grupos.push({nome: 'Outras decisões, somadas', cor: EJ_OP_OUTRAS, tem: function(x) { return prin.indexOf(x) < 0; }});
+  var datas = dias.map(function(x) { return x.d; });
+  // A posição do fim só existe com o arquivo do pregão seguinte: o último pregão fica sem barra.
+  var tot = dias.map(function(x) {
+    if (M.fim && !x.temFim) return null;
+    return M.rel ? 0 : x.linhas.reduce(function(a, r) { return a + (M.val(r) || 0); }, 0);
+  });
+  var traces = grupos.map(function(g) {
+    var y = [], cd = [];
+    dias.forEach(function(x, k) {
+      var s = null;
+      if (tot[k] != null) x.linhas.forEach(function(r) { var v = M.val(r); if (g.tem(r[1]) && v != null) s = (s || 0) + v; });
+      y.push(s == null ? null : s / M.div);
+      cd.push(s != null && tot[k] ? fmtBR(100 * s / tot[k], 1) + '%' : '—');
+    });
+    return {x: datas, y: y, customdata: cd, type: 'bar', name: g.nome, marker: {color: g.cor},
+            hovertemplate: '<b>' + g.nome + '</b> — %{y:,.' + M.dec + 'f} ' + M.u +
+              (M.rel ? '' : ' (%{customdata} do dia)') + '<extra></extra>'};
+  }).filter(function(t) { return t.y.some(function(v) { return v; }); });
+  if (EJ.dlOp) {
+    traces.forEach(function(t) {
+      // Um rótulo só por decisão, no último pregão com valor: um por dia cobriria as barras.
+      var k = t.y.length - 1;
+      while (k > 0 && !t.y[k]) k--;
+      t.text = t.y.map(function(v, i) { return i === k && v ? fmtBR(v, M.dec) : ''; });
+      t.textposition = 'inside';
+      t.textfont = {family: 'JetBrains Mono,monospace', size: 10, color: '#fff'};
+    });
+  }
+  _PERIOD_LABEL[EJ_OP_VOL] = cnDataBR;
+  var layout = mkTimeseriesLayout(M.unid, 420, traces, {
+    barmode: M.rel ? 'relative' : 'stack', bargap: 0.15, hovermode: 'x unified', separators: ',.',
+    legend: {orientation: 'h', y: -0.2, x: 0.5, xanchor: 'center', font: {size: 10.5}, traceorder: 'normal'},
+  });
+  layout.xaxis.hoverformat = '%d/%m/%Y';
+  var mc = ejMarcasCopom(datas[0], datas[datas.length - 1]);
+  layout.shapes = mc.shapes; layout.annotations = mc.annotations;
+  delete _chartXRange[EJ_OP_VOL];
+  _reactPreserveX(EJ_OP_VOL, traces, layout);
+  describeChart(EJ_OP_VOL, ejSemNome(traces), [
+    M.rel ? 'pregão a pregão: acima de zero, posição aberta; abaixo, encerrada' : 'pregão a pregão, barras empilhadas: a pilha é o total da reunião',
+    temOutras ? 'decisões sem linha própria no histórico de probabilidade somadas' : '',
+    M.fim && !dias[dias.length - 1].temFim ? 'o último pregão ainda não tem a posição do fim' : '',
+    mc.shapes.length ? 'linhas pontilhadas: reuniões do Copom no caminho' : '',
+  ], M.unid, {freq: 'dia', titulo: M.titulo + ' em Cada Decisão — ' + ejOpTitulo(j)});
+  ejPut('ej-cap-op-vol',
+    'Quanto dinheiro há atrás de cada probabilidade do gráfico de cima, com as mesmas cores. Contratos e volume são ' +
+    'o negociado no pregão; a posição em aberto é o número de contratos vivos no fim dele, que só se sabe com o ' +
+    'arquivo do pregão seguinte. Passe o mouse para ver a fatia de cada decisão no dia.' + ejOpNotaTamanho(j));
+}
+
+// Numa reunião decidida: o que o Copom fez, e quanto o mercado dava a isso na véspera.
+function ejOpDecididaFrase() {
+  var j = EJ.opReu, dec = j == null ? null : ejOpPassoDecidido(j);
+  if (dec == null) return '';
+  var d = ejOpDist(j, ejOpPonta(j)) || [], e = d.filter(function(x) { return x.b === dec; })[0];
+  return 'A ' + ejNome(j) + ' já foi decidida: ' + ejOpRotulo(dec).toLowerCase() + ' (contorno dourado)' +
+    (e && e.p != null ? ', a que o mercado dava ' + fmtBR(e.p, 0) + '% no pregão de ' +
+      cnDataBR(ejOp().datas[ejOpPonta(j)]) : ', que não estava entre as decisões listadas') + '. ';
+}
+function ejOpCmpLegenda() {
+  var O = ejOp(), iC = ejOpPregaoCmp();
+  if (iC < 0) return '';
+  var d = ejOpDist(EJ.opReu, iC);
+  return d ? ', e em cinza a do pregão de ' + cnDataBR(O.datas[iC]) + ', escolhido acima'
+           : '; no pregão de ' + cnDataBR(O.datas[iC]) + ', escolhido para comparar, esta reunião ainda não tinha opção listada';
+}
 function renderEjNotas() {
   var X = ejD(), H = ejHoje();
   if (X.di && X.di.spread && X.di.spread.length) {
@@ -4410,23 +4810,45 @@ function renderExpectativas() {
   wireDlToggle('dl-chart-ej-hoje', function(on) { EJ.dlHoje = on; if (!primeiro) renderEjHoje(); });
   wireDlToggle('dl-chart-ej-reuniao', function(on) { EJ.dlReu = on; if (!primeiro) renderEjReuniao(); });
   wireDlToggle('dl-chart-ej-hz', function(on) { EJ.dlHz = on; if (!primeiro) renderEjHz(); });
-  wireDlToggle('dl-chart-ej-op', function(on) { EJ.dlOp = on; if (!primeiro) { renderEjOpDist(); renderEjOpHist(); } });
+  wireDlToggle('dl-chart-ej-op', function(on) { EJ.dlOp = on; if (!primeiro) { renderEjOpDist(); renderEjOpHist(); renderEjOpVol(); } });
+  setupPillGroup('pg-ej-op-vol', Object.keys(EJ_OP_VOL_MED).map(function(k) { return {key: k, label: EJ_OP_VOL_MED[k].label}; }),
+    EJ.opVol, function(k) { EJ.opVol = k; if (!primeiro) renderEjOpVol(); });
   var opJs = ejOpReunioes();
   EJ.opReu = opJs.length ? opJs[0] : null;
-  setupPillGroup('pg-ej-op-reu', opJs.map(function(j) {
-    var r = ejReu(j);
-    return {key: String(j), label: (r.nro ? r.nro + 'ª' : cnPosicao(r.rot)) + ' · ' + cnDataBR(r.d)};
-  }), EJ.opReu != null ? String(EJ.opReu) : '', function(k) {
-    EJ.opReu = parseInt(k, 10);
-    if (!primeiro) { renderEjOpDist(); renderEjOpHist(); }
+  var selOp = document.getElementById('sel-ej-op-reu');
+  if (selOp) {
+    selOp.innerHTML = '';
+    var grupos = {fut: null, pas: null};
+    ejOpTodas().forEach(function(j) {
+      var g = ejOpDecidida(j) ? 'pas' : 'fut';
+      if (!grupos[g]) {
+        grupos[g] = document.createElement('optgroup');
+        grupos[g].label = g === 'fut' ? 'A decidir' : 'Já decididas';
+        selOp.appendChild(grupos[g]);
+      }
+      var r = ejReu(j), dec = ejOpPassoDecidido(j);
+      grupos[g].appendChild(new Option((r.nro ? r.nro + 'ª' : cnPosicao(r.rot)) + ' · ' + cnDataBR(r.d) +
+        (dec != null ? ' · ' + ejOpRotulo(dec).toLowerCase() : ''), String(j)));
+    });
+    if (EJ.opReu != null) selOp.value = String(EJ.opReu);
+    selOp.addEventListener('change', function() {
+      EJ.opReu = parseInt(selOp.value, 10);
+      // A comparação é dentro dos pregões DESTA reunião: volta ao anterior à ponta dela.
+      EJ.opCmp = dcPadrao(ejOpDatasReu(EJ.opReu));
+      if (EJ_OP_CMP) EJ_OP_CMP.set(EJ.opCmp);
+      renderEjOpDist(); renderEjOpHist(); renderEjOpVol(); renderEjOpTextos(); renderEjOpNeg();
+    });
+  }
+  EJ.opCmp = EJ.opReu != null ? dcPadrao(ejOpDatasReu(EJ.opReu)) : null;
+  EJ_OP_CMP = setupDateCompare('ej-op-cmp', {
+    datas: function() { return EJ.opReu != null ? ejOpDatasReu(EJ.opReu) : []; },
+    valor: EJ.opCmp, nome: 'a distribuição', semDado: 'pregão', notaId: 'ej-op-cmp-nota',
+    onChange: function(d) { EJ.opCmp = d; renderEjOpDist(); renderEjOpTextos(); },
   });
-  setupPillGroup('pg-ej-op-comp', EJ_OP_COMP.map(function(n) {
-    return {key: String(n), label: n ? ejSemanas(n) + ' antes' : 'Nenhuma'};
-  }), String(EJ.opComp), function(k) {
-    EJ.opComp = parseInt(k, 10);
-    if (!primeiro) { renderEjOpDist(); renderEjOpTextos(); }
+  ['focus', 'di'].forEach(function(f) {
+    EJ.cmp[f] = dcPadrao(ejDatasComp(f).map(function(e) { return e.d; }));
+    ejSetupCmp(f);
   });
-  ['focus', 'di'].forEach(function(f) { EJ.cmp[f] = ejCmpPadrao(f); ejSetupCmp(f); });
   setupPillGroup('pg-ej-hz', EJ_HZS.map(function(n) { return {key: String(n), label: ejOrdinal(n)}; }),
     String(EJ.hz), function(k) {
       EJ.hz = parseInt(k, 10);
@@ -4447,60 +4869,68 @@ function renderExpectativas() {
     });
   }
   primeiro = false;
-  renderEjHoje(); renderEjHojeTextos(); renderEjTabela();
-  renderEjReuniao(); renderEjReuniaoTextos();
-  renderEjHz(); renderEjHzTextos();
-  renderEjOpDist(); renderEjOpHist(); renderEjOpTextos();
+  // Os textos e a tabela não dependem de div visível: saem todos agora. Os gráficos, por sub-aba.
+  renderEjHojeTextos(); renderEjTabela();
+  renderEjReuniaoTextos(); renderEjHzTextos(); renderEjOpTextos();
   renderEjNotas();
+  ejSetupSubabas();
 }
 
-// A barra de uma fonte: dia anterior, a data, dia seguinte e "sem comparação". A data digitada
-// encaixa na disponível mais recente até ela, e a caixa passa a mostrar a que de fato foi usada.
-function ejSetupCmp(f) {
-  var box = document.getElementById('ej-cmp-' + f);
-  if (!box) return;
-  box.innerHTML = '';
-  var L = ejDatasComp(f), nome = f === 'di' ? 'curva' : 'pesquisa';
-  var botao = function(txt, title) {
-    var b = document.createElement('button');
-    b.className = 'ej-cmp-btn'; b.type = 'button'; b.textContent = txt; b.title = title;
-    box.appendChild(b); return b;
-  };
-  var ant = botao('‹', 'A ' + nome + ' do dia anterior disponível');
-  var inp = document.createElement('input');
-  inp.type = 'date'; inp.className = 'date-select';
-  inp.title = 'Data com que a ' + nome + ' de hoje é comparada';
-  if (L.length) { inp.min = L[0].d; inp.max = L[L.length - 1].d; }
-  box.appendChild(inp);
-  var seg = botao('›', 'A ' + nome + ' do dia seguinte disponível');
-  var sem = botao('×', 'Sem comparação para a ' + nome);
-  var sync = function() {
-    inp.value = EJ.cmp[f] || '';
-    ant.disabled = !L.length || (EJ.cmp[f] != null && ejVizinha(f, EJ.cmp[f], -1) == null);
-    seg.disabled = EJ.cmp[f] == null || ejVizinha(f, EJ.cmp[f], 1) == null;
-    sem.disabled = EJ.cmp[f] == null;
-  };
-  var aplicar = function(data, pedida) {
-    var e = data ? ejNaData(f, data) : null;
-    EJ.cmp[f] = e ? e.d : null;
-    EJ.cmpNota[f] = e && pedida && e.d !== pedida
-      ? 'Sem ' + (f === 'di' ? 'pregão' : 'pesquisa') + ' em ' + cnDataBR(pedida) + ': a ' + nome +
-        ' comparada é a de ' + cnDataBR(e.d) + '.'
-      : '';
-    ejPut('ej-cmp-nota', ['focus', 'di'].map(function(k) { return EJ.cmpNota[k]; }).filter(Boolean).join(' '));
-    sync();
-    // A comparação muda até onde o gráfico vai para trás: a janela de antes cortaria um caminho
-    // de um ano atrás pela metade.
-    delete _chartXRange[EJ_HOJE];
-    renderEjHoje(); renderEjHojeTextos();
-  };
-  ant.addEventListener('click', function() {
-    aplicar(EJ.cmp[f] == null ? ejCmpPadrao(f) : ejVizinha(f, EJ.cmp[f], -1));
+// ── Sub-abas da aba ───────────────────────────────────────────────────────────────
+// Cada sub-aba é uma <section id="ej-sub-KEY"> e desenha os gráficos dela na PRIMEIRA vez que é
+// aberta, como as abas de cima: num div escondido o Plotly dimensiona o gráfico com largura zero.
+// Os controles de uma sub-aba só são clicáveis com ela aberta, então nenhum redesenho acontece
+// escondido. Os botões são montados aqui, não no HTML, para a lista ter um lugar só.
+var EJ_SUBS = [
+  {key: 'hoje', label: 'Caminho de hoje', render: function() { renderEjHoje(); }},
+  {key: 'reuniao', label: 'Uma reunião', render: function() { renderEjReuniao(); }},
+  {key: 'tempo', label: 'Ao longo do tempo', render: function() { renderEjHz(); }},
+  {key: 'opcoes', label: 'Opções de Copom', render: function() { renderEjOpDist(); renderEjOpHist(); renderEjOpVol(); renderEjOpNeg(); }},
+  {key: 'notas', label: 'Como ler', render: function() {}},
+];
+var ejSubFeita = {};
+function ejSetupSubabas() {
+  var nav = document.getElementById('ej-subtabs');
+  ejSubFeita = {};
+  if (nav) {
+    nav.innerHTML = '';
+    EJ_SUBS.forEach(function(sb) {
+      var b = document.createElement('button');
+      b.className = 'subtab-btn'; b.type = 'button'; b.textContent = sb.label; b.dataset.sub = sb.key;
+      b.addEventListener('click', function() { ejAtivarSub(sb.key); });
+      nav.appendChild(b);
+    });
+  }
+  ejAtivarSub(EJ.sub || 'hoje');
+}
+function ejAtivarSub(key) {
+  EJ.sub = key;
+  var nav = document.getElementById('ej-subtabs');
+  if (nav) Array.prototype.slice.call(nav.children).forEach(function(b) {
+    if (b.dataset.sub === key) b.classList.add('active'); else b.classList.remove('active');
   });
-  seg.addEventListener('click', function() { if (EJ.cmp[f] != null) aplicar(ejVizinha(f, EJ.cmp[f], 1)); });
-  sem.addEventListener('click', function() { aplicar(null); });
-  inp.addEventListener('change', function() { aplicar(inp.value || null, inp.value || null); });
-  sync();
+  EJ_SUBS.forEach(function(sb) {
+    var p = document.getElementById('ej-sub-' + sb.key);
+    if (!p) return;
+    if (sb.key === key) p.classList.add('active'); else p.classList.remove('active');
+  });
+  var sb = EJ_SUBS.filter(function(x) { return x.key === key; })[0];
+  if (sb && !ejSubFeita[key]) { ejSubFeita[key] = true; sb.render(); }
+}
+
+// A barra de uma fonte (setupDateCompare, do compartilhado). Trocar a data muda até onde o
+// gráfico vai para trás, e a janela de antes cortaria um caminho de um ano atrás pela metade.
+function ejSetupCmp(f) {
+  setupDateCompare('ej-cmp-' + f, {
+    datas: function() { return ejDatasComp(f).map(function(e) { return e.d; }); },
+    valor: EJ.cmp[f], nome: f === 'di' ? 'a curva' : 'a pesquisa', semDado: f === 'di' ? 'pregão' : 'pesquisa',
+    notaId: 'ej-cmp-nota',
+    onChange: function(d) {
+      EJ.cmp[f] = d;
+      delete _chartXRange[EJ_HOJE];
+      renderEjHoje(); renderEjHojeTextos();
+    },
+  });
 }
 
 // ── Troca de aba — render lazy na primeira ativação ──────────────

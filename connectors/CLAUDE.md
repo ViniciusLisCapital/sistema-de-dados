@@ -965,6 +965,12 @@ b3_precos.classificar("DOLZ26C005700")  # ativo, tipo, vencimento (mês), opcao,
 - `FinInstrmQty`/`NtlFinVol`/`IntlFinVol` são os totais do dia (o dólar tem negócio fora do pregão
   regular). `AdjstdQt` é PU ou preço; `AdjstdQtTax` é a taxa — o regex não confunde as duas.
 - Mesmas regras de ausência do `b3_curvas`, 2 workers.
+- **Opções de Copom (`CPM`, 2026-10-30)**: `precos_cpm(d)`, cache **próprio** (`cache_precos_cpm/`) e
+  não um produto a mais em `PRODUTOS` — os ~2.300 pregões já em `cache_precos/` foram gravados sem o
+  CPM, e lá um dia sem ele diria "não houve negócio" quando é "não foi lido". Todo download do
+  boletim grava os dois caches, então o passe diário das tabelas de contratos traz o CPM sem custo.
+  Código `CPM` + letra do mês do vencimento + ano + `C` + strike em 6 dígitos com 3 decimais
+  (`CPMX26C099750` = nov/2026, 99,750 = corte de 25). Consumidor: `pm_copom_opcoes_negocios`.
 - O Boletim Diário da B3 (`arquivos.b3.com.br/bdi`, POST `/bdi/table/{nome}/{data}/{data}/{pág}/{tam}`
   com corpo `{}`) tem os mesmos números **só dos últimos 21 dias** e **sem quebra por tipo de
   participante** — essa quebra saiu da consulta pública em abr/2025 e vive no UP2DATA (pago).

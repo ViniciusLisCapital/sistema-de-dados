@@ -1,0 +1,17 @@
+    /* Comparação por data (date_compare.js): ‹ data › × numa barra de controle. */
+    .dc-cmp { display: inline-flex; align-items: center; gap: 4px; }
+    .dc-cmp input[type="date"] {
+      font-family: var(--mono); font-size: 12px; color: var(--text); padding: 4px 8px;
+      border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg);
+      min-width: 0; cursor: text;
+    }
+    .dc-cmp input[type="date"]:focus-visible { outline: none; border-color: var(--lis-azul-cl); }
+    .dc-btn {
+      font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--text); padding: 5px 7px;
+      border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); cursor: pointer;
+    }
+    .dc-btn:hover:not(:disabled) { border-color: var(--lis-azul-cl); }
+    .dc-btn:disabled { color: var(--muted); cursor: not-allowed; opacity: 0.5; }
+    /* A nota de encaixe ("Sem pregão em 24/10: a curva comparada é a de 23/10"), logo abaixo da barra. */
+    .dc-nota { font-family: var(--mono); font-size: 11px; color: var(--muted); margin: -4px 0 8px; }
+    .dc-nota:empty { display: none; }

@@ -94,8 +94,8 @@ desenvolvimento não tem.
   metade do buraco: `cmb_ptax`, `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`,
   `cmb_equity_us` e `comm_brent` já rodam por ele (via `registry.py`, mesmo as 6
   de `macro_international`), e **o agendamento existe desde 2026-09-03** — a tarefa
-  `Macro - series diarias` roda `--continuous` de 30 em 30 min das 09:30 às 12:00, cobrindo
-  as 11 tabelas contínuas (ver [`jobs/CLAUDE.md`](jobs/CLAUDE.md)). O que segue
+  `Macro - series diarias` roda `--continuous` uma vez por dia às 09:00 (desde 2026-10-30), cobrindo
+  as 26 tabelas contínuas (ver [`jobs/CLAUDE.md`](jobs/CLAUDE.md)). O que segue
   **sem nenhum job**, só à mão ou via `--tables`: `comm_icbr`/`comm_icbr_usd`/`inflc_meta` e
   `inflc_decomposicao_item` (este alimenta os núcleos MA/MS/DP do IPCA-15) em
   `domain/db/brasil/`, `clima_oni`/`cmb_real_rates` em `domain/db/international/`, e

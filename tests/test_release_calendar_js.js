@@ -1594,6 +1594,135 @@ async function testeLoteSemVeredito() {
   falhasTotais += falhas;
 }
 
+// ---------------------------------------------------------------------------
+// SERIES DIARIAS (2026-10-30): o cartao proprio, acima da lista. Pedido do usuario:
+// "um botao no calendario de divulgacao para atualizacao dos dados diarios". O que
+// precisa ser verdade:
+//   - a lista vem do payload (`continuas()` do YAML), nao de uma lista no template;
+//   - servido, o POST manda `{continuous: true}` e NADA mais -- nenhum nome de tabela;
+//   - o botao existe nos dois estados (laranja quando alguma nao foi buscada hoje);
+//   - os fatos sao a busca MAIS ANTIGA e quantas mudaram hoje, relidos depois do run;
+//   - arquivo, o mesmo botao copia `update_db.py --continuous`.
+// ---------------------------------------------------------------------------
+async function testeDiarias() {
+  let falhas = 0;
+  const check = (rotulo, cond, extra) => {
+    if (cond) console.log('  ok     ' + rotulo);
+    else { console.log('  FALHA  ' + rotulo + (extra !== undefined ? '  -> ' + extra : '')); falhas++; }
+  };
+  console.log('');
+  console.log('SERIES DIARIAS - cartao e botao');
+  const HOJE = '2026-08-20';
+  const DIARIAS = RD.diarias || [];
+  check('o payload traz a lista das series diarias', DIARIAS.length >= 10, DIARIAS.length);
+  check('  e ela inclui a PTAX e a curva da B3',
+        DIARIAS.indexOf('cmb_ptax') >= 0 && DIARIAS.indexOf('br_interest_rate') >= 0, DIARIAS.join(','));
+
+  const fatos = (rodou) => {
+    const t = fatosStub({}, HOJE);
+    DIARIAS.forEach((tb, i) => {
+      const ontem = '2026-08-19T11:00:00', hoje = HOJE + 'T10:30:00';
+      // Antes do run: a PRIMEIRA tabela parou ontem, as outras foram buscadas hoje.
+      const ok = rodou || i > 0 ? hoje : ontem;
+      t[tb] = { existe: true, coluna: 'date', max: '2026-08-19', linhas: 100, sem_script: false,
+                tentativa_em: ok, ok: true, erro: null, ok_em: ok,
+                mudou_em: rodou && i < 3 ? hoje : '2026-08-10T10:00:00', desde: '2026-01-01T00:00:00' };
+    });
+    return t;
+  };
+
+  // ── servido ──
+  {
+    const els = {};
+    const getEl = (id) => (els[id] = els[id] || new El('div'));
+    global.document = mkDoc(getEl);
+    global.window = { isSecureContext: false };
+    global.navigator = {};
+    const posts = [];
+    let rodou = false;
+    global.fetch = (url, opts) => {
+      if (url === '/api/ping')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, modo: 'servido', hoje: HOJE, agora: '11:00' }) });
+      if (url === '/api/status')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, hoje: HOJE, agora: '11:00', tabelas: fatos(rodou) }) });
+      if (url === '/api/dashboards')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, agora: '11:00', dashboards: DASHBOARDS_STUB }) });
+      if (url === '/api/run') {
+        posts.push(JSON.parse(opts.body));
+        rodou = true;
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, n_ok: DIARIAS.length, n_erro: 0, sem_script: [], resultados: [], tabelas: DIARIAS }) });
+      }
+      return Promise.reject(new Error('inesperado ' + url));
+    };
+    new Function(SRC)();
+    await new Promise((r) => setTimeout(r, 40));
+
+    const antes = getEl('bulk-diarias').innerHTML;
+    check('servido: uma parada desde ontem pinta o botao de laranja',
+          antes.indexOf('upd-btn late') >= 0 && antes.indexOf('Atualizar diárias') >= 0, antes.slice(0, 300));
+    check('  e o fato diz a busca mais antiga, de ontem',
+          antes.indexOf('não atualizadas hoje') >= 0 && antes.indexOf('19/08 11:00') >= 0, antes.slice(0, 300));
+    check('  o resumo conta as tabelas do payload',
+          getEl('diarias-resumo').innerHTML.indexOf('>' + DIARIAS.length + '<') >= 0, getEl('diarias-resumo').innerHTML);
+
+    const btn = new El('button'); btn.dataset.acao = 'rodar';
+    cliqueEm(getEl('diarias-card'), btn);
+    await new Promise((r) => setTimeout(r, 60));
+    check('clique: um POST, com {continuous: true} e nada mais',
+          posts.length === 1 && JSON.stringify(posts[0]) === '{"continuous":true}', JSON.stringify(posts));
+    const depois = getEl('bulk-diarias').innerHTML;
+    check('  depois do run o estado e relido: botao neutro, mas continua na tela',
+          depois.indexOf('upd-btn neutral') >= 0 && depois.indexOf('Atualizar diárias') >= 0, depois.slice(0, 300));
+    check('  e o fato diz quantas mudaram hoje',
+          depois.indexOf('atualizadas 20/08 10:30') >= 0 &&
+          depois.indexOf('3 de ' + DIARIAS.length + ' com dado novo hoje') >= 0, depois.slice(0, 300));
+    check('  e a mensagem do run fica',
+          depois.indexOf(DIARIAS.length + ' script(s) OK') >= 0, depois.slice(-200));
+
+    check('fechado, a lista das tabelas nao aparece',
+          getEl('diarias-lista').innerHTML.indexOf('<ul') < 0);
+    const tog = new El('button'); tog.dataset.acao = 'toggle';
+    cliqueEm(getEl('diarias-card'), tog);
+    const aberta = getEl('diarias-lista').innerHTML;
+    check('aberta, uma linha por tabela diaria',
+          (aberta.match(/<li>/g) || []).length === DIARIAS.length &&
+          DIARIAS.every((t) => aberta.indexOf('>' + t + '<') >= 0), (aberta.match(/<li>/g) || []).length);
+    check('  e o abrir nao disparou outro POST', posts.length === 1, posts.length);
+  }
+
+  // ── arquivo ──
+  {
+    const els = {};
+    const getEl = (id) => (els[id] = els[id] || new El('div'));
+    const doc = mkDoc(getEl);
+    let copiado = null;
+    // O captor espia o caminho do execCommand, que e o que roda fora de contexto seguro
+    // (ver a nota do lote em .claude/rules/lis-dashboards.md).
+    doc.execCommand = () => { const k = doc.body.children; copiado = k[k.length - 1].value; return true; };
+    global.document = doc;
+    global.window = { isSecureContext: false };
+    global.navigator = {};
+    global.fetch = () => Promise.reject(new Error('sem servidor'));
+    new Function(SRC)();
+    await new Promise((r) => setTimeout(r, 40));
+    const html = getEl('bulk-diarias').innerHTML;
+    check('arquivo: o botao vira Copiar cmd', html.indexOf('Copiar cmd') >= 0, html.slice(0, 200));
+    check('  e nao afirma fato nenhum sem servidor', html.indexOf('upd-fato') < 0, html.slice(0, 200));
+    const btn = new El('button'); btn.dataset.acao = 'rodar';
+    cliqueEm(getEl('diarias-card'), btn);
+    await new Promise((r) => setTimeout(r, 20));
+    check('  o clique copia o comando das series diarias',
+          copiado === 'uv run python jobs/update_db.py --continuous', copiado);
+  }
+
+  console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
+  falhasTotais += falhas;
+}
+
 (async () => {
   const modos = process.env.MODE ? [process.env.MODE] : ['file', 'served'];
   for (const m of modos) await rodar(m);
@@ -1605,6 +1734,7 @@ async function testeLoteSemVeredito() {
   if (!process.env.MODE) await testeLoteDashboards(true);
   if (!process.env.MODE) await testeLoteDivulgacoes();
   if (!process.env.MODE) await testeLoteSemVeredito();
+  if (!process.env.MODE) await testeDiarias();
   console.log('\n' + '='.repeat(62));
   console.log(falhasTotais ? `${falhasTotais} FALHA(S)` : 'todos os asserts passaram');
   process.exit(falhasTotais ? 1 : 0);

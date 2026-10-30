@@ -192,6 +192,7 @@ dashboards:
       - {kind: mysql, ref: macro_brasil.expc_focus_copom, role: "Selic esperada pela Focus para cada reunião do Copom — o caminho antes de cada reunião, aba Acompanhamento Condicionais, e a pesquisa semana a semana, aba Expectativas de Juros"}
       - {kind: mysql, ref: macro_brasil.br_di_grade, role: "Curva DI × pré com todos os vértices que a B3 publica — a taxa que o mercado precifica para depois de cada reunião, aba Expectativas de Juros"}
       - {kind: mysql, ref: macro_brasil.pm_copom_opcoes, role: "Opções de Copom da B3 — a probabilidade que o mercado dá a cada decisão possível nas próximas reuniões, aba Expectativas de Juros"}
+      - {kind: mysql, ref: macro_brasil.pm_copom_opcoes_negocios, role: "Negócios e posição em aberto das opções de Copom — a tabela embaixo do gráfico das probabilidades, aba Expectativas de Juros"}
       # A data mais distante do calendario, e nao a do ultimo dado: muda quando o BC publica
       # um ano novo de reunioes (ou remarca uma), que e quando as datas estimadas viram reais.
       - {kind: mysql, ref: macro_brasil.pm_copom_calendario, role: "Datas das reuniões do Copom que o BC já marcou, inclusive as do ano seguinte — onde cada degrau cai nas abas Acompanhamento Condicionais e Expectativas de Juros"}

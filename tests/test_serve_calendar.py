@@ -96,9 +96,10 @@ if d.get("ok"):
     # buscada, se o dado mudou, e o que o banco tem agora. Contado do proprio YAML --
     # um numero literal aqui vira falha toda vez que um grupo entra no calendario.
     f = d["tabelas"]
-    from domain.release_calendar.sync import carregar, tabelas_por_grupo
-    esperadas = {t for ts in tabelas_por_grupo(carregar()).values() for t in ts}
-    check("  um registro por tabela citada no calendario",
+    from domain.release_calendar.sync import carregar, continuas, tabelas_por_grupo
+    esperadas = ({t for ts in tabelas_por_grupo(carregar()).values() for t in ts}
+                 | set(continuas(carregar())))
+    check("  um registro por tabela citada no calendario (grupos + series diarias)",
           set(f) == esperadas, sorted(esperadas ^ set(f)))
     campos = {"existe", "coluna", "max", "linhas", "sem_script", "tentativa_em", "ok",
               "erro", "ok_em", "mudou_em", "desde"}
@@ -174,6 +175,11 @@ for corpo, rotulo in (
     ({}, "sem campo group"),
     ({"group": "domain.db.brasil.bcb.cred_credito_amplo"}, "nome de modulo como slug"),
     ({"group": ["bcb_icbr"]}, "group nao-string"),
+    # O botao das series diarias manda `continuous: true` e nada mais: qualquer outro
+    # valor (uma lista de tabelas, um nome de modulo) e recusado antes de rodar.
+    ({"continuous": ["cmb_ptax"]}, "continuous com lista de tabelas"),
+    ({"continuous": "domain.db.brasil.bcb.cmb_ptax"}, "continuous com nome de modulo"),
+    ({"continuous": 1}, "continuous truthy mas nao true"),
 ):
     code, _, _ = req("/api/run", metodo="POST", corpo=corpo)
     check(f"{rotulo} -> 400", code == 400, code)

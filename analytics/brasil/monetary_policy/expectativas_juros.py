@@ -453,7 +453,57 @@ def opcoes(reun: list[dict]) -> dict:
         "vig": vig,
         "j0": j0,
         "por_reuniao": out_j,
+        "negocios": negocios(venc_j),
     }
+
+
+def negocios(venc_j: dict) -> dict:
+    """Negocios e posicao em aberto (`pm_copom_opcoes_negocios`), por reuniao: `d` (os pregoes
+    da reuniao) e `r`, uma linha [indice em d, decisao, negocios, contratos, volume R$, posicao no
+    inicio, no fim, ultimo preco] por serie com negocio ou posicao. O pregao vai como indice
+    porque a historia inteira (desde 2020-05) sao dezenas de milhares de linhas, e a data repetida
+    em cada uma era metade do peso. A reuniao sai do vencimento pelo MESMO casamento das
+    probabilidades (`venc_j`), entao as tabelas e os graficos apontam a mesma reuniao.
+
+    Contratos e posicao vao em CONTRATOS DE R$ 100, o tamanho de hoje: ate 2025-05-23 um contrato
+    pagava R$ 10.000 e vale 100 dos de hoje (`valor_contrato`). Sem a conversao a serie salta 100
+    vezes na troca e nada antes dela se compara com depois. `troca` e o primeiro pregao no tamanho
+    novo, para a nota dizer isso."""
+    try:
+        n = q(_DB, "SELECT date, vencimento, variacao_bps, negocios, contratos, volume_brl, "
+                   "oi_abertura, oi_fechamento, ultimo, valor_contrato "
+                   "FROM pm_copom_opcoes_negocios ORDER BY date")
+    except Exception as exc:  # noqa: BLE001 -- sem a tabela, a secao so perde a tabela de negocios
+        print(f"  expectativas   opcoes: negocios FALHOU -- {exc}")
+        return {"desde": None, "por_reuniao": {}}
+    if n.empty:
+        return {"desde": None, "por_reuniao": {}}
+    n["date"] = pd.to_datetime(n["date"]).dt.date
+    n["vencimento"] = pd.to_datetime(n["vencimento"]).dt.date
+    out: dict[str, dict] = {}
+    sem = 0
+    for r in n.itertuples():
+        j = venc_j.get(r.vencimento)
+        if j is None:
+            sem += 1
+            continue
+        b = float(r.variacao_bps)
+        k = float(r.valor_contrato) / 100
+        R = out.setdefault(str(j), {"d": [], "r": []})
+        d = r.date.isoformat()
+        if not R["d"] or R["d"][-1] != d:   # n vem ordenado por data
+            R["d"].append(d)
+        R["r"].append([
+            len(R["d"]) - 1, int(b) if b == int(b) else b, int(r.negocios), round(r.contratos * k),
+            int(round(float(r.volume_brl))), round(r.oi_abertura * k),
+            None if pd.isna(r.oi_fechamento) else round(r.oi_fechamento * k),
+            None if pd.isna(r.ultimo) else float(r.ultimo)])
+    if sem:
+        print(f"  expectativas   opcoes: {sem} linha(s) de negocio sem reuniao casada")
+    grandes = n[n["valor_contrato"] > 100]
+    troca = n[n["date"] > grandes["date"].max()]["date"].min() if len(grandes) else None
+    return {"desde": n["date"].min().isoformat(), "por_reuniao": out,
+            "troca": troca.isoformat() if troca is not None and not pd.isna(troca) else None}
 
 
 def montar() -> dict:
