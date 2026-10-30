@@ -16,7 +16,8 @@ especialistas por área macro existem, fases de investimento planejadas):
 
 📄 **Sistema de agentes-analistas — regras decididas e o que falta fazer:** [`SISTEMA_AGENTES.md`](SISTEMA_AGENTES.md).
 Princípios gerais de todo agente (aplicados sem perguntar nos agentes novos): [`PRINCIPIOS_AGENTES.md`](PRINCIPIOS_AGENTES.md).
-Plano de construção, hoje até o primeiro batch de sete agentes e o report conjunto, em fases e com quem faz cada coisa: [`PLANO_AGENTES.md`](PLANO_AGENTES.md).
+Plano de construção, em frentes e com quem faz cada coisa: [`PLANO_AGENTES.md`](PLANO_AGENTES.md) (o Plano 2, desde 2026-10-30, vai até o ciclo 2 com nove agentes).
+Desde 2026-10-30 o plano corre em vários chats coordenados por um principal; o brief, o estado e os pedidos de cada chat ficam em [`coordenacao/`](coordenacao/README.md), um arquivo por chat.
 Desde 2026-10-21 os agentes **crescem por camadas**: rodam só com a camada 1 do material, e o resto entra por promoção.
 Decisão sobre o sistema vai para lá, em lista simples; não para os `CLAUDE.md` de pasta.
 `Workflow.md` é do usuário: agente/IA não acrescenta nem retira itens dele.
